@@ -1,0 +1,7 @@
+package: github.com/antham/doc-hunt
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/mattn/go-sqlite3
+- package: github.com/satori/go.uuid
+- package: github.com/spf13/cobra
+- package: github.com/spf13/viper
