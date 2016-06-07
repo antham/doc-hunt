@@ -11,3 +11,7 @@ func renderError(err error) {
 func renderSuccess(str string) {
 	color.Green(str)
 }
+
+func renderInfo(str string) {
+	color.Cyan(str)
+}
