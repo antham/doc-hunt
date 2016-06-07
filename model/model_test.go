@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -33,19 +34,18 @@ func createADocFile() {
 func createSourceFiles() {
 	createTestDirectory()
 
-	content := []byte("<?php echo 'A source file';")
-	err := ioutil.WriteFile("/tmp/doc-hunt/source1.php", content, 0644)
+	for i := 1; i <= 10; i++ {
+		content := []byte("<?php echo 'A source file';")
+		err := ioutil.WriteFile(fmt.Sprintf("/tmp/doc-hunt/source%d.php", i), content, 0644)
 
-	if err != nil {
-		logrus.Fatal(err)
+		if err != nil {
+			logrus.Fatal(err)
+		}
 	}
+}
 
-	content = []byte("<?php echo 'Another source file';")
-	err = ioutil.WriteFile("/tmp/doc-hunt/source2.php", content, 0644)
-
-	if err != nil {
-		logrus.Fatal(err)
-	}
+func deleteDatabase() {
+	os.Remove(dbName)
 }
 
 func TestInsertConfig(t *testing.T) {
@@ -86,4 +86,43 @@ func TestInsertConfig(t *testing.T) {
 
 		i++
 	}
+}
+
+func TestListConfigWithNoResults(t *testing.T) {
+	deleteDatabase()
+	createTables()
+
+	configs := ListConfig()
+
+	expected := []Config{}
+
+	assert.Equal(t, &expected, configs, "Must return an empty config array")
+}
+
+func TestListConfigWithEntries(t *testing.T) {
+	deleteDatabase()
+	createTables()
+
+	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	sources := NewSources(doc, []string{"/tmp/doc-hunt/source1.php", "/tmp/doc-hunt/source2.php"})
+
+	InsertConfig(doc, sources)
+
+	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	sources = NewSources(doc, []string{"/tmp/doc-hunt/source3.php", "/tmp/doc-hunt/source4.php", "/tmp/doc-hunt/source5.php"})
+
+	InsertConfig(doc, sources)
+
+	configs := ListConfig()
+
+	assert.Len(t, *configs, 2, "Must have 2 configs")
+
+	assert.Len(t, (*configs)[0].SourceFiles, 2, "Must have 2 source files")
+	assert.Equal(t, "/tmp/doc-hunt/source1.php", (*configs)[0].SourceFiles[0].Path, "Must return correct path")
+	assert.Equal(t, "/tmp/doc-hunt/source2.php", (*configs)[0].SourceFiles[1].Path, "Must return correct path")
+
+	assert.Len(t, (*configs)[1].SourceFiles, 3, "Must have 3 source files")
+	assert.Equal(t, "/tmp/doc-hunt/source3.php", (*configs)[1].SourceFiles[0].Path, "Must return correct path")
+	assert.Equal(t, "/tmp/doc-hunt/source4.php", (*configs)[1].SourceFiles[1].Path, "Must return correct path")
+	assert.Equal(t, "/tmp/doc-hunt/source5.php", (*configs)[1].SourceFiles[2].Path, "Must return correct path")
 }

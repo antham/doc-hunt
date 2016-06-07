@@ -1,8 +1,40 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/fatih/color"
+
+	"github.com/antham/doc-hunt/model"
 )
+
+func renderList(list *[]model.Config) {
+	if len(*list) == 0 {
+		renderInfo("No config added yet")
+
+		return
+	}
+
+	color.Magenta("----")
+
+	for i, config := range *list {
+		out := color.CyanString(fmt.Sprintf("%d", i))
+		out += color.YellowString(" - document : ")
+		out += config.DocFile.Path
+		out += color.YellowString(" => sources : ")
+
+		for j, source := range config.SourceFiles {
+			if j != 0 {
+				out += color.YellowString(", ")
+			}
+
+			out += source.Path
+		}
+
+		fmt.Printf("%s\n", out)
+		color.Magenta("----")
+	}
+}
 
 func renderError(err error) {
 	color.Red(err.Error())

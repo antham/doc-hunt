@@ -38,6 +38,8 @@ var configCmd = &cobra.Command{
 		}
 
 		switch args[0] {
+		case "list":
+			listConfig()
 		case "add":
 			docSource, fileSources, err := parseConfigAddArgs(args[1:])
 
@@ -80,6 +82,12 @@ func parseConfigAddArgs(args []string) (string, []string, error) {
 	}
 
 	return fileDoc, fileSources, nil
+}
+
+func listConfig() {
+	renderList(model.ListConfig())
+
+	successExit()
 }
 
 func addConfig(fileDoc string, fileSources []string) {
