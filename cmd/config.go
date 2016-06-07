@@ -27,12 +27,12 @@ import (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Add, delete configuration",
+	Short: "List, add or delete configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			err := fmt.Errorf("Missing argument : list, add or delete")
+		genErr := fmt.Errorf("Unvalid argument choose one those : list, add or delete")
 
-			renderError(err)
+		if len(args) == 0 {
+			renderError(genErr)
 
 			errorExit()
 		}
@@ -48,6 +48,10 @@ var configCmd = &cobra.Command{
 			}
 
 			addConfig(docSource, fileSources)
+		default:
+			renderError(genErr)
+
+			errorExit()
 		}
 	},
 }
