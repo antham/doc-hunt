@@ -15,12 +15,13 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 )
 
-func triggerErrorExit(err error) {
-	fmt.Println(err)
-
+func errorExit() {
 	os.Exit(1)
+}
+
+func successExit() {
+	os.Exit(0)
 }

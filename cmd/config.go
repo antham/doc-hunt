@@ -30,7 +30,11 @@ var configCmd = &cobra.Command{
 	Short: "Add, delete configuration",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
-			triggerErrorExit(fmt.Errorf("Missing argument : list, add or delete"))
+			err := fmt.Errorf("Missing argument : list, add or delete")
+
+			renderError(err)
+
+			errorExit()
 		}
 
 		switch args[0] {
@@ -38,7 +42,9 @@ var configCmd = &cobra.Command{
 			docSource, fileSources, err := parseConfigAddArgs(args[1:])
 
 			if err != nil {
-				triggerErrorExit(err)
+				renderError(err)
+
+				errorExit()
 			}
 
 			addConfig(docSource, fileSources)
@@ -77,7 +83,9 @@ func addConfig(fileDoc string, fileSources []string) {
 	sources := model.NewSources(doc, fileSources)
 	model.InsertConfig(doc, sources)
 
-	fmt.Println("Config added")
+	renderSuccess("Config added")
+
+	successExit()
 }
 
 func init() {

@@ -5,3 +5,5 @@ import:
 - package: github.com/satori/go.uuid
 - package: github.com/spf13/cobra
 - package: github.com/spf13/viper
+- package: github.com/fatih/color
+  version: ^0.1.0

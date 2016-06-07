@@ -1,8 +1,10 @@
-hash: 745489bbf8086a773dddef328688907d72730defe61cfd547ca887f2f1579231
-updated: 2016-06-05T14:38:08.883191642+02:00
+hash: 36c36513f02723ec72da132aa460ddca8952373ce9d6713ec8c43074052b27eb
+updated: 2016-06-07T22:08:25.450016504+02:00
 imports:
 - name: github.com/BurntSushi/toml
   version: f0aeabca5a127c4078abb8c8d64298b147264b55
+- name: github.com/fatih/color
+  version: 1b35f289c47d5c73c398cea8e006b7bcb6234a96
 - name: github.com/fsnotify/fsnotify
   version: 30411dbcefb7a1da7e84f75530ad3abe4011b4f8
 - name: github.com/hashicorp/hcl
@@ -20,6 +22,12 @@ imports:
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/magiconair/properties
   version: c265cfa48dda6474e208715ca93e987829f572f8
+- name: github.com/mattn/go-colorable
+  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+  repo: https://github.com/mattn/go-colorable
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+  repo: https://github.com/mattn/go-isatty
 - name: github.com/mattn/go-sqlite3
   version: 38ee283dabf11c9cbdb968eebd79b1fa7acbabe6
 - name: github.com/mitchellh/mapstructure
