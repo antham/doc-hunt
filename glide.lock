@@ -1,5 +1,5 @@
-hash: 36c36513f02723ec72da132aa460ddca8952373ce9d6713ec8c43074052b27eb
-updated: 2016-06-07T22:08:25.450016504+02:00
+hash: 679d2ca08cb12bc7fc41cb8fd839e75c0237c3145ed509ee0181ff1be5910b3a
+updated: 2016-06-07T22:56:27.933158253+02:00
 imports:
 - name: github.com/BurntSushi/toml
   version: f0aeabca5a127c4078abb8c8d64298b147264b55
@@ -22,18 +22,14 @@ imports:
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/magiconair/properties
   version: c265cfa48dda6474e208715ca93e987829f572f8
-- name: github.com/mattn/go-colorable
-  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
-  repo: https://github.com/mattn/go-colorable
-- name: github.com/mattn/go-isatty
-  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
-  repo: https://github.com/mattn/go-isatty
 - name: github.com/mattn/go-sqlite3
   version: 38ee283dabf11c9cbdb968eebd79b1fa7acbabe6
 - name: github.com/mitchellh/mapstructure
   version: d2dd0262208475919e1a362f675cfc0e7c10e905
 - name: github.com/satori/go.uuid
   version: f9ab0dce87d815821e221626b772e3475a0d2749
+- name: github.com/shiena/ansicolor
+  version: a422bbe96644373c5753384a59d678f7d261ff10
 - name: github.com/Sirupsen/logrus
   version: f3cfb454f4c209e6668c95216c4744b8fddb2356
 - name: github.com/spf13/cast
@@ -46,6 +42,10 @@ imports:
   version: cb88ea77998c3f024757528e3305022ab50b43be
 - name: github.com/spf13/viper
   version: d8a428b8a30606e1d0b355d91edf282609ade1a6
+- name: github.com/stretchr/testify
+  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
+  subpackages:
+  - assert
 - name: golang.org/x/sys
   version: 076b546753157f758b316e59bcb51e6807c04057
   subpackages:
