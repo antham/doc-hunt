@@ -9,12 +9,6 @@ import (
 )
 
 func renderList(list *[]model.Config) {
-	if len(*list) == 0 {
-		renderInfo("No config added yet")
-
-		return
-	}
-
 	color.Magenta("----")
 
 	for i, config := range *list {

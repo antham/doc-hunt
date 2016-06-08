@@ -107,7 +107,15 @@ func parseConfigAddArgs(args []string) (string, []string, error) {
 }
 
 func listConfig() {
-	renderList(model.ListConfig())
+	list := model.ListConfig()
+
+	if len(*list) == 0 {
+		renderInfo("No config added yet")
+
+		successExit()
+	}
+
+	renderList(list)
 
 	successExit()
 }
