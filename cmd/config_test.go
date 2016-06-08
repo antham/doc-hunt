@@ -7,6 +7,8 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/antham/doc-hunt/model"
 )
 
 func createTestDirectory() {
@@ -77,4 +79,49 @@ func TestParseConfigAddArgs(t *testing.T) {
 	assert.NoError(t, err, "Must return no error")
 	assert.Equal(t, "/tmp/doc-hunt/doc_test_1", docFile, "Must return doc file path")
 	assert.Equal(t, []string{"/tmp/doc-hunt/source_test_1", "/tmp/doc-hunt/source_test_2"}, sourceFiles, "Must return sources file path")
+}
+
+func TestParseConfigDelArgsWithArgumentNotANumber(t *testing.T) {
+	configs := []model.Config{
+		model.Config{},
+		model.Config{},
+		model.Config{},
+		model.Config{},
+	}
+
+	_, err := parseConfigDelArgs(&configs, "1,2,3,a")
+
+	assert.EqualError(t, err, "a is not a number", "Must return an error")
+}
+
+func TestParseConfigDelArgsWithArgumentNotInRange(t *testing.T) {
+	configs := []model.Config{
+		model.Config{},
+		model.Config{},
+		model.Config{},
+	}
+
+	_, err := parseConfigDelArgs(&configs, "3,4")
+
+	assert.EqualError(t, err, "Value 3 is out of bounds", "Must return an error")
+}
+
+func TestParseConfigDelArgs(t *testing.T) {
+	configs := []model.Config{
+		model.Config{DocFile: model.Doc{Path: "/tmp/source_0.php"}},
+		model.Config{DocFile: model.Doc{Path: "/tmp/source_1.php"}},
+		model.Config{DocFile: model.Doc{Path: "/tmp/source_2.php"}},
+		model.Config{DocFile: model.Doc{Path: "/tmp/source_3.php"}},
+		model.Config{DocFile: model.Doc{Path: "/tmp/source_4.php"}},
+	}
+
+	expected := &[]model.Config{
+		model.Config{DocFile: model.Doc{Path: "/tmp/source_3.php"}},
+		model.Config{DocFile: model.Doc{Path: "/tmp/source_4.php"}},
+	}
+
+	results, err := parseConfigDelArgs(&configs, "3,4")
+
+	assert.NoError(t, err, "Must return no error")
+	assert.Equal(t, expected, results, "Must return configs")
 }

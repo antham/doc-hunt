@@ -17,8 +17,10 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
 
 	"github.com/antham/doc-hunt/model"
@@ -29,7 +31,7 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "List, add or delete configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		genErr := fmt.Errorf("Unvalid argument choose one those : list, add or delete")
+		genErr := fmt.Errorf("Unvalid argument choose one those : list, add or del")
 
 		if len(args) == 0 {
 			renderError(genErr)
@@ -50,6 +52,26 @@ var configCmd = &cobra.Command{
 			}
 
 			addConfig(docSource, fileSources)
+		case "del":
+			list := model.ListConfig()
+
+			if len(*list) == 0 {
+				renderInfo("No config added yet")
+
+				successExit()
+			}
+
+			renderList(list)
+
+			configs, err := promptConfigToRemove(list)
+
+			if err != nil {
+				renderError(err)
+
+				errorExit()
+			}
+
+			delConfig(configs)
 		default:
 			renderError(genErr)
 
@@ -98,6 +120,46 @@ func addConfig(fileDoc string, fileSources []string) {
 	renderSuccess("Config added")
 
 	successExit()
+}
+
+func delConfig(configs *[]model.Config) {
+	model.RemoveConfigs(configs)
+}
+
+func promptConfigToRemove(configs *[]model.Config) (*[]model.Config, error) {
+	renderPrompt()
+	rl, err := readline.New(">> ")
+
+	if err != nil {
+		return nil, fmt.Errorf("Something wrong happened during argument fetching")
+	}
+
+	defer rl.Close()
+
+	line, _ := rl.Readline()
+
+	return parseConfigDelArgs(configs, line)
+}
+
+func parseConfigDelArgs(configs *[]model.Config, line string) (*[]model.Config, error) {
+	results := []model.Config{}
+
+	for _, sel := range strings.Split(line, ",") {
+		strings.TrimSpace(sel)
+		n, err := strconv.Atoi(sel)
+
+		if err != nil {
+			return nil, fmt.Errorf("%s is not a number", sel)
+		}
+
+		if n < 0 || n >= len(*configs) {
+			return nil, fmt.Errorf("Value %d is out of bounds", n)
+		}
+
+		results = append(results, (*configs)[n])
+	}
+
+	return &results, nil
 }
 
 func init() {

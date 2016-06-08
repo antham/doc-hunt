@@ -1,8 +1,10 @@
-hash: 679d2ca08cb12bc7fc41cb8fd839e75c0237c3145ed509ee0181ff1be5910b3a
-updated: 2016-06-07T22:56:27.933158253+02:00
+hash: 8d452ae4e5c6ba8b13f6d9e5ae256b2ba127ae2be0ea2b25c7d0e139426b187a
+updated: 2016-06-09T00:08:44.225872862+02:00
 imports:
 - name: github.com/BurntSushi/toml
   version: f0aeabca5a127c4078abb8c8d64298b147264b55
+- name: github.com/chzyer/readline
+  version: 64a71f22be412fa183322657872f81a757eb8665
 - name: github.com/fatih/color
   version: 1b35f289c47d5c73c398cea8e006b7bcb6234a96
 - name: github.com/fsnotify/fsnotify
@@ -46,6 +48,10 @@ imports:
   version: f390dcf405f7b83c997eac1b06768bb9f44dec18
   subpackages:
   - assert
+- name: golang.org/x/crypto
+  version: 77f4136a99ffb5ecdbdd0226bd5cb146cf56bc0e
+  subpackages:
+  - ssh/terminal
 - name: golang.org/x/sys
   version: 076b546753157f758b316e59bcb51e6807c04057
   subpackages:

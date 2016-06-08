@@ -36,6 +36,10 @@ func renderList(list *[]model.Config) {
 	}
 }
 
+func renderPrompt() {
+	color.Yellow(fmt.Sprintf("\nChoose configurations number to remove, each separated with a comma : "))
+}
+
 func renderError(err error) {
 	color.Red(err.Error())
 }

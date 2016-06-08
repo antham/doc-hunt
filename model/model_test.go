@@ -126,3 +126,66 @@ func TestListConfigWithEntries(t *testing.T) {
 	assert.Equal(t, "/tmp/doc-hunt/source4.php", (*configs)[1].SourceFiles[1].Path, "Must return correct path")
 	assert.Equal(t, "/tmp/doc-hunt/source5.php", (*configs)[1].SourceFiles[2].Path, "Must return correct path")
 }
+
+func TestRemoveConfigsWithNoResults(t *testing.T) {
+	deleteDatabase()
+	createTables()
+
+	configs := []Config{}
+
+	RemoveConfigs(&configs)
+
+	result := ListConfig()
+
+	assert.Len(t, *result, 0, "Must have no config")
+}
+
+func TestRemoveConfigsWithOneEntry(t *testing.T) {
+	deleteDatabase()
+	createTables()
+
+	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	sources := NewSources(doc, []string{"/tmp/doc-hunt/source1.php", "/tmp/doc-hunt/source2.php"})
+
+	InsertConfig(doc, sources)
+
+	configs := ListConfig()
+
+	RemoveConfigs(configs)
+
+	result := ListConfig()
+
+	assert.Len(t, *result, 0, "Must have no config remaining")
+}
+
+func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
+	deleteDatabase()
+	createTables()
+
+	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	sources := NewSources(doc, []string{"/tmp/doc-hunt/source1.php", "/tmp/doc-hunt/source2.php"})
+
+	InsertConfig(doc, sources)
+
+	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	sources = NewSources(doc, []string{"/tmp/doc-hunt/source3.php", "/tmp/doc-hunt/source4.php"})
+
+	InsertConfig(doc, sources)
+
+	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	sources = NewSources(doc, []string{"/tmp/doc-hunt/source3.php", "/tmp/doc-hunt/source5.php"})
+
+	InsertConfig(doc, sources)
+
+	configs := ListConfig()
+	expected := (*configs)[1]
+
+	c := append((*configs)[:1], (*configs)[2:]...)
+
+	RemoveConfigs(&c)
+
+	result := ListConfig()
+
+	assert.Len(t, *result, 1, "Must have no config remaining")
+	assert.Equal(t, expected, (*result)[0], "Wrong configs deleted")
+}

@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -114,4 +115,31 @@ func ListConfig() *[]Config {
 	}
 
 	return &configs
+}
+
+// RemoveConfigs delete one or several config group
+func RemoveConfigs(configs *[]Config) {
+	sourceIds := []string{}
+	docIds := []string{}
+
+	for _, config := range *configs {
+		for _, source := range config.SourceFiles {
+			sourceIds = append(sourceIds, fmt.Sprintf(`"%s"`, source.ID))
+		}
+		docIds = append(docIds, fmt.Sprintf(`"%s"`, config.DocFile.ID))
+	}
+
+	if len(sourceIds) > 0 {
+		_, err := db.Exec(fmt.Sprintf("delete from source_file where id in (%s)", strings.Join(sourceIds, ",")))
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
+
+		_, err = db.Exec(fmt.Sprintf("delete from doc_file where id in (%s)", strings.Join(docIds, ",")))
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	}
 }
