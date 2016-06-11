@@ -5,10 +5,10 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/antham/doc-hunt/model"
+	"github.com/antham/doc-hunt/file"
 )
 
-func renderList(list *[]model.Config) {
+func renderList(list *[]file.Config) {
 	color.Magenta("----")
 
 	for i, config := range *list {

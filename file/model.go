@@ -1,9 +1,7 @@
-package model
+package file
 
 import (
-	"crypto/sha1"
 	"fmt"
-	"io/ioutil"
 	"strings"
 	"time"
 
@@ -35,6 +33,13 @@ type Config struct {
 	SourceFiles []Source
 }
 
+// Result represents what we get after comparison between database and actual files
+type Result struct {
+	DocFile     Doc
+	SourceFiles []Source
+	Status      map[string]string
+}
+
 // NewDoc create a new doc file
 func NewDoc(docPath string) *Doc {
 	return &Doc{
@@ -49,12 +54,10 @@ func NewSources(doc *Doc, sourcePaths []string) *[]Source {
 	sources := []Source{}
 
 	for _, path := range sourcePaths {
-		var fingerprint string
+		fingerprint, err := calculateFingerprint(path)
 
-		data, err := ioutil.ReadFile(path)
-
-		if err == nil {
-			fingerprint = fmt.Sprintf("%x", sha1.Sum(data))
+		if err != nil {
+			logrus.Fatal(err)
 		}
 
 		source := Source{

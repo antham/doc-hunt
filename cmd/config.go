@@ -23,7 +23,7 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
 
-	"github.com/antham/doc-hunt/model"
+	"github.com/antham/doc-hunt/file"
 )
 
 // configCmd represents the config command
@@ -53,7 +53,7 @@ var configCmd = &cobra.Command{
 
 			addConfig(docSource, fileSources)
 		case "del":
-			list := model.ListConfig()
+			list := file.ListConfig()
 
 			if len(*list) == 0 {
 				renderInfo("No config added yet")
@@ -107,7 +107,7 @@ func parseConfigAddArgs(args []string) (string, []string, error) {
 }
 
 func listConfig() {
-	list := model.ListConfig()
+	list := file.ListConfig()
 
 	if len(*list) == 0 {
 		renderInfo("No config added yet")
@@ -121,20 +121,20 @@ func listConfig() {
 }
 
 func addConfig(fileDoc string, fileSources []string) {
-	doc := model.NewDoc(fileDoc)
-	sources := model.NewSources(doc, fileSources)
-	model.InsertConfig(doc, sources)
+	doc := file.NewDoc(fileDoc)
+	sources := file.NewSources(doc, fileSources)
+	file.InsertConfig(doc, sources)
 
 	renderSuccess("Config added")
 
 	successExit()
 }
 
-func delConfig(configs *[]model.Config) {
-	model.RemoveConfigs(configs)
+func delConfig(configs *[]file.Config) {
+	file.RemoveConfigs(configs)
 }
 
-func promptConfigToRemove(configs *[]model.Config) (*[]model.Config, error) {
+func promptConfigToRemove(configs *[]file.Config) (*[]file.Config, error) {
 	renderPrompt()
 	rl, err := readline.New(">> ")
 
@@ -149,8 +149,8 @@ func promptConfigToRemove(configs *[]model.Config) (*[]model.Config, error) {
 	return parseConfigDelArgs(configs, line)
 }
 
-func parseConfigDelArgs(configs *[]model.Config, line string) (*[]model.Config, error) {
-	results := []model.Config{}
+func parseConfigDelArgs(configs *[]file.Config, line string) (*[]file.Config, error) {
+	results := []file.Config{}
 
 	for _, sel := range strings.Split(line, ",") {
 		strings.TrimSpace(sel)

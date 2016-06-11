@@ -8,7 +8,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/antham/doc-hunt/model"
+	"github.com/antham/doc-hunt/file"
 )
 
 func createTestDirectory() {
@@ -82,11 +82,11 @@ func TestParseConfigAddArgs(t *testing.T) {
 }
 
 func TestParseConfigDelArgsWithArgumentNotANumber(t *testing.T) {
-	configs := []model.Config{
-		model.Config{},
-		model.Config{},
-		model.Config{},
-		model.Config{},
+	configs := []file.Config{
+		file.Config{},
+		file.Config{},
+		file.Config{},
+		file.Config{},
 	}
 
 	_, err := parseConfigDelArgs(&configs, "1,2,3,a")
@@ -95,10 +95,10 @@ func TestParseConfigDelArgsWithArgumentNotANumber(t *testing.T) {
 }
 
 func TestParseConfigDelArgsWithArgumentNotInRange(t *testing.T) {
-	configs := []model.Config{
-		model.Config{},
-		model.Config{},
-		model.Config{},
+	configs := []file.Config{
+		file.Config{},
+		file.Config{},
+		file.Config{},
 	}
 
 	_, err := parseConfigDelArgs(&configs, "3,4")
@@ -107,17 +107,17 @@ func TestParseConfigDelArgsWithArgumentNotInRange(t *testing.T) {
 }
 
 func TestParseConfigDelArgs(t *testing.T) {
-	configs := []model.Config{
-		model.Config{DocFile: model.Doc{Path: "/tmp/source_0.php"}},
-		model.Config{DocFile: model.Doc{Path: "/tmp/source_1.php"}},
-		model.Config{DocFile: model.Doc{Path: "/tmp/source_2.php"}},
-		model.Config{DocFile: model.Doc{Path: "/tmp/source_3.php"}},
-		model.Config{DocFile: model.Doc{Path: "/tmp/source_4.php"}},
+	configs := []file.Config{
+		file.Config{DocFile: file.Doc{Path: "/tmp/source_0.php"}},
+		file.Config{DocFile: file.Doc{Path: "/tmp/source_1.php"}},
+		file.Config{DocFile: file.Doc{Path: "/tmp/source_2.php"}},
+		file.Config{DocFile: file.Doc{Path: "/tmp/source_3.php"}},
+		file.Config{DocFile: file.Doc{Path: "/tmp/source_4.php"}},
 	}
 
-	expected := &[]model.Config{
-		model.Config{DocFile: model.Doc{Path: "/tmp/source_3.php"}},
-		model.Config{DocFile: model.Doc{Path: "/tmp/source_4.php"}},
+	expected := &[]file.Config{
+		file.Config{DocFile: file.Doc{Path: "/tmp/source_3.php"}},
+		file.Config{DocFile: file.Doc{Path: "/tmp/source_4.php"}},
 	}
 
 	results, err := parseConfigDelArgs(&configs, "3,4")
