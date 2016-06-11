@@ -31,52 +31,57 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "List, add or delete configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		genErr := fmt.Errorf("Unvalid argument choose one those : list, add or del")
+		cmd.Help()
+	},
+}
 
-		if len(args) == 0 {
-			renderError(genErr)
+var addCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add a new configuration row",
+	Run: func(cmd *cobra.Command, args []string) {
+		docSource, fileSources, err := parseConfigAddArgs(args)
+
+		if err != nil {
+			renderError(err)
+
+			errorExit()
+		}
+
+		addConfig(docSource, fileSources)
+	},
+}
+
+var delCmd = &cobra.Command{
+	Use:   "del",
+	Short: "Delete one or several configuration row",
+	Run: func(cmd *cobra.Command, args []string) {
+		list := file.ListConfig()
+
+		if len(*list) == 0 {
+			renderInfo("No config added yet")
+
+			successExit()
+		}
+
+		renderList(list)
+
+		configs, err := promptConfigToRemove(list)
+
+		if err != nil {
+			renderError(err)
 
 			errorExit()
 		}
 
-		switch args[0] {
-		case "list":
-			listConfig()
-		case "add":
-			docSource, fileSources, err := parseConfigAddArgs(args[1:])
+		delConfig(configs)
+	},
+}
 
-			if err != nil {
-				renderError(err)
-
-				errorExit()
-			}
-
-			addConfig(docSource, fileSources)
-		case "del":
-			list := file.ListConfig()
-
-			if len(*list) == 0 {
-				renderInfo("No config added yet")
-
-				successExit()
-			}
-
-			renderList(list)
-
-			configs, err := promptConfigToRemove(list)
-
-			if err != nil {
-				renderError(err)
-
-				errorExit()
-			}
-
-			delConfig(configs)
-		default:
-			renderError(genErr)
-
-			errorExit()
-		}
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all recorded configurations",
+	Run: func(cmd *cobra.Command, args []string) {
+		listConfig()
 	},
 }
 
@@ -172,4 +177,7 @@ func parseConfigDelArgs(configs *[]file.Config, line string) (*[]file.Config, er
 
 func init() {
 	RootCmd.AddCommand(configCmd)
+	configCmd.AddCommand(addCmd)
+	configCmd.AddCommand(delCmd)
+	configCmd.AddCommand(listCmd)
 }
