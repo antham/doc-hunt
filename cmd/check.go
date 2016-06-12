@@ -15,20 +15,46 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+
+	"github.com/antham/doc-hunt/file"
 )
+
+var failOnError bool
 
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "Check if documentation update could be needed",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("check called")
+		status := file.FetchStatus()
+
+		var hasErrors bool
+
+		for _, s := range *status {
+			if len(s.Status[file.Deleted]) > 0 || len(s.Status[file.Updated]) > 0 || len(s.Status[file.Failed]) > 0 {
+				hasErrors = true
+
+				break
+			}
+		}
+
+		if hasErrors {
+			renderCheck(status)
+		} else {
+			renderSuccess("No changes found")
+		}
+
+		if failOnError {
+			errorExit()
+		} else {
+			successExit()
+		}
 	},
 }
 
 func init() {
+	checkCmd.Flags().BoolVarP(&failOnError, "fail-on-error", "e", false, "return an error exit code (1)")
+
 	RootCmd.AddCommand(checkCmd)
 }

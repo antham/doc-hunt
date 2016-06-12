@@ -48,7 +48,7 @@ type Config struct {
 type Result struct {
 	Doc     Doc
 	Sources []Source
-	Status  map[string]string
+	Status  map[SourceStatus][]string
 }
 
 // NewDoc create a new doc file
