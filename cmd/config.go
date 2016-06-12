@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -39,7 +40,7 @@ var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new configuration row",
 	Run: func(cmd *cobra.Command, args []string) {
-		docSource, fileSources, err := parseConfigAddArgs(args)
+		doc, docCat, fileSources, err := parseConfigAddArgs(args)
 
 		if err != nil {
 			renderError(err)
@@ -47,7 +48,7 @@ var addCmd = &cobra.Command{
 			errorExit()
 		}
 
-		addConfig(docSource, fileSources)
+		addConfig(doc, docCat, fileSources)
 	},
 }
 
@@ -85,30 +86,39 @@ var listCmd = &cobra.Command{
 	},
 }
 
-func parseConfigAddArgs(args []string) (string, []string, error) {
+func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, error) {
+	var docCategory file.DocCategory
+
 	if len(args) == 0 {
-		return "", []string{}, fmt.Errorf("Missing file doc")
+		return "", docCategory, []string{}, fmt.Errorf("Missing file doc")
 	}
 
-	fileDoc := args[0]
+	doc := args[0]
 
-	if _, err := os.Stat(fileDoc); os.IsNotExist(err) {
-		return "", []string{}, fmt.Errorf("File doc %s doesn't exist", fileDoc)
+	_, fileErr := os.Stat(doc)
+	URL, URLErr := url.Parse(doc)
+
+	if fileErr == nil {
+		docCategory = file.FILE
+	} else if URLErr == nil && URL.IsAbs() {
+		docCategory = file.URL
+	} else {
+		return "", docCategory, []string{}, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", doc)
 	}
 
 	if len(args) == 1 {
-		return "", []string{}, fmt.Errorf("Missing file sources")
+		return "", docCategory, []string{}, fmt.Errorf("Missing file sources")
 	}
 
 	fileSources := strings.Split(args[1], ",")
 
 	for _, fileSource := range fileSources {
 		if _, err := os.Stat(fileSource); os.IsNotExist(err) {
-			return "", []string{}, fmt.Errorf("File source %s doesn't exist", fileSource)
+			return "", docCategory, []string{}, fmt.Errorf("File source %s doesn't exist", fileSource)
 		}
 	}
 
-	return fileDoc, fileSources, nil
+	return doc, docCategory, fileSources, nil
 }
 
 func listConfig() {
@@ -125,8 +135,8 @@ func listConfig() {
 	successExit()
 }
 
-func addConfig(fileDoc string, fileSources []string) {
-	doc := file.NewDoc(fileDoc)
+func addConfig(identifier string, docCat file.DocCategory, fileSources []string) {
+	doc := file.NewDoc(identifier, docCat)
 	sources := file.NewSources(doc, fileSources)
 	file.InsertConfig(doc, sources)
 

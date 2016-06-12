@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	//import sqlite
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
 )
@@ -17,34 +18,45 @@ type Source struct {
 	Fingerprint string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	DocFileID   string
+	DocID       string
 }
 
-// Doc represents a document file which as relationship with one or several source files
+// Doc represents a document which as relationship with one or several source files
 type Doc struct {
-	ID        string
-	Path      string
-	CreatedAt time.Time
+	ID         string
+	Category   DocCategory
+	Identifier string
+	CreatedAt  time.Time
 }
+
+// DocCategory represents a doc category
+type DocCategory int
+
+// DocCategory categories
+const (
+	FILE = iota
+	URL
+)
 
 // Config represents a config line
 type Config struct {
-	DocFile     Doc
-	SourceFiles []Source
+	Doc     Doc
+	Sources []Source
 }
 
 // Result represents what we get after comparison between database and actual files
 type Result struct {
-	DocFile     Doc
-	SourceFiles []Source
-	Status      map[string]string
+	Doc     Doc
+	Sources []Source
+	Status  map[string]string
 }
 
 // NewDoc create a new doc file
-func NewDoc(docPath string) *Doc {
+func NewDoc(identifier string, category DocCategory) *Doc {
 	return &Doc{
 		uuid.NewV4().String(),
-		docPath,
+		category,
+		identifier,
 		time.Now(),
 	}
 }
@@ -77,14 +89,14 @@ func NewSources(doc *Doc, sourcePaths []string) *[]Source {
 
 // InsertConfig create a new config entry
 func InsertConfig(doc *Doc, sources *[]Source) {
-	_, err := db.Exec("insert into doc_file values (?,?,?)", doc.ID, doc.Path, doc.CreatedAt)
+	_, err := db.Exec("insert into docs values (?,?,?,?)", doc.ID, doc.Category, doc.Identifier, doc.CreatedAt)
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
 	for _, source := range *sources {
-		_, err := db.Exec("insert into source_file values (?,?,?,?,?,?)", source.ID, source.Path, source.Fingerprint, source.CreatedAt, source.UpdatedAt, doc.ID)
+		_, err := db.Exec("insert into sources values (?,?,?,?,?,?)", source.ID, source.Path, source.Fingerprint, source.CreatedAt, source.UpdatedAt, doc.ID)
 
 		if err != nil {
 			logrus.Fatal(err)
@@ -96,25 +108,29 @@ func InsertConfig(doc *Doc, sources *[]Source) {
 func ListConfig() *[]Config {
 	configs := []Config{}
 
-	rows, err := db.Query("select d.id, d.path, d.created_at, s.id, s.path, s.fingerprint, s.created_at, s.updated_at, s.doc_file_id from doc_file d inner join source_file s on s.doc_file_id = d.id order by d.created_at")
+	rows, err := db.Query("select d.id, d.category, d.identifier, d.created_at, s.id, s.path, s.fingerprint, s.created_at, s.updated_at, s.doc_id from docs d inner join sources s on s.doc_id = d.id order by d.created_at")
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
 	for rows.Next() {
-		docFile := Doc{}
-		sourceFile := Source{}
+		doc := Doc{}
+		source := Source{}
 
-		rows.Scan(&docFile.ID, &docFile.Path, &docFile.CreatedAt, &sourceFile.ID, &sourceFile.Path, &sourceFile.Fingerprint, &sourceFile.CreatedAt, &sourceFile.UpdatedAt, &sourceFile.DocFileID)
+		err := rows.Scan(&doc.ID, &doc.Category, &doc.Identifier, &doc.CreatedAt, &source.ID, &source.Path, &source.Fingerprint, &source.CreatedAt, &source.UpdatedAt, &source.DocID)
 
-		if len(configs) == 0 || configs[len(configs)-1].DocFile.ID != sourceFile.DocFileID {
+		if err != nil {
+			logrus.Fatal(err)
+		}
+
+		if len(configs) == 0 || configs[len(configs)-1].Doc.ID != source.DocID {
 			configs = append(configs, Config{
-				DocFile: docFile,
+				Doc: doc,
 			})
 		}
 
-		configs[len(configs)-1].SourceFiles = append(configs[len(configs)-1].SourceFiles, sourceFile)
+		configs[len(configs)-1].Sources = append(configs[len(configs)-1].Sources, source)
 	}
 
 	return &configs
@@ -126,20 +142,20 @@ func RemoveConfigs(configs *[]Config) {
 	docIds := []string{}
 
 	for _, config := range *configs {
-		for _, source := range config.SourceFiles {
+		for _, source := range config.Sources {
 			sourceIds = append(sourceIds, fmt.Sprintf(`"%s"`, source.ID))
 		}
-		docIds = append(docIds, fmt.Sprintf(`"%s"`, config.DocFile.ID))
+		docIds = append(docIds, fmt.Sprintf(`"%s"`, config.Doc.ID))
 	}
 
 	if len(sourceIds) > 0 {
-		_, err := db.Exec(fmt.Sprintf("delete from source_file where id in (%s)", strings.Join(sourceIds, ",")))
+		_, err := db.Exec(fmt.Sprintf("delete from sources where id in (%s)", strings.Join(sourceIds, ",")))
 
 		if err != nil {
 			logrus.Fatal(err)
 		}
 
-		_, err = db.Exec(fmt.Sprintf("delete from doc_file where id in (%s)", strings.Join(docIds, ",")))
+		_, err = db.Exec(fmt.Sprintf("delete from docs where id in (%s)", strings.Join(docIds, ",")))
 
 		if err != nil {
 			logrus.Fatal(err)

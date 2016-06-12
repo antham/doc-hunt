@@ -14,11 +14,11 @@ func TestCreateTables(t *testing.T) {
 
 	createTables()
 
-	_, err := db.Exec("select * from doc_file")
+	_, err := db.Exec("select * from docs")
 
-	assert.NoError(t, err, "Select * doc_file table must return no error")
+	assert.NoError(t, err, "Select * docs table must return no error")
 
-	_, err = db.Exec("select * from source_file")
+	_, err = db.Exec("select * from sources")
 
-	assert.NoError(t, err, "Select * source_file table must return no error")
+	assert.NoError(t, err, "Select * sources table must return no error")
 }

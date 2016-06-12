@@ -29,9 +29,10 @@ func createTables() {
 
 func createDocFileTable() {
 	query := `
-create table doc_file(
+create table docs(
 id text primary key not null,
-path text not null,
+category int not null,
+identifier text not null,
 created_at timestamp not null);`
 
 	db.Exec(query)
@@ -39,13 +40,13 @@ created_at timestamp not null);`
 
 func createSourceFileTable() {
 	query := `
-create table source_file(
+create table sources(
 id text primary key not null,
 path text not null,
 fingerprint text not null,
 created_at timestamp not null,
 updated_at timestamp not null,
-doc_file_id text not null,
-foreign key(doc_file_id) references doc_file(id));`
+doc_id text not null,
+foreign key(doc_id) references doc_file(id));`
 	db.Exec(query)
 }

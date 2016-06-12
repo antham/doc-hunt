@@ -43,42 +43,56 @@ func createSourceFiles() {
 }
 
 func TestParseConfigAddArgsWithMissingFileDoc(t *testing.T) {
-	_, _, err := parseConfigAddArgs([]string{})
+	_, _, _, err := parseConfigAddArgs([]string{})
 
 	assert.EqualError(t, err, "Missing file doc", "Must return a missing file doc error")
 }
 
 func TestParseConfigAddArgsWithUnexistingFileDoc(t *testing.T) {
-	_, _, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/whatever"})
+	_, _, _, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/whatever"})
 
-	assert.EqualError(t, err, "File doc /tmp/doc-hunt/whatever doesn't exist", "Must return an unexisting file doc error")
+	assert.EqualError(t, err, "Doc /tmp/doc-hunt/whatever is not a valid existing file, nor a valid URL", "Must return an unexisting file doc error")
 }
 
 func TestParseConfigAddArgsWithMissingFileSources(t *testing.T) {
 	createTestDirectory()
 	createDocFile()
 
-	_, _, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/doc_test_1"})
+	_, _, _, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/doc_test_1"})
 
 	assert.EqualError(t, err, "Missing file sources", "Must return a missing file sources error")
 }
 
 func TestParseConfigAddArgsWithUnexistingFileSources(t *testing.T) {
-	_, _, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/doc_test_1", "/tmp/doc-hunt/whatever"})
+	_, _, _, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/doc_test_1", "/tmp/doc-hunt/whatever"})
 
 	assert.EqualError(t, err, "File source /tmp/doc-hunt/whatever doesn't exist", "Must return a unexisting source file error")
 }
 
-func TestParseConfigAddArgs(t *testing.T) {
+func TestParseConfigAddArgsWithFile(t *testing.T) {
 	createTestDirectory()
 	createDocFile()
 	createSourceFiles()
 
-	docFile, sourceFiles, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/doc_test_1", "/tmp/doc-hunt/source_test_1,/tmp/doc-hunt/source_test_2"})
+	doc, docCat, sources, err := parseConfigAddArgs([]string{"/tmp/doc-hunt/doc_test_1", "/tmp/doc-hunt/source_test_1,/tmp/doc-hunt/source_test_2"})
 
 	assert.NoError(t, err, "Must return no error")
-	assert.Equal(t, "/tmp/doc-hunt/doc_test_1", docFile, "Must return doc file path")
-	assert.Equal(t, []string{"/tmp/doc-hunt/source_test_1", "/tmp/doc-hunt/source_test_2"}, sourceFiles, "Must return sources file path")
+	assert.Equal(t, "/tmp/doc-hunt/doc_test_1", doc, "Must return doc file path")
+	assert.True(t, 0 == docCat, "Must return a file doc category")
+	assert.Equal(t, []string{"/tmp/doc-hunt/source_test_1", "/tmp/doc-hunt/source_test_2"}, sources, "Must return sources file path")
+}
+
+func TestParseConfigAddArgsWithURL(t *testing.T) {
+	createTestDirectory()
+	createDocFile()
+	createSourceFiles()
+
+	doc, docCat, sources, err := parseConfigAddArgs([]string{"http://google.com", "/tmp/doc-hunt/source_test_1,/tmp/doc-hunt/source_test_2"})
+
+	assert.NoError(t, err, "Must return no error")
+	assert.Equal(t, "http://google.com", doc, "Must return a doc url")
+	assert.True(t, 1 == docCat, "Must return an URL doc category")
+	assert.Equal(t, []string{"/tmp/doc-hunt/source_test_1", "/tmp/doc-hunt/source_test_2"}, sources, "Must return sources file path")
 }
 
 func TestParseConfigDelArgsWithArgumentNotANumber(t *testing.T) {
@@ -108,16 +122,16 @@ func TestParseConfigDelArgsWithArgumentNotInRange(t *testing.T) {
 
 func TestParseConfigDelArgs(t *testing.T) {
 	configs := []file.Config{
-		file.Config{DocFile: file.Doc{Path: "/tmp/source_0.php"}},
-		file.Config{DocFile: file.Doc{Path: "/tmp/source_1.php"}},
-		file.Config{DocFile: file.Doc{Path: "/tmp/source_2.php"}},
-		file.Config{DocFile: file.Doc{Path: "/tmp/source_3.php"}},
-		file.Config{DocFile: file.Doc{Path: "/tmp/source_4.php"}},
+		file.Config{Doc: file.Doc{Identifier: "/tmp/source_0.php"}},
+		file.Config{Doc: file.Doc{Identifier: "/tmp/source_1.php"}},
+		file.Config{Doc: file.Doc{Identifier: "/tmp/source_2.php"}},
+		file.Config{Doc: file.Doc{Identifier: "/tmp/source_3.php"}},
+		file.Config{Doc: file.Doc{Identifier: "/tmp/source_4.php"}},
 	}
 
 	expected := &[]file.Config{
-		file.Config{DocFile: file.Doc{Path: "/tmp/source_3.php"}},
-		file.Config{DocFile: file.Doc{Path: "/tmp/source_4.php"}},
+		file.Config{Doc: file.Doc{Identifier: "/tmp/source_3.php"}},
+		file.Config{Doc: file.Doc{Identifier: "/tmp/source_4.php"}},
 	}
 
 	results, err := parseConfigDelArgs(&configs, "3,4")

@@ -52,20 +52,20 @@ func TestInsertConfig(t *testing.T) {
 	createADocFile()
 	createSourceFiles()
 
-	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt", FILE)
 	sources := NewSources(doc, []string{"/tmp/doc-hunt/source1.php", "/tmp/doc-hunt/source2.php"})
 
 	InsertConfig(doc, sources)
 
-	var path string
+	var identifier string
 
-	err := db.QueryRow("select path from doc_file where id = ?", doc.ID).Scan(&path)
+	err := db.QueryRow("select identifier from docs where id = ?", doc.ID).Scan(&identifier)
 
 	assert.NoError(t, err, "Must return no errors")
 
-	assert.Equal(t, doc.Path, path, "Must record a doc file row")
+	assert.Equal(t, doc.Identifier, identifier, "Must record a doc file row")
 
-	results, err := db.Query("select path, fingerprint from source_file where doc_file_id = ? order by path", doc.ID)
+	results, err := db.Query("select path, fingerprint from sources where doc_id = ? order by path", doc.ID)
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -103,12 +103,12 @@ func TestListConfigWithEntries(t *testing.T) {
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt", FILE)
 	sources := NewSources(doc, []string{"/tmp/doc-hunt/source1.php", "/tmp/doc-hunt/source2.php"})
 
 	InsertConfig(doc, sources)
 
-	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt", FILE)
 	sources = NewSources(doc, []string{"/tmp/doc-hunt/source3.php", "/tmp/doc-hunt/source4.php", "/tmp/doc-hunt/source5.php"})
 
 	InsertConfig(doc, sources)
@@ -117,14 +117,14 @@ func TestListConfigWithEntries(t *testing.T) {
 
 	assert.Len(t, *configs, 2, "Must have 2 configs")
 
-	assert.Len(t, (*configs)[0].SourceFiles, 2, "Must have 2 source files")
-	assert.Equal(t, "/tmp/doc-hunt/source1.php", (*configs)[0].SourceFiles[0].Path, "Must return correct path")
-	assert.Equal(t, "/tmp/doc-hunt/source2.php", (*configs)[0].SourceFiles[1].Path, "Must return correct path")
+	assert.Len(t, (*configs)[0].Sources, 2, "Must have 2 source files")
+	assert.Equal(t, "/tmp/doc-hunt/source1.php", (*configs)[0].Sources[0].Path, "Must return correct path")
+	assert.Equal(t, "/tmp/doc-hunt/source2.php", (*configs)[0].Sources[1].Path, "Must return correct path")
 
-	assert.Len(t, (*configs)[1].SourceFiles, 3, "Must have 3 source files")
-	assert.Equal(t, "/tmp/doc-hunt/source3.php", (*configs)[1].SourceFiles[0].Path, "Must return correct path")
-	assert.Equal(t, "/tmp/doc-hunt/source4.php", (*configs)[1].SourceFiles[1].Path, "Must return correct path")
-	assert.Equal(t, "/tmp/doc-hunt/source5.php", (*configs)[1].SourceFiles[2].Path, "Must return correct path")
+	assert.Len(t, (*configs)[1].Sources, 3, "Must have 3 source files")
+	assert.Equal(t, "/tmp/doc-hunt/source3.php", (*configs)[1].Sources[0].Path, "Must return correct path")
+	assert.Equal(t, "/tmp/doc-hunt/source4.php", (*configs)[1].Sources[1].Path, "Must return correct path")
+	assert.Equal(t, "/tmp/doc-hunt/source5.php", (*configs)[1].Sources[2].Path, "Must return correct path")
 }
 
 func TestRemoveConfigsWithNoResults(t *testing.T) {
@@ -144,7 +144,7 @@ func TestRemoveConfigsWithOneEntry(t *testing.T) {
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt", FILE)
 	sources := NewSources(doc, []string{"/tmp/doc-hunt/source1.php", "/tmp/doc-hunt/source2.php"})
 
 	InsertConfig(doc, sources)
@@ -162,17 +162,17 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	doc := NewDoc("/tmp/doc-hunt/doc_file_to_track.txt", FILE)
 	sources := NewSources(doc, []string{"/tmp/doc-hunt/source1.php", "/tmp/doc-hunt/source2.php"})
 
 	InsertConfig(doc, sources)
 
-	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt", FILE)
 	sources = NewSources(doc, []string{"/tmp/doc-hunt/source3.php", "/tmp/doc-hunt/source4.php"})
 
 	InsertConfig(doc, sources)
 
-	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt")
+	doc = NewDoc("/tmp/doc-hunt/doc_file_to_track.txt", FILE)
 	sources = NewSources(doc, []string{"/tmp/doc-hunt/source3.php", "/tmp/doc-hunt/source5.php"})
 
 	InsertConfig(doc, sources)
