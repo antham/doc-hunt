@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/Sirupsen/logrus"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/mattn/go-sqlite3"
 )
 
 var db *sql.DB
@@ -35,7 +35,11 @@ category int not null,
 identifier text not null,
 created_at timestamp not null);`
 
-	db.Exec(query)
+	_, err := db.Exec(query)
+
+	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
+		logrus.Fatal(err)
+	}
 }
 
 func createSourceFileTable() {
@@ -48,5 +52,10 @@ created_at timestamp not null,
 updated_at timestamp not null,
 doc_id text not null,
 foreign key(doc_id) references doc_file(id));`
-	db.Exec(query)
+
+	_, err := db.Exec(query)
+
+	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
+		logrus.Fatal(err)
+	}
 }

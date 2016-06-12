@@ -12,9 +12,13 @@ import (
 )
 
 func createTestDirectory() {
-	os.RemoveAll("/tmp/doc-hunt")
+	err := os.RemoveAll("/tmp/doc-hunt")
 
-	err := os.Mkdir("/tmp/doc-hunt", 0777)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = os.Mkdir("/tmp/doc-hunt", 0777)
 
 	if err != nil && !os.IsExist(err) {
 		logrus.Fatal(err)
@@ -89,10 +93,10 @@ func TestParseConfigAddArgsWithURL(t *testing.T) {
 
 	doc, docCat, sources, err := parseConfigAddArgs([]string{"http://google.com", "/tmp/doc-hunt/source_test_1,/tmp/doc-hunt/source_test_2"})
 
-	assert.NoError(t, err, "Must return no error")
 	assert.Equal(t, "http://google.com", doc, "Must return a doc url")
-	assert.True(t, 1 == docCat, "Must return an URL doc category")
+	assert.NoError(t, err, "Must return no error")
 	assert.Equal(t, []string{"/tmp/doc-hunt/source_test_1", "/tmp/doc-hunt/source_test_2"}, sources, "Must return sources file path")
+	assert.True(t, 1 == docCat, "Must return an URL doc category")
 }
 
 func TestParseConfigDelArgsWithArgumentNotANumber(t *testing.T) {

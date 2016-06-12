@@ -21,6 +21,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
 
@@ -32,7 +33,11 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "List, add or delete configuration",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		err := cmd.Help()
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
 	},
 }
 
@@ -157,7 +162,11 @@ func promptConfigToRemove(configs *[]file.Config) (*[]file.Config, error) {
 		return nil, fmt.Errorf("Something wrong happened during argument fetching")
 	}
 
-	defer rl.Close()
+	defer func() {
+		if err := rl.Close(); err != nil {
+			logrus.Fatal(err)
+		}
+	}()
 
 	line, _ := rl.Readline()
 

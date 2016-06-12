@@ -11,9 +11,13 @@ import (
 )
 
 func createTestDirectory() {
-	os.RemoveAll("/tmp/doc-hunt")
+	err := os.RemoveAll("/tmp/doc-hunt")
 
-	err := os.Mkdir("/tmp/doc-hunt", 0777)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = os.Mkdir("/tmp/doc-hunt", 0777)
 
 	if err != nil && !os.IsExist(err) {
 		logrus.Fatal(err)
@@ -45,7 +49,11 @@ func createSourceFiles() {
 }
 
 func deleteDatabase() {
-	os.Remove(dbName)
+	err := os.Remove(dbName)
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func TestInsertConfig(t *testing.T) {
@@ -69,7 +77,11 @@ func TestInsertConfig(t *testing.T) {
 
 	assert.NoError(t, err, "Must return no errors")
 
-	defer results.Close()
+	defer func() {
+		if err := results.Close(); err != nil {
+			logrus.Fatal(err)
+		}
+	}()
 
 	var i int
 
