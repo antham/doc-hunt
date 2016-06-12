@@ -7,7 +7,7 @@ import (
 )
 
 func TestCalculateFingerprint(t *testing.T) {
-	createADocFile()
+	createMocks()
 
 	fingerprint, err := calculateFingerprint("/tmp/doc-hunt/doc_file_to_track.txt")
 
