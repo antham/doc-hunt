@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/chzyer/readline"
 )
@@ -56,5 +57,37 @@ var basePrompt = func(prompt string, callback checker) string {
 		}
 
 		return line
+	}
+}
+
+var globalPrompt = func(filename string, deleted *map[string]bool, moved *map[string]string) checker {
+	return func(line string) error {
+		if line == "d" {
+			(*deleted)[filename] = true
+
+			return nil
+		}
+
+		if line == "r" {
+			basePrompt(fmt.Sprintf(`Write an existing file name to rename "%s"`, filename), renamePrompt(filename, moved))
+
+			return nil
+		}
+
+		return fmt.Errorf(`This action "%s" : doesn't exist`, line)
+	}
+}
+
+var renamePrompt = func(filename string, moved *map[string]string) checker {
+	return func(line string) error {
+		_, err := os.Stat(line)
+
+		if err != nil && !os.IsExist(err) {
+			return fmt.Errorf(`File "%s" doesn't exist, please enter an existing filename`, line)
+		}
+
+		(*moved)[filename] = line
+
+		return nil
 	}
 }

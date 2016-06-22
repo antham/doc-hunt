@@ -33,6 +33,17 @@ func createADocFile() {
 	}
 }
 
+func createDocFiles() {
+	for i := 1; i <= 10; i++ {
+		content := []byte("This is a doc file")
+		err := ioutil.WriteFile(fmt.Sprintf("/tmp/doc-hunt/doc_file_to_track_%d.txt", i), content, 0644)
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	}
+}
+
 func createSourceFiles() {
 	for i := 1; i <= 10; i++ {
 		content := []byte("<?php echo 'A source file';")
