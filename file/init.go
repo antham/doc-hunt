@@ -2,6 +2,7 @@ package file
 
 import (
 	"database/sql"
+	"os"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/mattn/go-sqlite3"
@@ -9,9 +10,18 @@ import (
 
 var db *sql.DB
 var dbName = ".doc-hunt"
+var dirApp string
 
 func init() {
 	createTables()
+
+	var err error
+
+	dirApp, err = os.Getwd()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func createTables() {

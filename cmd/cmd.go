@@ -16,7 +16,21 @@ package cmd
 
 import (
 	"os"
+
+	"github.com/Sirupsen/logrus"
 )
+
+var dirApp string
+
+func init() {
+	var err error
+
+	dirApp, err = os.Getwd()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+}
 
 func errorExit() {
 	os.Exit(1)

@@ -48,7 +48,9 @@ func buildSourceStatus(source *Source, status *map[string]SourceStatus) {
 
 	var fingerprint string
 
-	_, err := os.Stat(source.Path)
+	filename := dirApp + "/" + source.Path
+
+	_, err := os.Stat(filename)
 
 	if err != nil {
 		(*status)[(*source).Path] = Deleted
@@ -56,7 +58,7 @@ func buildSourceStatus(source *Source, status *map[string]SourceStatus) {
 		return
 	}
 
-	fingerprint, err = calculateFingerprint((*source).Path)
+	fingerprint, err = calculateFingerprint(filename)
 
 	if err != nil {
 		(*status)[(*source).Path] = Failed

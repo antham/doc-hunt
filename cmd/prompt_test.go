@@ -100,8 +100,8 @@ func TestRenamePrompt(t *testing.T) {
 	filename := "test"
 	moved := map[string]string{}
 
-	err := renamePrompt(filename, &moved)("/tmp/doc-hunt/source_test_1")
+	err := renamePrompt(filename, &moved)("source_test_1")
 
 	assert.NoError(t, err, "Must throws no error")
-	assert.Equal(t, map[string]string{"test": "/tmp/doc-hunt/source_test_1"}, moved, "Must store original and renamed file")
+	assert.Equal(t, map[string]string{"test": "source_test_1"}, moved, "Must store original and renamed file")
 }

@@ -99,8 +99,9 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, erro
 	}
 
 	doc := args[0]
+	docFilename := dirApp + "/" + doc
 
-	_, fileErr := os.Stat(doc)
+	_, fileErr := os.Stat(docFilename)
 	URL, URLErr := url.Parse(doc)
 
 	if fileErr == nil {
@@ -108,7 +109,7 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, erro
 	} else if URLErr == nil && URL.IsAbs() {
 		docCategory = file.URL
 	} else {
-		return "", docCategory, []string{}, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", doc)
+		return "", docCategory, []string{}, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", docFilename)
 	}
 
 	if len(args) == 1 {
@@ -118,8 +119,10 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, erro
 	fileSources := strings.Split(args[1], ",")
 
 	for _, fileSource := range fileSources {
-		if _, err := os.Stat(fileSource); os.IsNotExist(err) {
-			return "", docCategory, []string{}, fmt.Errorf("File source %s doesn't exist", fileSource)
+		filenameSource := dirApp + "/" + fileSource
+
+		if _, err := os.Stat(filenameSource); os.IsNotExist(err) {
+			return "", docCategory, []string{}, fmt.Errorf("File source %s doesn't exist", filenameSource)
 		}
 	}
 

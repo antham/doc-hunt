@@ -66,7 +66,8 @@ func NewSources(doc *Doc, sourcePaths []string) *[]Source {
 	sources := []Source{}
 
 	for _, path := range sourcePaths {
-		fingerprint, err := calculateFingerprint(path)
+		filename := dirApp + "/" + path
+		fingerprint, err := calculateFingerprint(filename)
 
 		if err != nil {
 			logrus.Fatal(err)

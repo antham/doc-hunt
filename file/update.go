@@ -26,7 +26,8 @@ func UpdateSourcesFingeprint() {
 	}
 
 	for _, path := range paths {
-		fingerprint, err := calculateFingerprint(path)
+		filename := dirApp + "/" + path
+		fingerprint, err := calculateFingerprint(filename)
 
 		if err != nil {
 			logrus.Fatal(err)

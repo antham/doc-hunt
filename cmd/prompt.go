@@ -78,15 +78,16 @@ var globalPrompt = func(filename string, deleted *map[string]bool, moved *map[st
 	}
 }
 
-var renamePrompt = func(filename string, moved *map[string]string) checker {
+var renamePrompt = func(path string, moved *map[string]string) checker {
 	return func(line string) error {
-		_, err := os.Stat(line)
+		filename := dirApp + "/" + line
+		_, err := os.Stat(filename)
 
 		if err != nil && !os.IsExist(err) {
 			return fmt.Errorf(`File "%s" doesn't exist, please enter an existing filename`, line)
 		}
 
-		(*moved)[filename] = line
+		(*moved)[path] = line
 
 		return nil
 	}
