@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/antham/doc-hunt/file"
+	"github.com/antham/doc-hunt/ui"
 )
 
 var failOnError bool
@@ -42,7 +43,7 @@ var checkCmd = &cobra.Command{
 		if hasErrors {
 			renderCheck(status)
 		} else {
-			renderSuccess("No changes found")
+			ui.Success("No changes found")
 		}
 
 		if failOnError {

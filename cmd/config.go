@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/antham/doc-hunt/file"
+	"github.com/antham/doc-hunt/ui"
 )
 
 // configCmd represents the config command
@@ -48,7 +49,7 @@ var addCmd = &cobra.Command{
 		doc, docCat, fileSources, err := parseConfigAddArgs(args)
 
 		if err != nil {
-			renderError(err)
+			ui.Error(err)
 
 			errorExit()
 		}
@@ -64,7 +65,7 @@ var delCmd = &cobra.Command{
 		list := file.ListConfig()
 
 		if len(*list) == 0 {
-			renderInfo("No config added yet")
+			ui.Info("No config added yet")
 
 			successExit()
 		}
@@ -74,7 +75,7 @@ var delCmd = &cobra.Command{
 		configs, err := promptConfigToRemove(list)
 
 		if err != nil {
-			renderError(err)
+			ui.Error(err)
 
 			errorExit()
 		}
@@ -133,7 +134,7 @@ func listConfig() {
 	list := file.ListConfig()
 
 	if len(*list) == 0 {
-		renderInfo("No config added yet")
+		ui.Info("No config added yet")
 
 		successExit()
 	}
@@ -148,7 +149,7 @@ func addConfig(identifier string, docCat file.DocCategory, fileSources []string)
 	sources := file.NewSources(doc, fileSources)
 	file.InsertConfig(doc, sources)
 
-	renderSuccess("Config added")
+	ui.Success("Config added")
 
 	successExit()
 }
@@ -158,7 +159,7 @@ func delConfig(configs *[]file.Config) {
 }
 
 func promptConfigToRemove(configs *[]file.Config) (*[]file.Config, error) {
-	renderPrompt()
+	ui.Prompt("Choose configurations number to remove, each separated with a comma")
 	rl, err := readline.New(">> ")
 
 	if err != nil {

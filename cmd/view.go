@@ -62,19 +62,3 @@ func renderCheck(list *[]file.Result) {
 
 	fmt.Print(output)
 }
-
-func renderPrompt() {
-	color.Yellow(fmt.Sprintf("\nChoose configurations number to remove, each separated with a comma : "))
-}
-
-func renderError(err error) {
-	color.Red(err.Error())
-}
-
-func renderSuccess(str string) {
-	color.Green(str)
-}
-
-func renderInfo(str string) {
-	color.Cyan(str)
-}
