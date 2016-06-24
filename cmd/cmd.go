@@ -31,11 +31,3 @@ func init() {
 		logrus.Fatal(err)
 	}
 }
-
-func errorExit() {
-	os.Exit(1)
-}
-
-func successExit() {
-	os.Exit(0)
-}

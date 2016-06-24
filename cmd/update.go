@@ -20,6 +20,7 @@ import (
 
 	"github.com/antham/doc-hunt/file"
 	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 // updateCmd represents the update command
@@ -32,8 +33,7 @@ var updateCmd = &cobra.Command{
 		file.UpdateSourcesFingeprint()
 
 		ui.Success("Update configuration succeeded")
-
-		successExit()
+		util.SuccessExit()
 	},
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/chzyer/readline"
 
 	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 type checker func(line string) error
@@ -26,7 +27,7 @@ func init() {
 	if err != nil {
 		ui.Error(fmt.Errorf("Something went wrong when initializing prompt"))
 
-		errorExit()
+		util.ErrorExit()
 	}
 }
 
@@ -37,7 +38,7 @@ var basePrompt = func(prompt string, callback checker) string {
 		if err := rl.Close(); err != nil {
 			ui.Error(err)
 
-			errorExit()
+			util.ErrorExit()
 		}
 	}()
 
@@ -47,7 +48,7 @@ var basePrompt = func(prompt string, callback checker) string {
 		if err != nil {
 			ui.Error(err)
 
-			errorExit()
+			util.ErrorExit()
 		}
 
 		err = callback(line)

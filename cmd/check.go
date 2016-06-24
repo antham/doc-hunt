@@ -19,6 +19,7 @@ import (
 
 	"github.com/antham/doc-hunt/file"
 	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 var failOnError bool
@@ -47,9 +48,9 @@ var checkCmd = &cobra.Command{
 		}
 
 		if failOnError {
-			errorExit()
+			util.ErrorExit()
 		} else {
-			successExit()
+			util.SuccessExit()
 		}
 	},
 }

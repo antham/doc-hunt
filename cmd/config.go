@@ -27,6 +27,7 @@ import (
 
 	"github.com/antham/doc-hunt/file"
 	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 // configCmd represents the config command
@@ -51,7 +52,7 @@ var addCmd = &cobra.Command{
 		if err != nil {
 			ui.Error(err)
 
-			errorExit()
+			util.ErrorExit()
 		}
 
 		addConfig(doc, docCat, fileSources)
@@ -67,7 +68,7 @@ var delCmd = &cobra.Command{
 		if len(*list) == 0 {
 			ui.Info("No config added yet")
 
-			successExit()
+			util.SuccessExit()
 		}
 
 		renderList(list)
@@ -77,7 +78,7 @@ var delCmd = &cobra.Command{
 		if err != nil {
 			ui.Error(err)
 
-			errorExit()
+			util.ErrorExit()
 		}
 
 		delConfig(configs)
@@ -136,12 +137,12 @@ func listConfig() {
 	if len(*list) == 0 {
 		ui.Info("No config added yet")
 
-		successExit()
+		util.SuccessExit()
 	}
 
 	renderList(list)
 
-	successExit()
+	util.SuccessExit()
 }
 
 func addConfig(identifier string, docCat file.DocCategory, fileSources []string) {
@@ -151,7 +152,7 @@ func addConfig(identifier string, docCat file.DocCategory, fileSources []string)
 
 	ui.Success("Config added")
 
-	successExit()
+	util.SuccessExit()
 }
 
 func delConfig(configs *[]file.Config) {
