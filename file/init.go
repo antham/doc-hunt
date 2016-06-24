@@ -33,11 +33,11 @@ func createTables() {
 		logrus.Fatal(err)
 	}
 
-	createSourceFileTable()
-	createDocFileTable()
+	createSourceTable()
+	createDocTable()
 }
 
-func createDocFileTable() {
+func createDocTable() {
 	query := `
 create table docs(
 id text primary key not null,
@@ -52,7 +52,7 @@ created_at timestamp not null);`
 	}
 }
 
-func createSourceFileTable() {
+func createSourceTable() {
 	query := `
 create table sources(
 id text primary key not null,
