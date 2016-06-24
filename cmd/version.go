@@ -15,9 +15,10 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+
+	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 var version = "0.0.0"
@@ -27,7 +28,9 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "App version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("v" + version)
+		ui.Info("v" + version)
+
+		util.SuccessExit()
 	},
 }
 
