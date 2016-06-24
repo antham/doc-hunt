@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 // UpdateSourcesFingeprint update file check sum if source file content changed
@@ -12,7 +13,9 @@ func UpdateSourcesFingeprint() {
 	rows, err := db.Query("select distinct(path) from sources")
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 
 	paths := []string{}
@@ -30,13 +33,17 @@ func UpdateSourcesFingeprint() {
 		fingerprint, err := calculateFingerprint(filename)
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 
 		_, err = db.Exec("update sources set fingerprint = ?, updated_at = ? where path = ?", fingerprint, time.Now(), path)
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 	}
 }
@@ -56,13 +63,17 @@ func DeleteSources(filenames *[]string) {
 	_, err := db.Exec(fmt.Sprintf("delete from sources where path in (%s)", filenameQuery))
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 
 	_, err = db.Exec("delete from docs where id not in (select doc_id from sources);")
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 }
 
@@ -72,7 +83,9 @@ func UpdateFilenameSources(filenames *map[string]string) {
 		_, err := db.Exec("update sources set path = ? where path = ?", updatedFilename, origFilename)
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 	}
 }

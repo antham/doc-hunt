@@ -17,7 +17,8 @@ package cmd
 import (
 	"os"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 var dirApp string
@@ -28,6 +29,8 @@ func init() {
 	dirApp, err = os.Getwd()
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 }

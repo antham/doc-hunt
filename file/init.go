@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"os"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/mattn/go-sqlite3"
+
+	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 var db *sql.DB
@@ -20,7 +22,9 @@ func init() {
 	dirApp, err = os.Getwd()
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 }
 
@@ -30,7 +34,9 @@ func createTables() {
 	db, err = sql.Open("sqlite3", dbName)
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 
 	createSourceTable()
@@ -48,7 +54,9 @@ created_at timestamp not null);`
 	_, err := db.Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 }
 
@@ -66,6 +74,8 @@ foreign key(doc_id) references doc_file(id));`
 	_, err := db.Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 }

@@ -21,7 +21,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
 
@@ -38,7 +37,9 @@ var configCmd = &cobra.Command{
 		err := cmd.Help()
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 	},
 }
@@ -169,7 +170,9 @@ func promptConfigToRemove(configs *[]file.Config) (*[]file.Config, error) {
 
 	defer func() {
 		if err := rl.Close(); err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 	}()
 

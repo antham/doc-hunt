@@ -5,10 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	//import sqlite
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
+
+	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
 // Source represents a source file that we want to follow changes
@@ -70,7 +72,9 @@ func NewSources(doc *Doc, sourcePaths []string) *[]Source {
 		fingerprint, err := calculateFingerprint(filename)
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 
 		source := Source{
@@ -93,14 +97,18 @@ func InsertConfig(doc *Doc, sources *[]Source) {
 	_, err := db.Exec("insert into docs values (?,?,?,?)", doc.ID, doc.Category, doc.Identifier, doc.CreatedAt)
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 
 	for _, source := range *sources {
 		_, err := db.Exec("insert into sources values (?,?,?,?,?,?)", source.ID, source.Path, source.Fingerprint, source.CreatedAt, source.UpdatedAt, doc.ID)
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 	}
 }
@@ -112,7 +120,9 @@ func ListConfig() *[]Config {
 	rows, err := db.Query("select d.id, d.category, d.identifier, d.created_at, s.id, s.path, s.fingerprint, s.created_at, s.updated_at, s.doc_id from docs d inner join sources s on s.doc_id = d.id order by d.created_at")
 
 	if err != nil {
-		logrus.Fatal(err)
+		ui.Error(err)
+
+		util.ErrorExit()
 	}
 
 	for rows.Next() {
@@ -122,7 +132,9 @@ func ListConfig() *[]Config {
 		err := rows.Scan(&doc.ID, &doc.Category, &doc.Identifier, &doc.CreatedAt, &source.ID, &source.Path, &source.Fingerprint, &source.CreatedAt, &source.UpdatedAt, &source.DocID)
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 
 		if len(configs) == 0 || configs[len(configs)-1].Doc.ID != source.DocID {
@@ -153,13 +165,17 @@ func RemoveConfigs(configs *[]Config) {
 		_, err := db.Exec(fmt.Sprintf("delete from sources where id in (%s)", strings.Join(sourceIds, ",")))
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 
 		_, err = db.Exec(fmt.Sprintf("delete from docs where id in (%s)", strings.Join(docIds, ",")))
 
 		if err != nil {
-			logrus.Fatal(err)
+			ui.Error(err)
+
+			util.ErrorExit()
 		}
 	}
 }
