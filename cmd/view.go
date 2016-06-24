@@ -9,7 +9,7 @@ import (
 	"github.com/antham/doc-hunt/file"
 )
 
-func renderList(list *[]file.Config) {
+func renderConfig(list *[]file.Config) {
 	color.Magenta("----")
 
 	for i, config := range *list {

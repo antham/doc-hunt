@@ -72,7 +72,7 @@ var delCmd = &cobra.Command{
 			util.SuccessExit()
 		}
 
-		renderList(list)
+		renderConfig(list)
 
 		configs, err := promptConfigToRemove(list)
 
@@ -141,7 +141,7 @@ func listConfig() {
 		util.SuccessExit()
 	}
 
-	renderList(list)
+	renderConfig(list)
 
 	util.SuccessExit()
 }
