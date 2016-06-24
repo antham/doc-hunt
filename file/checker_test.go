@@ -7,6 +7,8 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/antham/doc-hunt/util"
 )
 
 func TestFetchStatusWithSourceFilesUntouched(t *testing.T) {
@@ -41,7 +43,7 @@ func TestFetchStatusWithUpdatedSource(t *testing.T) {
 	InsertConfig(doc, sources)
 
 	content := []byte("whatever")
-	err := ioutil.WriteFile(dirApp+"/source1.php", content, 0644)
+	err := ioutil.WriteFile(util.GetAbsPath("source1.php"), content, 0644)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -64,7 +66,7 @@ func TestFetchStatusWithDeletedSource(t *testing.T) {
 
 	InsertConfig(doc, sources)
 
-	err := os.Remove(dirApp + "/source1.php")
+	err := os.Remove(util.GetAbsPath("source1.php"))
 
 	if err != nil {
 		logrus.Fatal(err)

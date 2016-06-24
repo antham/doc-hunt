@@ -1,13 +1,14 @@
 package file
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/antham/doc-hunt/util"
 )
 
 func TestUpdateSourcesFingerprint(t *testing.T) {
@@ -22,7 +23,7 @@ func TestUpdateSourcesFingerprint(t *testing.T) {
 
 	configsBefore := ListConfig()
 
-	err := ioutil.WriteFile(fmt.Sprint(dirApp+"/source1.php"), []byte("<?php echo 'Hello world !';"), 0644)
+	err := ioutil.WriteFile(util.GetAbsPath("source1.php"), []byte("<?php echo 'Hello world !';"), 0644)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -52,7 +53,7 @@ func TestDeleteSources(t *testing.T) {
 
 	configsBefore := ListConfig()
 
-	err := os.Remove(dirApp + "/source1.php")
+	err := os.Remove(util.GetAbsPath("source1.php"))
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -85,7 +86,7 @@ func TestDeleteSourcesWithOnlyOneSourceRemaining(t *testing.T) {
 
 	configsBefore := ListConfig()
 
-	err := os.Remove(dirApp + "/source1.php")
+	err := os.Remove(util.GetAbsPath("source1.php"))
 
 	if err != nil {
 		logrus.Fatal(err)

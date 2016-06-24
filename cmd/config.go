@@ -102,7 +102,7 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, erro
 	}
 
 	doc := args[0]
-	docFilename := dirApp + "/" + doc
+	docFilename := util.GetAbsPath(doc)
 
 	_, fileErr := os.Stat(docFilename)
 	URL, URLErr := url.Parse(doc)
@@ -122,7 +122,7 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, erro
 	fileSources := strings.Split(args[1], ",")
 
 	for _, fileSource := range fileSources {
-		filenameSource := dirApp + "/" + fileSource
+		filenameSource := util.GetAbsPath(fileSource)
 
 		if _, err := os.Stat(filenameSource); os.IsNotExist(err) {
 			return "", docCategory, []string{}, fmt.Errorf("File source %s doesn't exist", filenameSource)

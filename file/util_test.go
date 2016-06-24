@@ -4,19 +4,21 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/antham/doc-hunt/util"
 )
 
 func TestCalculateFingerprint(t *testing.T) {
 	createMocks()
 
-	fingerprint, err := calculateFingerprint(dirApp + "/doc_file_to_track.txt")
+	fingerprint, err := calculateFingerprint(util.GetAbsPath("doc_file_to_track.txt"))
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Equal(t, "8e2586d4d6c168565389214a17426a60f4bce67c", fingerprint, "Must calculate file fingerprint")
 }
 
 func TestCalculateFingerprintOfUnexistingFile(t *testing.T) {
-	_, err := calculateFingerprint(dirApp + "/whatever")
+	_, err := calculateFingerprint(util.GetAbsPath("whatever"))
 
 	assert.Error(t, err, "Must return an error")
 }

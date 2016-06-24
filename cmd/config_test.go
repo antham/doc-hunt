@@ -9,26 +9,21 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/antham/doc-hunt/file"
+	"github.com/antham/doc-hunt/util"
 )
 
 func init() {
-	currentDir, dirErr := os.Getwd()
-
-	if dirErr != nil {
-		logrus.Fatal(dirErr)
-	}
-
-	dirApp = currentDir + "/../" + "test"
+	util.AppPath = util.AppPath + "/../" + "test"
 }
 
 func createTestDirectory() {
-	err := os.RemoveAll(dirApp)
+	err := os.RemoveAll(util.AppPath)
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	err = os.Mkdir(dirApp, 0777)
+	err = os.Mkdir(util.AppPath, 0777)
 
 	if err != nil && !os.IsExist(err) {
 		logrus.Fatal(err)
@@ -37,7 +32,7 @@ func createTestDirectory() {
 
 func createDocFile() {
 	content := []byte("")
-	err := ioutil.WriteFile(dirApp+"/doc_test_1", content, 0644)
+	err := ioutil.WriteFile(util.GetAbsPath("doc_test_1"), content, 0644)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -47,7 +42,7 @@ func createDocFile() {
 func createSourceFiles() {
 	content := []byte("")
 
-	for _, name := range []string{dirApp + "/source_test_1", dirApp + "/source_test_2"} {
+	for _, name := range []string{util.GetAbsPath("source_test_1"), util.GetAbsPath("/source_test_2")} {
 		err := ioutil.WriteFile(name, content, 0644)
 
 		if err != nil {
@@ -65,7 +60,7 @@ func TestParseConfigAddArgsWithMissingFileDoc(t *testing.T) {
 func TestParseConfigAddArgsWithUnexistingFileDoc(t *testing.T) {
 	_, _, _, err := parseConfigAddArgs([]string{"whatever"})
 
-	assert.EqualError(t, err, "Doc "+dirApp+"/whatever is not a valid existing file, nor a valid URL", "Must return an unexisting file doc error")
+	assert.EqualError(t, err, "Doc "+util.GetAbsPath("whatever")+" is not a valid existing file, nor a valid URL", "Must return an unexisting file doc error")
 }
 
 func TestParseConfigAddArgsWithMissingFileSources(t *testing.T) {
@@ -80,7 +75,7 @@ func TestParseConfigAddArgsWithMissingFileSources(t *testing.T) {
 func TestParseConfigAddArgsWithUnexistingFileSources(t *testing.T) {
 	_, _, _, err := parseConfigAddArgs([]string{"doc_test_1", "whatever"})
 
-	assert.EqualError(t, err, "File source "+dirApp+"/whatever doesn't exist", "Must return a unexisting source file error")
+	assert.EqualError(t, err, "File source "+util.GetAbsPath("whatever")+" doesn't exist", "Must return a unexisting source file error")
 }
 
 func TestParseConfigAddArgsWithFile(t *testing.T) {

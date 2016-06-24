@@ -83,7 +83,7 @@ var globalPrompt = func(filename string, deleted *map[string]bool, moved *map[st
 
 var renamePrompt = func(path string, moved *map[string]string) checker {
 	return func(line string) error {
-		filename := dirApp + "/" + line
+		filename := util.GetAbsPath(line)
 		_, err := os.Stat(filename)
 
 		if err != nil && !os.IsExist(err) {

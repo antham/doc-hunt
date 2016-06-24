@@ -29,8 +29,7 @@ func UpdateSourcesFingeprint() {
 	}
 
 	for _, path := range paths {
-		filename := dirApp + "/" + path
-		fingerprint, err := calculateFingerprint(filename)
+		fingerprint, err := calculateFingerprint(util.GetAbsPath(path))
 
 		if err != nil {
 			ui.Error(err)

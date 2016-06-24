@@ -68,8 +68,7 @@ func NewSources(doc *Doc, sourcePaths []string) *[]Source {
 	sources := []Source{}
 
 	for _, path := range sourcePaths {
-		filename := dirApp + "/" + path
-		fingerprint, err := calculateFingerprint(filename)
+		fingerprint, err := calculateFingerprint(util.GetAbsPath(path))
 
 		if err != nil {
 			ui.Error(err)

@@ -2,6 +2,8 @@ package file
 
 import (
 	"os"
+
+	"github.com/antham/doc-hunt/util"
 )
 
 //go:generate stringer -type=SourceStatus
@@ -48,7 +50,7 @@ func buildSourceStatus(source *Source, status *map[string]SourceStatus) {
 
 	var fingerprint string
 
-	filename := dirApp + "/" + source.Path
+	filename := util.GetAbsPath(source.Path)
 
 	_, err := os.Stat(filename)
 
