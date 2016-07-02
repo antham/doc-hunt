@@ -17,3 +17,11 @@ func TestTrimAbsBasePath(t *testing.T) {
 
 	assert.Equal(t, "test", TrimAbsBasePath("/tmp/test"), "Must return relative path")
 }
+
+func TestGetFolderPathAddTrailingSeparator(t *testing.T) {
+	assert.Equal(t, "test/", GetFolderPath("test"), "Must add a trailing seperator")
+}
+
+func TestGetFolderPathAddTrailingSeparatorWithMultipleTrailingSeparator(t *testing.T) {
+	assert.Equal(t, "test/", GetFolderPath("test////////////"), "Must add a trailing seperator")
+}

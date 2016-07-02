@@ -34,3 +34,8 @@ func TrimAbsBasePath(absPath string) string {
 	return strings.TrimPrefix(absPath, fmt.Sprintf("%s%c", AppPath, filepath.Separator))
 }
 
+// GetFolderPath add trailing separator if it doesn't exist
+func GetFolderPath(path string) string {
+	return strings.TrimRight(path, fmt.Sprintf("%c", filepath.Separator)) + fmt.Sprintf("%c", filepath.Separator)
+}
+}
