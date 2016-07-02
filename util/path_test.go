@@ -40,15 +40,11 @@ func createSubTestDirectory(path string) {
 }
 
 func TestGetAbsPath(t *testing.T) {
-	AppPath = "/tmp"
-
-	assert.Equal(t, "/tmp/file", GetAbsPath("file"), "Must return an absolute path")
+	assert.Equal(t, AppPath+"/file", GetAbsPath("file"), "Must return an absolute path")
 }
 
 func TestTrimAbsBasePath(t *testing.T) {
-	AppPath = "/tmp"
-
-	assert.Equal(t, "test", TrimAbsBasePath("/tmp/test"), "Must return relative path")
+	assert.Equal(t, "test", TrimAbsBasePath(AppPath+"/test"), "Must return relative path")
 }
 
 func TestGetFolderPathAddTrailingSeparator(t *testing.T) {
