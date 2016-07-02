@@ -2,7 +2,9 @@ package util
 
 import (
 	"fmt"
+	"path/filepath"
 	"os"
+	"strings"
 
 	"github.com/antham/doc-hunt/ui"
 )
@@ -26,3 +28,9 @@ func init() {
 func GetAbsPath(relPath string) string {
 	return fmt.Sprintf("%s/%s", AppPath, relPath)
 }
+
+// TrimAbsBasePath remove project folder
+func TrimAbsBasePath(absPath string) string {
+	return strings.TrimPrefix(absPath, fmt.Sprintf("%s%c", AppPath, filepath.Separator))
+}
+
