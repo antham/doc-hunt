@@ -142,3 +142,53 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 	assert.False(t, sourceRows.Next(), "Must have deleted source id")
 	assert.False(t, docRows.Next(), "Must have deleted doc id")
 }
+
+func TestUpdate(t *testing.T) {
+	createMocks()
+	createDocFiles()
+	deleteDatabase()
+	Initialize()
+	createSubTestDirectory("test1")
+	createSourceFilesInPath("test1")
+
+	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = os.Remove(util.GetAbsPath("test1/source1.php"))
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	content := []byte("whatever")
+	err = ioutil.WriteFile(util.GetAbsPath("test1/source2.php"), content, 0644)
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	createSourceFile([]byte("test"), "test1/source20.php")
+
+	err = Update()
+
+	assert.NoError(t, err, "Must produces no errors")
+
+	items := retrieveItems([]string{"test1"})
+
+	assert.Len(t, (*items["test1"]), 10, "Must return 10 items")
+
+	values := map[string]Item{}
+
+	for _, i := range *items["test1"] {
+		values[i.Identifier] = i
+	}
+
+	_, exists := values["test1/source1.php"]
+
+	assert.Equal(t, values["test1/source20.php"].Fingerprint, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", "Must a new files")
+	assert.Equal(t, values["test1/source2.php"].Fingerprint, "d869db7fe62fb07c25a0403ecaea55031744b5fb", "Must update fingerprint of changed files")
+	assert.False(t, exists, "Must remove deleted file")
+}
