@@ -10,9 +10,9 @@ import (
 func TestCreateTables(t *testing.T) {
 	id := uuid.NewV4().String()
 
-	dbName = "/tmp/" + id
+	dbName = id
 
-	createTables()
+	Initialize()
 
 	_, err := db.Exec("select * from docs")
 

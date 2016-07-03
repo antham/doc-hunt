@@ -23,10 +23,16 @@ const (
 var statusCache map[string]ItemStatus
 
 // BuildStatus retrieves sources file status
-func BuildStatus() *[]Result {
+func BuildStatus() (*[]Result, error) {
 	results := []Result{}
 
-	for _, config := range *ListConfig() {
+	configs, err := ListConfig()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, config := range *configs {
 		for _, source := range config.Sources {
 			result := Result{
 				Status: map[ItemStatus][]string{},
@@ -37,10 +43,21 @@ func BuildStatus() *[]Result {
 
 			switch source.Category {
 			case SFILE:
-				status := retrieveFileItem(&source)
+				status, err := retrieveFileItem(&source)
+
+				if err != nil {
+					return nil, err
+				}
+
 				result.Status[status] = append(result.Status[status], source.Identifier)
 			case SFOLDER:
-				for identifier, status := range retrieveFolderItems(&source) {
+				folderItems, err := retrieveFolderItems(&source)
+
+				if err != nil {
+					return nil, err
+				}
+
+				for identifier, status := range *folderItems {
 					result.Status[status] = append(result.Status[status], identifier)
 				}
 			}
@@ -49,13 +66,18 @@ func BuildStatus() *[]Result {
 		}
 	}
 
-	return &results
+	return &results, nil
 }
 
-func retrieveFolderItems(source *Source) map[string]ItemStatus {
+func retrieveFolderItems(source *Source) (*map[string]ItemStatus, error) {
 	items := map[string]ItemStatus{}
+	dbItems, err := getItems(source)
 
-	for _, item := range *getItems(source) {
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range *dbItems {
 		items[item.Identifier] = getFileStatus(item.Identifier, item.Fingerprint)
 	}
 
@@ -65,13 +87,17 @@ func retrieveFolderItems(source *Source) map[string]ItemStatus {
 		}
 	}
 
-	return items
+	return &items, nil
 }
 
-func retrieveFileItem(source *Source) ItemStatus {
-	item := (*getItems(source))[0]
+func retrieveFileItem(source *Source) (ItemStatus, error) {
+	items, err := getItems(source)
 
-	return getFileStatus(item.Identifier, item.Fingerprint)
+	if err != nil {
+		return INONE, err
+	}
+
+	return getFileStatus((*items)[0].Identifier, (*items)[0].Fingerprint), nil
 }
 
 func getFileStatus(path string, origFingerprint string) ItemStatus {

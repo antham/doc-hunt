@@ -65,6 +65,12 @@ func createSourceFiles() {
 	}
 }
 
+func createSourceFilesInPath(path string) {
+	for i := 1; i <= 10; i++ {
+		createSourceFile([]byte("<?php echo 'A source file';"), fmt.Sprintf("%s%csource%d.php", path, filepath.Separator, i))
+	}
+}
+
 func createSourceFile(content []byte, filename string) {
 	err := ioutil.WriteFile(util.GetAbsPath(filename), content, 0644)
 
@@ -81,9 +87,5 @@ func createMocks() {
 }
 
 func deleteDatabase() {
-	err := os.Remove(dbName)
-
-	if err != nil {
-		logrus.Fatal(err)
-	}
+	os.Remove(util.GetAbsPath(dbName))
 }

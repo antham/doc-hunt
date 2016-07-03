@@ -15,21 +15,17 @@ import (
 func TestBuildStatusWithFilesUntouched(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
+	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
 
-	source1 := NewSource(doc, "source1.php", SFILE)
-	source2 := NewSource(doc, "source2.php", SFILE)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
-	InsertSource(source1)
-	InsertSource(source2)
+	results, err := BuildStatus()
 
-	InsertItems(NewItems(&[]string{"source1.php"}, source1))
-	InsertItems(NewItems(&[]string{"source2.php"}, source2))
-
-	results := BuildStatus()
+	assert.NoError(t, err, "Must returns no errors")
 
 	assert.Len(t, *results, 2, "Two results must be returned")
 
@@ -47,28 +43,24 @@ func TestBuildStatusWithFilesUntouched(t *testing.T) {
 func TestBuildStatusWithUpdatedFile(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
-
-	source1 := NewSource(doc, "source1.php", SFILE)
-	source2 := NewSource(doc, "source2.php", SFILE)
-
-	InsertSource(source1)
-	InsertSource(source2)
-
-	InsertItems(NewItems(&[]string{"source1.php"}, source1))
-	InsertItems(NewItems(&[]string{"source2.php"}, source2))
-
-	content := []byte("whatever")
-	err := ioutil.WriteFile(util.GetAbsPath("source1.php"), content, 0644)
+	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	results := BuildStatus()
+	content := []byte("whatever")
+	err = ioutil.WriteFile(util.GetAbsPath("source1.php"), content, 0644)
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	results, err := BuildStatus()
+
+	assert.NoError(t, err, "Must returns no errors")
 
 	assert.Len(t, *results, 2, "Two results must be returned")
 
@@ -86,27 +78,23 @@ func TestBuildStatusWithUpdatedFile(t *testing.T) {
 func TestBuildStatusWithDeletedFile(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
-
-	source1 := NewSource(doc, "source1.php", SFILE)
-	source2 := NewSource(doc, "source2.php", SFILE)
-
-	InsertSource(source1)
-	InsertSource(source2)
-
-	InsertItems(NewItems(&[]string{"source1.php"}, source1))
-	InsertItems(NewItems(&[]string{"source2.php"}, source2))
-
-	err := os.Remove(util.GetAbsPath("source1.php"))
+	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	results := BuildStatus()
+	err = os.Remove(util.GetAbsPath("source1.php"))
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	results, err := BuildStatus()
+
+	assert.NoError(t, err, "Must returns no errors")
 
 	assert.Len(t, *results, 2, "Two results must be returned")
 
@@ -125,23 +113,21 @@ func TestBuildStatusWithFolderSource(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
-	createTables()
+	Initialize()
 
 	createSourceFile([]byte("test"), "test1/source1.php")
 	createSourceFile([]byte("test"), "test1/source2.php")
 	createSourceFile([]byte("test"), "test1/source3.php")
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
+	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
 
-	source := NewSource(doc, "test1", SFOLDER)
-	InsertSource(source)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
-	InsertItems(NewItems(&[]string{"test1/source1.php"}, source))
-	InsertItems(NewItems(&[]string{"test1/source2.php"}, source))
-	InsertItems(NewItems(&[]string{"test1/source3.php"}, source))
+	results, err := BuildStatus()
 
-	results := BuildStatus()
+	assert.NoError(t, err, "Must returns no errors")
 
 	sort.Strings((*results)[0].Status[INONE])
 
@@ -157,25 +143,19 @@ func TestBuildStatusWithFolderSourceAndAddedFile(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
-	createTables()
+	Initialize()
 
 	createSourceFile([]byte("test"), "test1/source1.php")
 	createSourceFile([]byte("test"), "test1/source2.php")
 	createSourceFile([]byte("test"), "test1/source3.php")
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
-
-	source := NewSource(doc, "test1", SFOLDER)
-	InsertSource(source)
-
-	InsertItems(NewItems(&[]string{"test1/source1.php"}, source))
-	InsertItems(NewItems(&[]string{"test1/source2.php"}, source))
-	InsertItems(NewItems(&[]string{"test1/source3.php"}, source))
+	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
 
 	createSourceFile([]byte("test"), "test1/source4.php")
 
-	results := BuildStatus()
+	results, err := BuildStatus()
+
+	assert.NoError(t, err, "Must returns no errors")
 
 	sort.Strings((*results)[0].Status[INONE])
 
@@ -195,25 +175,25 @@ func TestBuildStatusWithFolderDeleted(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
-	createTables()
+	Initialize()
 
 	createSourceFile([]byte("test"), "test1/source1.php")
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
-
-	source := NewSource(doc, "test1", SFOLDER)
-	InsertSource(source)
-
-	InsertItems(NewItems(&[]string{"test1/source1.php"}, source))
-
-	err := os.RemoveAll(util.GetAbsPath("test1"))
+	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	results := BuildStatus()
+	err = os.RemoveAll(util.GetAbsPath("test1"))
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	results, err := BuildStatus()
+
+	assert.NoError(t, err, "Must returns no errors")
 
 	sort.Strings((*results)[0].Status[IDELETED])
 

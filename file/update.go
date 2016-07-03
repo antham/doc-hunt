@@ -60,15 +60,27 @@ func updateItems() error {
 	deleted := map[string]bool{}
 	added := []Item{}
 
-	for _, result := range *BuildStatus() {
+	status, err := BuildStatus()
+
+	if err != nil {
+		return err
+	}
+
+	for _, result := range *status {
 		for _, filename := range result.Status[IDELETED] {
 			deleted[filename] = true
 		}
 
 		if _, ok := result.Status[IADDED]; ok == true {
-			items := result.Status[IADDED]
+			itemsAdded := result.Status[IADDED]
 
-			for _, item := range *NewItems(&items, &result.Source) {
+			items, err := NewItems(&itemsAdded, &result.Source)
+
+			if err != nil {
+				return err
+			}
+
+			for _, item := range *items {
 				added = append(added, item)
 			}
 		}
@@ -84,10 +96,19 @@ func updateItems() error {
 		return &results
 	}
 
-	InsertItems(&added)
-	err := deleteItems(extractDeletedFiles(&deleted))
+	err = InsertItems(&added)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	err = deleteItems(extractDeletedFiles(&deleted))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // updateItemsFingeprint update file check sum if source file content changed

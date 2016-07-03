@@ -5,34 +5,44 @@ import (
 
 	"github.com/mattn/go-sqlite3"
 
-	"github.com/antham/doc-hunt/ui"
 	"github.com/antham/doc-hunt/util"
 )
 
 var db *sql.DB
 var dbName = ".doc-hunt"
 
-func init() {
-	createTables()
-}
-
-func createTables() {
+// Initialize initialize project
+func Initialize() error {
 	var err error
 
-	db, err = sql.Open("sqlite3", dbName)
+	db, err = sql.Open("sqlite3", util.GetAbsPath(dbName))
 
 	if err != nil {
-		ui.Error(err)
-
-		util.ErrorExit()
+		return err
 	}
 
-	createSourceTable()
-	createDocTable()
-	createItemTable()
+	err = createSourceTable()
+
+	if err != nil {
+		return err
+	}
+
+	err = createDocTable()
+
+	if err != nil {
+		return err
+	}
+
+	err = createItemTable()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func createDocTable() {
+func createDocTable() error {
 	query := `
 create table docs(
 id text primary key not null,
@@ -43,13 +53,13 @@ created_at timestamp not null);`
 	_, err := db.Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		ui.Error(err)
-
-		util.ErrorExit()
+		return err
 	}
+
+	return nil
 }
 
-func createSourceTable() {
+func createSourceTable() error {
 	query := `
 create table sources(
 id text primary key not null,
@@ -62,13 +72,13 @@ foreign key(doc_id) references docs(id));`
 	_, err := db.Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		ui.Error(err)
-
-		util.ErrorExit()
+		return err
 	}
+
+	return nil
 }
 
-func createItemTable() {
+func createItemTable() error {
 	query := `
 create table items(
 id text primary key not null,
@@ -82,8 +92,8 @@ foreign key(source_id) references sources(id));`
 	_, err := db.Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		ui.Error(err)
-
-		util.ErrorExit()
+		return err
 	}
+
+	return nil
 }

@@ -56,7 +56,13 @@ var delCmd = &cobra.Command{
 	Use:   "del",
 	Short: "Delete one or several configuration row",
 	Run: func(cmd *cobra.Command, args []string) {
-		list := file.ListConfig()
+		list, err := file.ListConfig()
+
+		if err != nil {
+			ui.Error(err)
+
+			util.ErrorExit()
+		}
 
 		if len(*list) == 0 {
 			ui.Info("No config added yet")
@@ -133,7 +139,13 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []st
 }
 
 func listConfig() {
-	list := file.ListConfig()
+	list, err := file.ListConfig()
+
+	if err != nil {
+		ui.Error(err)
+
+		util.ErrorExit()
+	}
 
 	if len(*list) == 0 {
 		ui.Info("No config added yet")
@@ -146,24 +158,14 @@ func listConfig() {
 	util.SuccessExit()
 }
 
-func addConfig(identifier string, docCat file.DocCategory, folderSources []string, fileSources []string) {
-	doc := file.NewDoc(identifier, docCat)
-	file.InsertDoc(doc)
+func addConfig(docIdentifier string, docCat file.DocCategory, folderSources []string, fileSources []string) {
 
-	for _, identifier := range folderSources {
-		source := file.NewSource(doc, identifier, file.SFOLDER)
-		file.InsertSource(source)
+	err := file.CreateConfig(docIdentifier, docCat, folderSources, fileSources)
 
-		items := file.NewItems(util.ExtractFolderFiles(identifier), source)
-		file.InsertItems(items)
-	}
+	if err != nil {
+		ui.Error(err)
 
-	for _, identifier := range fileSources {
-		source := file.NewSource(doc, identifier, file.SFILE)
-		file.InsertSource(source)
-
-		items := file.NewItems(&[]string{identifier}, source)
-		file.InsertItems(items)
+		util.ErrorExit()
 	}
 
 	ui.Success("Config added")
@@ -172,7 +174,13 @@ func addConfig(identifier string, docCat file.DocCategory, folderSources []strin
 }
 
 func delConfig(configs *[]file.Config) {
-	file.RemoveConfigs(configs)
+	err := file.RemoveConfigs(configs)
+
+	if err != nil {
+		ui.Error(err)
+
+		util.ErrorExit()
+	}
 }
 
 func promptConfigToRemove(configs *[]file.Config) (*[]file.Config, error) {

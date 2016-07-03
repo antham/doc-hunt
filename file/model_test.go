@@ -10,6 +10,8 @@ import (
 
 func TestNewSource(t *testing.T) {
 	createMocks()
+	deleteDatabase()
+	Initialize()
 	createSubTestDirectory("whatever")
 
 	doc := NewDoc("test.txt", DFILE)
@@ -21,6 +23,8 @@ func TestNewSource(t *testing.T) {
 
 func TestInsertConfig(t *testing.T) {
 	createMocks()
+	deleteDatabase()
+	Initialize()
 
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 	InsertDoc(doc)
@@ -68,9 +72,11 @@ func TestInsertConfig(t *testing.T) {
 func TestListConfigWithNoResults(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
-	configs := ListConfig()
+	configs, err := ListConfig()
+
+	assert.NoError(t, err, "Must return no errors")
 
 	expected := []Config{}
 
@@ -80,7 +86,7 @@ func TestListConfigWithNoResults(t *testing.T) {
 func TestListConfigWithEntries(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 	InsertDoc(doc)
@@ -99,7 +105,9 @@ func TestListConfigWithEntries(t *testing.T) {
 	InsertSource(sources[1])
 	InsertSource(sources[2])
 
-	configs := ListConfig()
+	configs, err := ListConfig()
+
+	assert.NoError(t, err, "Must return no errors")
 
 	assert.Len(t, *configs, 2, "Must have 2 configs")
 
@@ -116,13 +124,15 @@ func TestListConfigWithEntries(t *testing.T) {
 func TestRemoveConfigsWithNoResults(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
 	configs := []Config{}
 
 	RemoveConfigs(&configs)
 
-	result := ListConfig()
+	result, err := ListConfig()
+
+	assert.NoError(t, err, "Must return no errors")
 
 	assert.Len(t, *result, 0, "Must have no config")
 }
@@ -130,7 +140,7 @@ func TestRemoveConfigsWithNoResults(t *testing.T) {
 func TestRemoveConfigsWithOneEntry(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
@@ -139,11 +149,15 @@ func TestRemoveConfigsWithOneEntry(t *testing.T) {
 	InsertSource(sources[0])
 	InsertSource(sources[1])
 
-	configs := ListConfig()
+	configs, err := ListConfig()
+
+	assert.NoError(t, err, "Must return no errors")
 
 	RemoveConfigs(configs)
 
-	result := ListConfig()
+	result, err := ListConfig()
+
+	assert.NoError(t, err, "Must return no errors")
 
 	assert.Len(t, *result, 0, "Must have no config remaining")
 }
@@ -151,7 +165,7 @@ func TestRemoveConfigsWithOneEntry(t *testing.T) {
 func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	createTables()
+	Initialize()
 
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 	InsertDoc(doc)
@@ -171,14 +185,17 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 	InsertSource(NewSource(doc, "source1.php", SFILE))
 	InsertSource(NewSource(doc, "source2.php", SFILE))
 
-	configs := ListConfig()
+	configs, err := ListConfig()
+	assert.NoError(t, err, "Must return no errors")
+
 	expected := (*configs)[1]
 
 	c := append((*configs)[:1], (*configs)[2:]...)
 
 	RemoveConfigs(&c)
 
-	result := ListConfig()
+	result, err := ListConfig()
+	assert.NoError(t, err, "Must return no errors")
 
 	assert.Len(t, *result, 1, "Must have no config remaining")
 	assert.Equal(t, expected, (*result)[0], "Wrong configs deleted")
@@ -186,13 +203,16 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 
 func TestNewItems(t *testing.T) {
 	createMocks()
+	deleteDatabase()
+	Initialize()
 
 	doc := NewDoc("test.txt", DFILE)
 	source := NewSource(doc, "whatever", SFOLDER)
 
 	files := []string{"source1.php", "source2.php"}
 
-	items := NewItems(&files, source)
+	items, err := NewItems(&files, source)
+	assert.NoError(t, err, "Must return no errors")
 
 	assert.Equal(t, "source1.php", (*items)[0].Identifier, "Must return file source1.php")
 	assert.Equal(t, "source2.php", (*items)[1].Identifier, "Must return file source2.php")

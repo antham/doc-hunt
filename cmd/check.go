@@ -15,7 +15,13 @@ var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "Check if documentation update could be needed",
 	Run: func(cmd *cobra.Command, args []string) {
-		itemStatus, changesOccured := file.GetItemStatus()
+		itemStatus, changesOccured, err := file.GetItemStatus()
+
+		if err != nil {
+			ui.Error(err)
+
+			util.ErrorExit()
+		}
 
 		if changesOccured {
 			renderCheck(itemStatus)
