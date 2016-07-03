@@ -34,7 +34,13 @@ var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new configuration row",
 	Run: func(cmd *cobra.Command, args []string) {
-		doc, docCat, fileSources, err := parseConfigAddArgs(args)
+		if len(args) > 2 {
+			ui.Error(fmt.Errorf("No more than 2 arguments expected"))
+
+			util.ErrorExit()
+		}
+
+		doc, docCat, folderSources, fileSources, err := parseConfigAddArgs(args)
 
 		if err != nil {
 			ui.Error(err)
@@ -42,7 +48,7 @@ var addCmd = &cobra.Command{
 			util.ErrorExit()
 		}
 
-		addConfig(doc, docCat, fileSources)
+		addConfig(doc, docCat, folderSources, fileSources)
 	},
 }
 
@@ -80,11 +86,13 @@ var listCmd = &cobra.Command{
 	},
 }
 
-func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, error) {
+func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []string, error) {
 	var docCategory file.DocCategory
+	folderSources := []string{}
+	fileSources := []string{}
 
 	if len(args) == 0 {
-		return "", docCategory, []string{}, fmt.Errorf("Missing file doc")
+		return "", docCategory, folderSources, fileSources, fmt.Errorf("Missing file doc")
 	}
 
 	doc := args[0]
@@ -94,28 +102,34 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, erro
 	URL, URLErr := url.Parse(doc)
 
 	if fileErr == nil {
-		docCategory = file.FILE
+		docCategory = file.DFILE
 	} else if URLErr == nil && URL.IsAbs() {
-		docCategory = file.URL
+		docCategory = file.DURL
 	} else {
-		return "", docCategory, []string{}, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", docFilename)
+		return "", docCategory, folderSources, fileSources, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", docFilename)
 	}
 
 	if len(args) == 1 {
-		return "", docCategory, []string{}, fmt.Errorf("Missing file sources")
+		return "", docCategory, folderSources, fileSources, fmt.Errorf("Missing file/folder sources")
 	}
 
-	fileSources := strings.Split(args[1], ",")
+	for _, source := range strings.Split(args[1], ",") {
+		path := util.GetAbsPath(source)
 
-	for _, fileSource := range fileSources {
-		filenameSource := util.GetAbsPath(fileSource)
+		f, err := os.Stat(path)
 
-		if _, err := os.Stat(filenameSource); os.IsNotExist(err) {
-			return "", docCategory, []string{}, fmt.Errorf("File source %s doesn't exist", filenameSource)
+		if os.IsNotExist(err) {
+			return "", docCategory, folderSources, fileSources, fmt.Errorf("File/folder source %s doesn't exist", source)
+		}
+
+		if f.IsDir() {
+			folderSources = append(folderSources, source)
+		} else {
+			fileSources = append(fileSources, source)
 		}
 	}
 
-	return doc, docCategory, fileSources, nil
+	return doc, docCategory, folderSources, fileSources, nil
 }
 
 func listConfig() {
@@ -132,10 +146,25 @@ func listConfig() {
 	util.SuccessExit()
 }
 
-func addConfig(identifier string, docCat file.DocCategory, fileSources []string) {
+func addConfig(identifier string, docCat file.DocCategory, folderSources []string, fileSources []string) {
 	doc := file.NewDoc(identifier, docCat)
-	sources := file.NewSources(doc, fileSources)
-	file.InsertConfig(doc, sources)
+	file.InsertDoc(doc)
+
+	for _, identifier := range folderSources {
+		source := file.NewSource(doc, identifier, file.SFOLDER)
+		file.InsertSource(source)
+
+		items := file.NewItems(util.ExtractFolderFiles(identifier), source)
+		file.InsertItems(items)
+	}
+
+	for _, identifier := range fileSources {
+		source := file.NewSource(doc, identifier, file.SFILE)
+		file.InsertSource(source)
+
+		items := file.NewItems(&[]string{identifier}, source)
+		file.InsertItems(items)
+	}
 
 	ui.Success("Config added")
 

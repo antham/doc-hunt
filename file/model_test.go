@@ -1,19 +1,34 @@
 package file
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewSource(t *testing.T) {
+	createMocks()
+	createSubTestDirectory("whatever")
+
+	doc := NewDoc("test.txt", DFILE)
+	source := NewSource(doc, "whatever", SFOLDER)
+
+	assert.EqualValues(t, SFOLDER, source.Category, "Must be a folder source")
+	assert.Equal(t, doc.ID, source.DocID, "Must be tied to document declared previously")
+}
+
 func TestInsertConfig(t *testing.T) {
 	createMocks()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
 
-	InsertConfig(doc, sources)
+	sources := []*Source{NewSource(doc, "source1.php", SFILE), NewSource(doc, "source2.php", SFILE)}
+
+	InsertSource(sources[0])
+	InsertSource(sources[1])
 
 	var identifier string
 
@@ -23,7 +38,7 @@ func TestInsertConfig(t *testing.T) {
 
 	assert.Equal(t, doc.Identifier, identifier, "Must record a doc file row")
 
-	results, err := db.Query("select path, fingerprint from sources where doc_id = ? order by path", doc.ID)
+	results, err := db.Query("select identifier, category from sources where doc_id = ? order by identifier", doc.ID)
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -36,15 +51,15 @@ func TestInsertConfig(t *testing.T) {
 	var i int
 
 	for results.Next() {
-		var path string
-		var fingerprint string
+		var identifier string
+		var category SourceCategory
 
-		err := results.Scan(&path, &fingerprint)
+		err := results.Scan(&identifier, &category)
 
 		assert.NoError(t, err, "Must return no errors")
 
-		assert.Equal(t, (*sources)[i].Path, path, "Must return source path : "+(*sources)[i].Path)
-		assert.Equal(t, (*sources)[i].Fingerprint, fingerprint, "Must return fingerprint path : "+(*sources)[i].Fingerprint)
+		assert.Equal(t, sources[i].Identifier, identifier, "Must return source identifier : "+sources[i].Identifier)
+		assert.Equal(t, sources[i].Category, category, fmt.Sprintf("Must return fingerprint identifier : %d", sources[i].Category))
 
 		i++
 	}
@@ -67,28 +82,35 @@ func TestListConfigWithEntries(t *testing.T) {
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
 
-	InsertConfig(doc, sources)
+	sources := []*Source{NewSource(doc, "source1.php", SFILE), NewSource(doc, "source2.php", SFILE)}
 
-	doc = NewDoc("doc_file_to_track.txt", FILE)
-	sources = NewSources(doc, []string{"source3.php", "source4.php", "source5.php"})
+	InsertSource(sources[0])
+	InsertSource(sources[1])
 
-	InsertConfig(doc, sources)
+	doc = NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
+
+	sources = []*Source{NewSource(doc, "source3.php", SFILE), NewSource(doc, "source4.php", SFILE), NewSource(doc, "source5.php", SFILE)}
+
+	InsertSource(sources[0])
+	InsertSource(sources[1])
+	InsertSource(sources[2])
 
 	configs := ListConfig()
 
 	assert.Len(t, *configs, 2, "Must have 2 configs")
 
 	assert.Len(t, (*configs)[0].Sources, 2, "Must have 2 source files")
-	assert.Equal(t, "source1.php", (*configs)[0].Sources[0].Path, "Must return correct path")
-	assert.Equal(t, "source2.php", (*configs)[0].Sources[1].Path, "Must return correct path")
+	assert.Equal(t, "source1.php", (*configs)[0].Sources[0].Identifier, "Must return correct identifier")
+	assert.Equal(t, "source2.php", (*configs)[0].Sources[1].Identifier, "Must return correct identifier")
 
 	assert.Len(t, (*configs)[1].Sources, 3, "Must have 3 source files")
-	assert.Equal(t, "source3.php", (*configs)[1].Sources[0].Path, "Must return correct path")
-	assert.Equal(t, "source4.php", (*configs)[1].Sources[1].Path, "Must return correct path")
-	assert.Equal(t, "source5.php", (*configs)[1].Sources[2].Path, "Must return correct path")
+	assert.Equal(t, "source3.php", (*configs)[1].Sources[0].Identifier, "Must return correct identifier")
+	assert.Equal(t, "source4.php", (*configs)[1].Sources[1].Identifier, "Must return correct identifier")
+	assert.Equal(t, "source5.php", (*configs)[1].Sources[2].Identifier, "Must return correct identifier")
 }
 
 func TestRemoveConfigsWithNoResults(t *testing.T) {
@@ -110,10 +132,12 @@ func TestRemoveConfigsWithOneEntry(t *testing.T) {
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
-	InsertConfig(doc, sources)
+	sources := []*Source{NewSource(doc, "source1.php", SFILE), NewSource(doc, "source2.php", SFILE)}
+
+	InsertSource(sources[0])
+	InsertSource(sources[1])
 
 	configs := ListConfig()
 
@@ -129,20 +153,23 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
 
-	InsertConfig(doc, sources)
+	InsertSource(NewSource(doc, "source1.php", SFILE))
+	InsertSource(NewSource(doc, "source2.php", SFILE))
 
-	doc = NewDoc("doc_file_to_track.txt", FILE)
-	sources = NewSources(doc, []string{"source3.php", "source4.php"})
+	doc = NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
 
-	InsertConfig(doc, sources)
+	InsertSource(NewSource(doc, "source3.php", SFILE))
+	InsertSource(NewSource(doc, "source4.php", SFILE))
 
-	doc = NewDoc("doc_file_to_track.txt", FILE)
-	sources = NewSources(doc, []string{"source3.php", "source5.php"})
+	doc = NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
 
-	InsertConfig(doc, sources)
+	InsertSource(NewSource(doc, "source1.php", SFILE))
+	InsertSource(NewSource(doc, "source2.php", SFILE))
 
 	configs := ListConfig()
 	expected := (*configs)[1]
@@ -155,4 +182,18 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 
 	assert.Len(t, *result, 1, "Must have no config remaining")
 	assert.Equal(t, expected, (*result)[0], "Wrong configs deleted")
+}
+
+func TestNewItems(t *testing.T) {
+	createMocks()
+
+	doc := NewDoc("test.txt", DFILE)
+	source := NewSource(doc, "whatever", SFOLDER)
+
+	files := []string{"source1.php", "source2.php"}
+
+	items := NewItems(&files, source)
+
+	assert.Equal(t, "source1.php", (*items)[0].Identifier, "Must return file source1.php")
+	assert.Equal(t, "source2.php", (*items)[1].Identifier, "Must return file source2.php")
 }

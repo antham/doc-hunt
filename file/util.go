@@ -4,10 +4,12 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/antham/doc-hunt/util"
 )
 
 func calculateFingerprint(filepath string) (string, error) {
-	data, err := ioutil.ReadFile(filepath)
+	data, err := ioutil.ReadFile(util.GetAbsPath(filepath))
 
 	if err != nil {
 		return "", err

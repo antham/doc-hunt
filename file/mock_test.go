@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/Sirupsen/logrus"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func init() {
-	util.AppPath = util.AppPath + "/../" + "test"
+	util.AppPath = filepath.Clean(util.AppPath + "/../" + "test")
 }
 
 func removeTestDirectory() {
@@ -24,6 +25,14 @@ func removeTestDirectory() {
 
 func createTestDirectory() {
 	err := os.Mkdir(util.AppPath, 0777)
+
+	if err != nil && !os.IsExist(err) {
+		logrus.Fatal(err)
+	}
+}
+
+func createSubTestDirectory(path string) {
+	err := os.Mkdir(fmt.Sprintf("%s%c%s", util.AppPath, filepath.Separator, path), 0777)
 
 	if err != nil && !os.IsExist(err) {
 		logrus.Fatal(err)
@@ -52,12 +61,15 @@ func createDocFiles() {
 
 func createSourceFiles() {
 	for i := 1; i <= 10; i++ {
-		content := []byte("<?php echo 'A source file';")
-		err := ioutil.WriteFile(util.GetAbsPath(fmt.Sprintf("source%d.php", i)), content, 0644)
+		createSourceFile([]byte("<?php echo 'A source file';"), fmt.Sprintf("source%d.php", i))
+	}
+}
 
-		if err != nil {
-			logrus.Fatal(err)
-		}
+func createSourceFile(content []byte, filename string) {
+	err := ioutil.WriteFile(util.GetAbsPath(filename), content, 0644)
+
+	if err != nil {
+		logrus.Fatal(err)
 	}
 }
 

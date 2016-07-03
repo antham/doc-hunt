@@ -11,17 +11,25 @@ import (
 	"github.com/antham/doc-hunt/util"
 )
 
-func TestUpdateSourcesFingerprint(t *testing.T) {
+func TestUpdateItemsFingerprint(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
 
-	InsertConfig(doc, sources)
+	source1 := NewSource(doc, "source1.php", SFILE)
+	source2 := NewSource(doc, "source2.php", SFILE)
 
-	configsBefore := ListConfig()
+	InsertSource(source1)
+	InsertSource(source2)
+
+	InsertItems(NewItems(&[]string{"source1.php"}, source1))
+	InsertItems(NewItems(&[]string{"source2.php"}, source2))
+
+	items1Before := getItems(source1)
+	items2Before := getItems(source2)
 
 	err := ioutil.WriteFile(util.GetAbsPath("source1.php"), []byte("<?php echo 'Hello world !';"), 0644)
 
@@ -29,29 +37,34 @@ func TestUpdateSourcesFingerprint(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	UpdateSourcesFingeprint()
-	configsAfter := ListConfig()
+	UpdateItemsFingeprint()
 
-	assert.Equal(t, (*configsAfter)[0].Sources[0].ID, (*configsBefore)[0].Sources[0].ID, "Must return same id")
-	assert.NotEqual(t, (*configsAfter)[0].Sources[0].Fingerprint, (*configsBefore)[0].Sources[0].Fingerprint, "Must return a different fingerprint")
-	assert.True(t, (*configsAfter)[0].Sources[0].UpdatedAt.After((*configsAfter)[0].Sources[0].CreatedAt), "Must change updated_at date")
+	items1After := getItems(source1)
+	items2After := getItems(source2)
 
-	assert.Equal(t, (*configsAfter)[0].Sources[1].ID, (*configsBefore)[0].Sources[1].ID, "Must return same id")
-	assert.Equal(t, (*configsAfter)[0].Sources[1].Fingerprint, (*configsBefore)[0].Sources[1].Fingerprint, "Must return same fingerprint")
-	assert.True(t, (*configsAfter)[0].Sources[1].UpdatedAt.After((*configsAfter)[0].Sources[1].CreatedAt), "Must change updated_at date")
+	assert.Equal(t, (*items1Before)[0].ID, (*items1After)[0].ID, "Must return same id")
+	assert.True(t, (*items1After)[0].UpdatedAt.After((*items1Before)[0].UpdatedAt), "Must changes updated date")
+
+	assert.Equal(t, (*items2Before)[0].ID, (*items2After)[0].ID, "Must return same id")
+	assert.True(t, (*items2After)[0].UpdatedAt.After((*items2Before)[0].UpdatedAt), "Must changes updated date")
 }
 
-func TestDeleteSources(t *testing.T) {
+func TestDeleteItems(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc)
 
-	InsertConfig(doc, sources)
+	source1 := NewSource(doc, "source1.php", SFILE)
+	source2 := NewSource(doc, "source2.php", SFILE)
 
-	configsBefore := ListConfig()
+	InsertItems(NewItems(&[]string{"source1.php"}, source1))
+	InsertItems(NewItems(&[]string{"source2.php"}, source2))
+
+	items1Before := getItems(source1)
+	items2Before := getItems(source2)
 
 	err := os.Remove(util.GetAbsPath("source1.php"))
 
@@ -59,32 +72,41 @@ func TestDeleteSources(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	DeleteSources(&[]string{"source1.php"})
-	configsAfter := ListConfig()
+	DeleteItems(&[]string{"source1.php"})
 
-	assert.Len(t, (*configsBefore)[0].Sources, 2, "Must contains 2 elements")
+	items1After := getItems(source1)
+	items2After := getItems(source2)
 
-	assert.Len(t, (*configsAfter)[0].Sources, 1, "Must contains 1 element")
-	assert.Equal(t, "source2.php", (*configsAfter)[0].Sources[0].Path, "Must keep element not deleted")
+	assert.Len(t, (*items1Before), 1, "Must contains 1 element")
+	assert.Len(t, (*items2Before), 1, "Must contains 1 element")
+
+	assert.Len(t, (*items1After), 0, "Must contains no element")
+	assert.Len(t, (*items2After), 1, "Must contains 1 element, only first item is removed")
 }
 
-func TestDeleteSourcesWithOnlyOneSourceRemaining(t *testing.T) {
+func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 	createMocks()
 	createDocFiles()
 	deleteDatabase()
 	createTables()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php"})
+	doc1 := NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc1)
 
-	InsertConfig(doc, sources)
+	source1 := NewSource(doc1, "source1.php", SFILE)
+	InsertSource(source1)
 
-	doc = NewDoc("doc_file_to_track_2.txt", FILE)
-	sources = NewSources(doc, []string{"source2.php"})
+	doc2 := NewDoc("doc_file_to_track_2.txt", DFILE)
+	InsertDoc(doc2)
 
-	InsertConfig(doc, sources)
+	source2 := NewSource(doc2, "source2.php", SFILE)
+	InsertSource(source2)
 
-	configsBefore := ListConfig()
+	InsertItems(NewItems(&[]string{"source1.php"}, source1))
+	InsertItems(NewItems(&[]string{"source2.php"}, source2))
+
+	items1Before := getItems(source1)
+	items2Before := getItems(source2)
 
 	err := os.Remove(util.GetAbsPath("source1.php"))
 
@@ -92,36 +114,29 @@ func TestDeleteSourcesWithOnlyOneSourceRemaining(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	DeleteSources(&[]string{"source1.php"})
-	configsAfter := ListConfig()
+	DeleteItems(&[]string{"source1.php"})
 
-	rows, err := db.Query("select d.id from docs d where id = ?", (*configsBefore)[0].Doc.ID)
+	sourceRows, err := db.Query("select s.id from sources s where id = ?", source1.ID)
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	assert.Len(t, (*configsBefore)[0].Sources, 1, "Must contains 1 element")
-	assert.Len(t, (*configsAfter), 1, "Must contains remaining config only")
-	assert.False(t, rows.Next(), "Must have deleted doc id")
-}
+	docRows, err := db.Query("select d.id from docs d where id = ?", doc1.ID)
 
-func TestUpdateFilenameSources(t *testing.T) {
-	createMocks()
-	deleteDatabase()
-	createTables()
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php"})
+	items1After := getItems(source1)
+	items2After := getItems(source2)
 
-	InsertConfig(doc, sources)
+	assert.Len(t, (*items1Before), 1, "Must contains 1 element")
+	assert.Len(t, (*items2Before), 1, "Must contains 1 element")
 
-	configsBefore := ListConfig()
+	assert.Len(t, (*items1After), 0, "Must contains no element")
+	assert.Len(t, (*items2After), 1, "Must contains 1 element, only first item is removed")
 
-	UpdateFilenameSources(&map[string]string{"source1.php": "source2.php"})
-
-	configsAfter := ListConfig()
-
-	assert.Equal(t, (*configsBefore)[0].Sources[0].Path, "source1.php", "Must contains original path")
-	assert.Equal(t, (*configsAfter)[0].Sources[0].Path, "source2.php", "Must contains renamed path")
+	assert.False(t, sourceRows.Next(), "Must have deleted source id")
+	assert.False(t, docRows.Next(), "Must have deleted doc id")
 }

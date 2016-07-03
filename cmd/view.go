@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/fatih/color"
 
@@ -23,7 +22,7 @@ func renderConfig(list *[]file.Config) {
 				out += color.YellowString(", ")
 			}
 
-			out += source.Path
+			out += source.Identifier
 		}
 
 		fmt.Printf("%s\n", out)
@@ -31,25 +30,28 @@ func renderConfig(list *[]file.Config) {
 	}
 }
 
-func renderCheck(list *[]file.Result) {
+func renderCheck(list *map[file.Doc]map[file.ItemStatus]map[string]bool) {
 	output := ""
 
-	for _, r := range *list {
-		if len(r.Status[file.Deleted]) != 0 || len(r.Status[file.Updated]) != 0 || len(r.Status[file.Failed]) != 0 {
-			output += color.CyanString(r.Doc.Identifier + "\n")
+	for doc, status := range *list {
+		if len(status[file.IDELETED]) != 0 || len(status[file.IUPDATED]) != 0 || len(status[file.IFAILED]) != 0 || len(status[file.IADDED]) != 0 {
+			output += color.CyanString(doc.Identifier + "\n")
 
-			for status, sources := range r.Status {
-				switch status {
-				case file.Updated:
-					output += fmt.Sprintf("\n  %s \n\n", color.YellowString(strings.ToLower(status.String())))
-				case file.Deleted, file.Failed:
-					output += fmt.Sprintf("\n  %s \n\n", color.RedString(strings.ToLower(status.String())))
-				}
+			for _, s := range []file.ItemStatus{file.IADDED, file.IUPDATED, file.IDELETED} {
+				if len(status[s]) > 0 {
+					switch s {
+					case file.IADDED:
+						output += fmt.Sprintf("\n  %s \n\n", color.GreenString("Added"))
+					case file.IUPDATED:
+						output += fmt.Sprintf("\n  %s \n\n", color.YellowString("Updated"))
+					case file.IFAILED:
+						output += fmt.Sprintf("\n  %s \n\n", color.RedString("An error occured"))
+					case file.IDELETED:
+						output += fmt.Sprintf("\n  %s \n\n", color.RedString("Deleted"))
+					}
 
-				if status != file.Untouched {
-
-					for _, s := range sources {
-						output += fmt.Sprintf("    => %s\n", s)
+					for filename := range status[s] {
+						output += fmt.Sprintf("    => %s\n", filename)
 					}
 				}
 			}

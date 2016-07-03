@@ -2,6 +2,7 @@ package file
 
 import (
 	"fmt"
+
 	"strings"
 	"time"
 
@@ -13,14 +14,33 @@ import (
 	"github.com/antham/doc-hunt/util"
 )
 
-// Source represents a source file that we want to follow changes
+// Source represents a source that we want to follow changes
 type Source struct {
+	ID         string
+	Category   SourceCategory
+	Identifier string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DocID      string
+}
+
+// SourceCategory represents a source category
+type SourceCategory int
+
+// SourceCategory categories
+const (
+	SFILE = iota
+	SFOLDER
+)
+
+// Item represents an actual tracked source
+type Item struct {
 	ID          string
-	Path        string
+	Identifier  string
 	Fingerprint string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	DocID       string
+	SourceID    string
 }
 
 // Doc represents a document which as relationship with one or several source files
@@ -36,8 +56,8 @@ type DocCategory int
 
 // DocCategory categories
 const (
-	FILE = iota
-	URL
+	DFILE = iota
+	DURL
 )
 
 // Config represents a config line
@@ -48,9 +68,9 @@ type Config struct {
 
 // Result represents what we get after comparison between database and actual files
 type Result struct {
-	Doc     Doc
-	Sources []Source
-	Status  map[SourceStatus][]string
+	Doc    Doc
+	Source Source
+	Status map[ItemStatus][]string
 }
 
 // NewDoc create a new doc file
@@ -63,12 +83,26 @@ func NewDoc(identifier string, category DocCategory) *Doc {
 	}
 }
 
-// NewSources create new sources recording file fingerprint
-func NewSources(doc *Doc, sourcePaths []string) *[]Source {
-	sources := []Source{}
+// NewSource create new source
+func NewSource(doc *Doc, identifier string, category SourceCategory) *Source {
+	source := Source{
+		uuid.NewV4().String(),
+		category,
+		identifier,
+		time.Now(),
+		time.Now(),
+		doc.ID,
+	}
 
-	for _, path := range sourcePaths {
-		fingerprint, err := calculateFingerprint(util.GetAbsPath(path))
+	return &source
+}
+
+// NewItems create new source
+func NewItems(identifiers *[]string, source *Source) *[]Item {
+	items := []Item{}
+
+	for _, identifier := range *identifiers {
+		fingerprint, err := calculateFingerprint(identifier)
 
 		if err != nil {
 			ui.Error(err)
@@ -76,23 +110,21 @@ func NewSources(doc *Doc, sourcePaths []string) *[]Source {
 			util.ErrorExit()
 		}
 
-		source := Source{
+		items = append(items, Item{
 			uuid.NewV4().String(),
-			path,
+			identifier,
 			fingerprint,
 			time.Now(),
 			time.Now(),
-			doc.ID,
-		}
-
-		sources = append(sources, source)
+			source.ID,
+		})
 	}
 
-	return &sources
+	return &items
 }
 
-// InsertConfig create a new config entry
-func InsertConfig(doc *Doc, sources *[]Source) {
+// InsertDoc create a new doc entry
+func InsertDoc(doc *Doc) {
 	_, err := db.Exec("insert into docs values (?,?,?,?)", doc.ID, doc.Category, doc.Identifier, doc.CreatedAt)
 
 	if err != nil {
@@ -100,9 +132,22 @@ func InsertConfig(doc *Doc, sources *[]Source) {
 
 		util.ErrorExit()
 	}
+}
 
-	for _, source := range *sources {
-		_, err := db.Exec("insert into sources values (?,?,?,?,?,?)", source.ID, source.Path, source.Fingerprint, source.CreatedAt, source.UpdatedAt, doc.ID)
+// InsertSource create a new source entry
+func InsertSource(source *Source) {
+	_, err := db.Exec("insert into sources values (?,?,?,?,?)", source.ID, source.Identifier, source.Category, source.CreatedAt, source.DocID)
+
+	if err != nil {
+		ui.Error(err)
+
+		util.ErrorExit()
+	}
+}
+
+func InsertItems(items *[]Item) {
+	for _, item := range *items {
+		_, err := db.Exec("insert into items values (?,?,?,?,?,?)", item.ID, item.Identifier, item.Fingerprint, item.CreatedAt, item.UpdatedAt, item.SourceID)
 
 		if err != nil {
 			ui.Error(err)
@@ -116,7 +161,7 @@ func InsertConfig(doc *Doc, sources *[]Source) {
 func ListConfig() *[]Config {
 	configs := []Config{}
 
-	rows, err := db.Query("select d.id, d.category, d.identifier, d.created_at, s.id, s.path, s.fingerprint, s.created_at, s.updated_at, s.doc_id from docs d inner join sources s on s.doc_id = d.id order by d.created_at")
+	rows, err := db.Query("select d.id, d.category, d.identifier, d.created_at, s.id, s.category, s.identifier, s.created_at, s.doc_id from docs d inner join sources s on s.doc_id = d.id order by d.created_at")
 
 	if err != nil {
 		ui.Error(err)
@@ -128,7 +173,7 @@ func ListConfig() *[]Config {
 		doc := Doc{}
 		source := Source{}
 
-		err := rows.Scan(&doc.ID, &doc.Category, &doc.Identifier, &doc.CreatedAt, &source.ID, &source.Path, &source.Fingerprint, &source.CreatedAt, &source.UpdatedAt, &source.DocID)
+		err := rows.Scan(&doc.ID, &doc.Category, &doc.Identifier, &doc.CreatedAt, &source.ID, &source.Category, &source.Identifier, &source.CreatedAt, &source.DocID)
 
 		if err != nil {
 			ui.Error(err)
@@ -146,6 +191,34 @@ func ListConfig() *[]Config {
 	}
 
 	return &configs
+}
+
+func getItems(source *Source) *[]Item {
+	items := []Item{}
+
+	rows, err := db.Query("select id, identifier, fingerprint, created_at, updated_at, source_id from items where source_id = ? order by identifier", source.ID)
+
+	if err != nil {
+		ui.Error(err)
+
+		util.ErrorExit()
+	}
+
+	for rows.Next() {
+		item := Item{}
+
+		err := rows.Scan(&item.ID, &item.Identifier, &item.Fingerprint, &item.CreatedAt, &item.UpdatedAt, &item.SourceID)
+
+		if err != nil {
+			ui.Error(err)
+
+			util.ErrorExit()
+		}
+
+		items = append(items, item)
+	}
+
+	return &items
 }
 
 // RemoveConfigs delete one or several config group
@@ -170,6 +243,14 @@ func RemoveConfigs(configs *[]Config) {
 		}
 
 		_, err = db.Exec(fmt.Sprintf("delete from docs where id in (%s)", strings.Join(docIds, ",")))
+
+		if err != nil {
+			ui.Error(err)
+
+			util.ErrorExit()
+		}
+
+		_, err = db.Exec(fmt.Sprintf("delete from items where source_id in (%s)", strings.Join(sourceIds, ",")))
 
 		if err != nil {
 			ui.Error(err)

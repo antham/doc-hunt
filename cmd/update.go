@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/antham/doc-hunt/file"
@@ -15,9 +13,9 @@ var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update documentation references",
 	Run: func(cmd *cobra.Command, args []string) {
-		resolveDeletedAndMovedFiles()
+		updateDeletedAndAddedFiles()
 
-		file.UpdateSourcesFingeprint()
+		file.UpdateItemsFingeprint()
 
 		ui.Success("Update configuration succeeded")
 		util.SuccessExit()
@@ -28,21 +26,21 @@ func init() {
 	RootCmd.AddCommand(updateCmd)
 }
 
-func resolveDeletedAndMovedFiles() {
+func updateDeletedAndAddedFiles() {
 	deleted := map[string]bool{}
-	moved := map[string]string{}
+	added := []file.Item{}
 
-	for _, s := range *file.FetchStatus() {
-		for _, filename := range s.Status[file.Deleted] {
-			if _, ok := deleted[filename]; ok == true {
-				continue
+	for _, result := range *file.BuildStatus() {
+		for _, filename := range result.Status[file.IDELETED] {
+			deleted[filename] = true
+		}
+
+		if _, ok := result.Status[file.IADDED]; ok == true {
+			items := result.Status[file.IADDED]
+
+			for _, item := range *file.NewItems(&items, &result.Source) {
+				added = append(added, item)
 			}
-
-			if _, ok := moved[filename]; ok == true {
-				continue
-			}
-
-			basePrompt(fmt.Sprintf(`File "%s" is removed : rename (r) or delete (d) ?`, filename), globalPrompt(filename, &deleted, &moved))
 		}
 	}
 
@@ -56,6 +54,6 @@ func resolveDeletedAndMovedFiles() {
 		return &results
 	}
 
-	file.DeleteSources(extractDeletedFiles(&deleted))
-	file.UpdateFilenameSources(&moved)
+	file.InsertItems(&added)
+	file.DeleteItems(extractDeletedFiles(&deleted))
 }

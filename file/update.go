@@ -8,9 +8,9 @@ import (
 	"github.com/antham/doc-hunt/util"
 )
 
-// UpdateSourcesFingeprint update file check sum if source file content changed
-func UpdateSourcesFingeprint() {
-	rows, err := db.Query("select distinct(path) from sources")
+// UpdateItemsFingeprint update file check sum if source file content changed
+func UpdateItemsFingeprint() {
+	rows, err := db.Query("select distinct(identifier) from items")
 
 	if err != nil {
 		ui.Error(err)
@@ -18,18 +18,18 @@ func UpdateSourcesFingeprint() {
 		util.ErrorExit()
 	}
 
-	paths := []string{}
+	identifiers := []string{}
 
 	for rows.Next() {
-		var path string
+		var identifier string
 
-		rows.Scan(&path)
+		rows.Scan(&identifier)
 
-		paths = append(paths, path)
+		identifiers = append(identifiers, identifier)
 	}
 
-	for _, path := range paths {
-		fingerprint, err := calculateFingerprint(util.GetAbsPath(path))
+	for _, identifier := range identifiers {
+		fingerprint, err := calculateFingerprint(identifier)
 
 		if err != nil {
 			ui.Error(err)
@@ -37,7 +37,7 @@ func UpdateSourcesFingeprint() {
 			util.ErrorExit()
 		}
 
-		_, err = db.Exec("update sources set fingerprint = ?, updated_at = ? where path = ?", fingerprint, time.Now(), path)
+		_, err = db.Exec("update items set fingerprint = ?, updated_at = ? where identifier = ?", fingerprint, time.Now(), identifier)
 
 		if err != nil {
 			ui.Error(err)
@@ -47,19 +47,27 @@ func UpdateSourcesFingeprint() {
 	}
 }
 
-// DeleteSources remove sources from their filenames
-func DeleteSources(filenames *[]string) {
-	var filenameQuery string
+// DeleteItems remove items from their identifiers
+func DeleteItems(identifiers *[]string) {
+	var identifierQuery string
 
-	for i, filename := range *filenames {
-		filenameQuery += `"` + filename + `"`
+	for i, identifier := range *identifiers {
+		identifierQuery += `"` + identifier + `"`
 
-		if len(*filenames)-1 != i {
-			filenameQuery += ","
+		if len(*identifiers)-1 != i {
+			identifierQuery += ","
 		}
 	}
 
-	_, err := db.Exec(fmt.Sprintf("delete from sources where path in (%s)", filenameQuery))
+	_, err := db.Exec(fmt.Sprintf("delete from items where identifier in (%s)", identifierQuery))
+
+	if err != nil {
+		ui.Error(err)
+
+		util.ErrorExit()
+	}
+
+	_, err = db.Exec("delete from sources where id not in (select source_id from items);")
 
 	if err != nil {
 		ui.Error(err)
@@ -73,18 +81,5 @@ func DeleteSources(filenames *[]string) {
 		ui.Error(err)
 
 		util.ErrorExit()
-	}
-}
-
-// UpdateFilenameSources update filename sources when locations changed
-func UpdateFilenameSources(filenames *map[string]string) {
-	for origFilename, updatedFilename := range *filenames {
-		_, err := db.Exec("update sources set path = ? where path = ?", updatedFilename, origFilename)
-
-		if err != nil {
-			ui.Error(err)
-
-			util.ErrorExit()
-		}
 	}
 }

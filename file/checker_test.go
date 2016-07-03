@@ -5,76 +5,82 @@ import (
 	"os"
 	"testing"
 
+	"github.com/antham/doc-hunt/util"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/antham/doc-hunt/util"
 )
 
-func TestFetchStatusWithSourceFilesUntouched(t *testing.T) {
+func TestGetItemStatus(t *testing.T) {
 	createMocks()
 	deleteDatabase()
+	createSubTestDirectory("test1")
+	createSubTestDirectory("test2")
+	createDocFiles()
 	createTables()
+	createDocFiles()
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	doc1 := NewDoc("doc_file_to_track.txt", DFILE)
+	InsertDoc(doc1)
 
-	InsertConfig(doc, sources)
+	source1 := NewSource(doc1, "source5.php", SFOLDER)
+	InsertSource(source1)
 
-	results := FetchStatus()
+	InsertItems(NewItems(&[]string{"source5.php"}, source1))
 
-	assert.Len(t, *results, 1, "One configuration must be returned")
-	assert.Equal(t, "doc_file_to_track.txt", (*results)[0].Doc.Identifier, "Wrong doc identifier returned")
-	assert.Len(t, (*results)[0].Sources, 2, "Two file sources must be found")
-	assert.Equal(t, "source1.php", (*results)[0].Sources[0].Path, "Wrong source path returned")
-	assert.Equal(t, "source2.php", (*results)[0].Sources[1].Path, "Wrong source path returned")
-	assert.Equal(t, []string{"source1.php", "source2.php"}, (*results)[0].Status[Untouched], "Files must be marked as untouched")
+	source2 := NewSource(doc1, "test1", SFOLDER)
+	InsertSource(source2)
 
-}
+	InsertItems(NewItems(&[]string{"source1.php"}, source2))
+	InsertItems(NewItems(&[]string{"source2.php"}, source2))
+	InsertItems(NewItems(&[]string{"source3.php"}, source2))
 
-func TestFetchStatusWithUpdatedSource(t *testing.T) {
-	createMocks()
-	deleteDatabase()
-	createTables()
+	createSourceFile([]byte("test"), "test1/source4.php")
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	err := os.Remove(util.GetAbsPath("source2.php"))
 
-	InsertConfig(doc, sources)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	content := []byte("whatever")
-	err := ioutil.WriteFile(util.GetAbsPath("source1.php"), content, 0644)
+	err = ioutil.WriteFile(util.GetAbsPath("source3.php"), content, 0644)
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	results := FetchStatus()
+	doc2 := NewDoc("doc_file_to_track_2.txt", DFILE)
+	InsertDoc(doc2)
 
-	assert.Len(t, *results, 1, "One configuration must be returned")
-	assert.Equal(t, (*results)[0].Status[Updated], []string{"source1.php"}, "File must be marked as Deleted")
-	assert.Equal(t, (*results)[0].Status[Untouched], []string{"source2.php"}, "File must be marked as untouched")
-}
+	source3 := NewSource(doc2, "source6.php", SFILE)
+	InsertSource(source3)
 
-func TestFetchStatusWithDeletedSource(t *testing.T) {
-	createMocks()
-	deleteDatabase()
-	createTables()
+	InsertItems(NewItems(&[]string{"source6.php"}, source3))
 
-	doc := NewDoc("doc_file_to_track.txt", FILE)
-	sources := NewSources(doc, []string{"source1.php", "source2.php"})
+	itemStatus := GetItemStatus()
 
-	InsertConfig(doc, sources)
+	results := map[string]map[ItemStatus]map[string]bool{}
 
-	err := os.Remove(util.GetAbsPath("source1.php"))
-
-	if err != nil {
-		logrus.Fatal(err)
+	for doc, status := range *itemStatus {
+		if results[doc.ID] == nil {
+			results[doc.ID] = map[ItemStatus]map[string]bool{
+				IADDED:   status[IADDED],
+				IUPDATED: status[IUPDATED],
+				IDELETED: status[IDELETED],
+				IFAILED:  status[IFAILED],
+				INONE:    status[INONE],
+			}
+		}
 	}
 
-	results := FetchStatus()
+	assert.Len(t, results[doc1.ID][IADDED], 1, "Must contains 1 element added")
+	assert.Len(t, results[doc1.ID][IDELETED], 1, "Must contains 1 element deleted")
+	assert.Len(t, results[doc1.ID][IUPDATED], 1, "Must contains 1 element updated")
+	assert.Len(t, results[doc1.ID][INONE], 2, "Must contains 1 element untouched")
 
-	assert.Len(t, *results, 1, "One configuration must be returned")
-	assert.Equal(t, (*results)[0].Status[Deleted], []string{"source1.php"}, "File must be marked as Deleted")
-	assert.Equal(t, (*results)[0].Status[Untouched], []string{"source2.php"}, "File must be marked as untouched")
+	assert.Len(t, results[doc2.ID][IADDED], 0, "Must contains no element added")
+	assert.Len(t, results[doc2.ID][IDELETED], 0, "Must contains no element deleted")
+	assert.Len(t, results[doc2.ID][IUPDATED], 0, "Must contains no element updated")
+	assert.Len(t, results[doc2.ID][INONE], 1, "Must contains 1 element untouched")
 }

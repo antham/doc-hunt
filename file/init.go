@@ -29,6 +29,7 @@ func createTables() {
 
 	createSourceTable()
 	createDocTable()
+	createItemTable()
 }
 
 func createDocTable() {
@@ -52,12 +53,31 @@ func createSourceTable() {
 	query := `
 create table sources(
 id text primary key not null,
-path text not null,
+identifier text not null,
+category int not null,
+created_at timestamp not null,
+doc_id text not null,
+foreign key(doc_id) references docs(id));`
+
+	_, err := db.Exec(query)
+
+	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
+		ui.Error(err)
+
+		util.ErrorExit()
+	}
+}
+
+func createItemTable() {
+	query := `
+create table items(
+id text primary key not null,
+identifier text not null,
 fingerprint text not null,
 created_at timestamp not null,
 updated_at timestamp not null,
-doc_id text not null,
-foreign key(doc_id) references doc_file(id));`
+source_id text not null,
+foreign key(source_id) references sources(id));`
 
 	_, err := db.Exec(query)
 
