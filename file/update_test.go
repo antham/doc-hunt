@@ -37,7 +37,7 @@ func TestUpdateItemsFingerprint(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	UpdateItemsFingeprint()
+	updateItemsFingeprint()
 
 	items1After := getItems(source1)
 	items2After := getItems(source2)
@@ -72,7 +72,7 @@ func TestDeleteItems(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	DeleteItems(&[]string{"source1.php"})
+	deleteItems(&[]string{"source1.php"})
 
 	items1After := getItems(source1)
 	items2After := getItems(source2)
@@ -114,7 +114,7 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	DeleteItems(&[]string{"source1.php"})
+	deleteItems(&[]string{"source1.php"})
 
 	sourceRows, err := db.Query("select s.id from sources s where id = ?", source1.ID)
 
