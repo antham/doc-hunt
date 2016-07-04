@@ -23,7 +23,8 @@ type SourceCategory int
 
 // SourceCategory categories
 const (
-	SFILE = iota
+	SERROR = iota
+	SFILE
 	SFOLDER
 )
 
@@ -50,7 +51,8 @@ type DocCategory int
 
 // DocCategory categories
 const (
-	DFILE = iota
+	DERROR = iota
+	DFILE
 	DURL
 )
 
