@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-
 	"github.com/antham/doc-hunt/ui"
 	"github.com/antham/doc-hunt/util"
+	"github.com/spf13/cobra"
 )
 
 var version = "0.0.0"
