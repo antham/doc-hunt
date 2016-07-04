@@ -1,12 +1,16 @@
 package cmd
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"testing"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/antham/doc-hunt/util"
 )
@@ -84,4 +88,18 @@ func createMocks() {
 	createTestDirectory()
 	createADocFile()
 	createSourceFiles()
+}
+
+func TestConfig(t *testing.T) {
+	os.Args = []string{"", "config"}
+
+	var b bytes.Buffer
+	writer := bufio.NewWriter(&b)
+
+	RootCmd.SetOutput(writer)
+	RootCmd.Execute()
+
+	writer.Flush()
+
+	assert.Contains(t, b.String(), "List, add or delete", "Must display config help")
 }
