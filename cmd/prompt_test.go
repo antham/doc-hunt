@@ -92,16 +92,15 @@ func TestRenamePromptUnexistingFilename(t *testing.T) {
 }
 
 func TestRenamePrompt(t *testing.T) {
-	createTestDirectory()
-	createSourceFiles()
+	createMocks()
 
 	rl = &mockTerminalReader{"test", nil}
 
 	filename := "test"
 	moved := map[string]string{}
 
-	err := renamePrompt(filename, &moved)("source_test_1")
+	err := renamePrompt(filename, &moved)("source1.php")
 
 	assert.NoError(t, err, "Must throws no error")
-	assert.Equal(t, map[string]string{"test": "source_test_1"}, moved, "Must store original and renamed file")
+	assert.Equal(t, map[string]string{"test": "source1.php"}, moved, "Must store original and renamed file")
 }

@@ -52,38 +52,63 @@ func addConfig(docIdentifier string, docCat file.DocCategory, folderSources []st
 
 func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []string, error) {
 	var docCategory file.DocCategory
+	var err error
 	folderSources := []string{}
 	fileSources := []string{}
 
-	if len(args) == 0 {
-		return "", docCategory, folderSources, fileSources, fmt.Errorf("Missing file doc")
+	switch len(args) {
+	case 0:
+		err = fmt.Errorf("Missing doc identifier")
+	case 1:
+		err = fmt.Errorf("Missing source identifiers")
 	}
 
-	doc := args[0]
-	docFilename := util.GetAbsPath(doc)
+	if err != nil {
+		return "", docCategory, folderSources, fileSources, err
+	}
+
+	docIdentifier := args[0]
+	docCategory, err = parseDocCategory(docIdentifier)
+
+	if err != nil {
+		return "", docCategory, folderSources, fileSources, err
+	}
+
+	folderSources, fileSources, err = parseSources(strings.Split(args[1], ","))
+
+	if err != nil {
+		return "", docCategory, folderSources, fileSources, err
+	}
+
+	return docIdentifier, docCategory, folderSources, fileSources, nil
+}
+
+func parseDocCategory(docIdentifier string) (file.DocCategory, error) {
+	docFilename := util.GetAbsPath(docIdentifier)
 
 	_, fileErr := os.Stat(docFilename)
-	URL, URLErr := url.Parse(doc)
+	URL, URLErr := url.Parse(docIdentifier)
 
 	if fileErr == nil {
-		docCategory = file.DFILE
+		return file.DFILE, nil
 	} else if URLErr == nil && URL.IsAbs() {
-		docCategory = file.DURL
+		return file.DURL, nil
 	} else {
-		return "", docCategory, folderSources, fileSources, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", docFilename)
+		return file.DERROR, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", docIdentifier)
 	}
+}
 
-	if len(args) == 1 {
-		return "", docCategory, folderSources, fileSources, fmt.Errorf("Missing file/folder sources")
-	}
+func parseSources(sources []string) ([]string, []string, error) {
+	folderSources := []string{}
+	fileSources := []string{}
 
-	for _, source := range strings.Split(args[1], ",") {
+	for _, source := range sources {
 		path := util.GetAbsPath(source)
 
 		f, err := os.Stat(path)
 
 		if os.IsNotExist(err) {
-			return "", docCategory, folderSources, fileSources, fmt.Errorf("File/folder source %s doesn't exist", source)
+			return folderSources, fileSources, fmt.Errorf("Source identifier %s doesn't exist", source)
 		}
 
 		if f.IsDir() {
@@ -93,7 +118,7 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []st
 		}
 	}
 
-	return doc, docCategory, folderSources, fileSources, nil
+	return folderSources, fileSources, nil
 }
 
 func init() {
