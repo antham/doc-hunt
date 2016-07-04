@@ -5,11 +5,11 @@ import (
 )
 
 // ErrorExit exit with error status code 1
-func ErrorExit() {
+var ErrorExit = func() {
 	os.Exit(1)
 }
 
 // SuccessExit exit with success status code 0
-func SuccessExit() {
+var SuccessExit = func() {
 	os.Exit(0)
 }
