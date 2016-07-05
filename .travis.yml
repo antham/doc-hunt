@@ -4,6 +4,8 @@ go:
   - 1.6
 
 before_install:
+  - wget -O ~/doc-hunt https://github.com/antham/doc-hunt/releases/download/v1.0.0/doc-hunt_linux_amd64
+  - chmod 777 ~/doc-hunt
   - go get github.com/onsi/gomega
   - go get github.com/onsi/ginkgo
   - go get github.com/Masterminds/glide
@@ -11,7 +13,7 @@ before_install:
 install: glide install
 
 script:
-  make run-tests
+  make run-tests && ~/doc-hunt check -e
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
