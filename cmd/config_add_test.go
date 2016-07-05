@@ -1,31 +1,85 @@
 package cmd
 
 import (
+	"os"
 	"testing"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/antham/doc-hunt/file"
+
+	"github.com/antham/doc-hunt/ui"
+	"github.com/antham/doc-hunt/util"
 )
 
-func TestParseConfigAddArgsWithMissingFileDoc(t *testing.T) {
-	_, _, _, _, err := parseConfigAddArgs([]string{})
+func TestAddConfigWithMissingFileDoc(t *testing.T) {
+	ui.Error = func(err error) {
+		assert.EqualError(t, err, "Missing doc identifier", "Must return a missing file doc error")
+	}
 
-	assert.EqualError(t, err, "Missing doc identifier", "Must return a missing file doc error")
+	util.ErrorExit = func() {
+		t.SkipNow()
+	}
+
+	os.Args = []string{"", "config", "add"}
+
+	RootCmd.Execute()
+}
+
+func TestAddConfigWithMissingFileSources(t *testing.T) {
+	ui.Error = func(err error) {
+		assert.EqualError(t, err, "Missing source identifiers", "Must return a missing source identifier error")
+	}
+
+	util.ErrorExit = func() {
+		t.SkipNow()
+	}
+
+	os.Args = []string{"", "config", "add", "test"}
+
+	RootCmd.Execute()
+}
+
+func TestAddConfigWithMoreThanTwoArguments(t *testing.T) {
+	ui.Error = func(err error) {
+		assert.EqualError(t, err, "No more than 2 arguments expected", "Must return an overflow argument error")
+	}
+
+	util.ErrorExit = func() {
+		t.SkipNow()
+	}
+
+	os.Args = []string{"", "config", "add", "test", "test", "test"}
+
+	RootCmd.Execute()
+}
+
+func TestAddConfig(t *testing.T) {
+	createMocks()
+	err := file.Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	ui.Success = func(msg string) {
+		assert.Equal(t, "Config added", msg, "Must display a success message")
+	}
+
+	util.SuccessExit = func() {
+		t.SkipNow()
+	}
+
+	os.Args = []string{"", "config", "add", "doc_file_to_track.txt", "source1.php,source2.php"}
+
+	RootCmd.Execute()
 }
 
 func TestParseConfigAddArgsWithUnexistingFileDoc(t *testing.T) {
 	_, _, _, _, err := parseConfigAddArgs([]string{"whatever", "test"})
 
 	assert.EqualError(t, err, "Doc whatever is not a valid existing file, nor a valid URL", "Must return an unexisting doc identifier error")
-}
-
-func TestParseConfigAddArgsWithMissingFileSources(t *testing.T) {
-	createMocks()
-
-	_, _, _, _, err := parseConfigAddArgs([]string{"doc_file_to_track.txt"})
-
-	assert.EqualError(t, err, "Missing source identifiers", "Must return a missing source identifier error")
 }
 
 func TestParseConfigAddArgsWithUnexistingFileSources(t *testing.T) {

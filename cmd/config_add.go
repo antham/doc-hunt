@@ -17,13 +17,17 @@ var addConfigCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new configuration row",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) > 2 {
-			ui.Error(fmt.Errorf("No more than 2 arguments expected"))
 
-			util.ErrorExit()
+		var err error
+
+		switch true {
+		case len(args) == 0:
+			err = fmt.Errorf("Missing doc identifier")
+		case len(args) == 1:
+			err = fmt.Errorf("Missing source identifiers")
+		case len(args) > 2:
+			err = fmt.Errorf("No more than 2 arguments expected")
 		}
-
-		doc, docCat, folderSources, fileSources, err := parseConfigAddArgs(args)
 
 		if err != nil {
 			ui.Error(err)
@@ -31,23 +35,25 @@ var addConfigCmd = &cobra.Command{
 			util.ErrorExit()
 		}
 
-		addConfig(doc, docCat, folderSources, fileSources)
+		docIdentifier, docCat, folderSources, fileSources, err := parseConfigAddArgs(args)
+
+		if err != nil {
+			ui.Error(err)
+
+			util.ErrorExit()
+		}
+
+		err = file.CreateConfig(docIdentifier, docCat, folderSources, fileSources)
+
+		if err != nil {
+			ui.Error(err)
+
+			util.ErrorExit()
+		}
+
+		ui.Success("Config added")
+		util.SuccessExit()
 	},
-}
-
-func addConfig(docIdentifier string, docCat file.DocCategory, folderSources []string, fileSources []string) {
-
-	err := file.CreateConfig(docIdentifier, docCat, folderSources, fileSources)
-
-	if err != nil {
-		ui.Error(err)
-
-		util.ErrorExit()
-	}
-
-	ui.Success("Config added")
-
-	util.SuccessExit()
 }
 
 func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []string, error) {
@@ -55,17 +61,6 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []st
 	var err error
 	folderSources := []string{}
 	fileSources := []string{}
-
-	switch len(args) {
-	case 0:
-		err = fmt.Errorf("Missing doc identifier")
-	case 1:
-		err = fmt.Errorf("Missing source identifiers")
-	}
-
-	if err != nil {
-		return "", docCategory, folderSources, fileSources, err
-	}
 
 	docIdentifier := args[0]
 	docCategory, err = parseDocCategory(docIdentifier)
