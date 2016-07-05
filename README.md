@@ -71,6 +71,8 @@ Use "doc-hunt [command] --help" for more information about a command.
 
 ### Config
 
+A config line is made with a document (a file, a folder in current repository or an external URL) with one or several sources (files or folder in current repository).
+
 To add a new configuration on a file and two folder for instance, run :
 
 ```
@@ -105,10 +107,10 @@ doc-hunt check -e
 
 ### Update
 
-To record everything change run :
+To record every changes run :
 
 ```
 doc-hunt update
 ```
 
-Commit new version of .doc-hunt in your repository.
+Commit this new version of .doc-hunt in your repository.

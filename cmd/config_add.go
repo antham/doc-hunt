@@ -81,16 +81,18 @@ func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []st
 func parseDocCategory(docIdentifier string) (file.DocCategory, error) {
 	docFilename := util.GetAbsPath(docIdentifier)
 
-	_, fileErr := os.Stat(docFilename)
+	fileInfo, fileErr := os.Stat(docFilename)
 	URL, URLErr := url.Parse(docIdentifier)
 
-	if fileErr == nil {
+	if fileErr == nil && !fileInfo.IsDir() {
 		return file.DFILE, nil
+	} else if fileErr == nil && fileInfo.IsDir() {
+		return file.DFOLDER, nil
 	} else if URLErr == nil && URL.IsAbs() {
 		return file.DURL, nil
-	} else {
-		return file.DERROR, fmt.Errorf("Doc %s is not a valid existing file, nor a valid URL", docIdentifier)
 	}
+
+	return file.DERROR, fmt.Errorf("Doc %s is not a valid existing file, nor a valid existing folder, nor a valid URL", docIdentifier)
 }
 
 func parseSources(sources []string) ([]string, []string, error) {

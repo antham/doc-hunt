@@ -54,6 +54,7 @@ const (
 	DERROR = iota
 	DFILE
 	DURL
+	DFOLDER
 )
 
 // Result represents what we get after comparison between database and actual files

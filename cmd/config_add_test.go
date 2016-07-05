@@ -77,12 +77,16 @@ func TestAddConfig(t *testing.T) {
 }
 
 func TestParseConfigAddArgsWithUnexistingFileDoc(t *testing.T) {
+	createMocks()
+
 	_, _, _, _, err := parseConfigAddArgs([]string{"whatever", "test"})
 
-	assert.EqualError(t, err, "Doc whatever is not a valid existing file, nor a valid URL", "Must return an unexisting doc identifier error")
+	assert.EqualError(t, err, "Doc whatever is not a valid existing file, nor a valid existing folder, nor a valid URL", "Must return an unexisting doc identifier error")
 }
 
 func TestParseConfigAddArgsWithUnexistingFileSources(t *testing.T) {
+	createMocks()
+
 	_, _, _, _, err := parseConfigAddArgs([]string{"doc_file_to_track.txt", "whatever"})
 
 	assert.EqualError(t, err, "Source identifier whatever doesn't exist", "Must return a missing source identifier error")
@@ -109,6 +113,19 @@ func TestParseConfigAddArgsWithURL(t *testing.T) {
 	assert.NoError(t, err, "Must return no error")
 	assert.Equal(t, []string{"source1.php", "source2.php"}, fileSources, "Must return sources file path")
 	assert.True(t, file.DURL == docCat, "Must return an URL doc category")
+	assert.Equal(t, []string{}, folderSources, "Must return empty folder sources")
+}
+
+func TestParseConfigAddArgsWithAFolder(t *testing.T) {
+	createMocks()
+	createSubTestDirectory("test2")
+
+	doc, docCat, folderSources, fileSources, err := parseConfigAddArgs([]string{"test2", "source1.php,source2.php"})
+
+	assert.Equal(t, "test2", doc, "Must return a doc folder")
+	assert.NoError(t, err, "Must return no error")
+	assert.Equal(t, []string{"source1.php", "source2.php"}, fileSources, "Must return sources file path")
+	assert.True(t, file.DFOLDER == docCat, "Must return a folder doc category")
 	assert.Equal(t, []string{}, folderSources, "Must return empty folder sources")
 }
 
