@@ -1,3 +1,5 @@
+export CGO_ENABLED=1
+
 compile:
 	git stash -u
 	gox -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
