@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
 
 	"github.com/antham/doc-hunt/file"
@@ -21,13 +20,11 @@ var delConfigCmd = &cobra.Command{
 
 		if err != nil {
 			ui.Error(err)
-
 			util.ErrorExit()
 		}
 
 		if len(*list) == 0 {
 			ui.Info("No config added yet")
-
 			util.SuccessExit()
 		}
 
@@ -37,31 +34,23 @@ var delConfigCmd = &cobra.Command{
 
 		if err != nil {
 			ui.Error(err)
-
 			util.ErrorExit()
 		}
 
-		delConfig(configs)
+		err = file.RemoveConfigs(configs)
+
+		if err != nil {
+			ui.Error(err)
+			util.ErrorExit()
+		}
+
+		ui.Success("Config deleted")
+		util.SuccessExit()
 	},
-}
-
-func delConfig(configs *[]file.Config) {
-	err := file.RemoveConfigs(configs)
-
-	if err != nil {
-		ui.Error(err)
-
-		util.ErrorExit()
-	}
 }
 
 func promptConfigToRemove(configs *[]file.Config) (*[]file.Config, error) {
 	ui.Prompt("Choose configurations number to remove, each separated with a comma")
-	rl, err := readline.New(">> ")
-
-	if err != nil {
-		return nil, fmt.Errorf("Something wrong happened during argument fetching")
-	}
 
 	defer func() {
 		if err := rl.Close(); err != nil {
@@ -71,7 +60,11 @@ func promptConfigToRemove(configs *[]file.Config) (*[]file.Config, error) {
 		}
 	}()
 
-	line, _ := rl.Readline()
+	line, err := rl.Readline()
+
+	if err != nil {
+		return nil, err
+	}
 
 	return parseConfigDelArgs(configs, line)
 }
