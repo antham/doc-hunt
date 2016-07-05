@@ -35,16 +35,16 @@ func TestParseConfigDelArgsWithArgumentNotInRange(t *testing.T) {
 
 func TestParseConfigDelArgs(t *testing.T) {
 	configs := []file.Config{
-		file.Config{Doc: file.Doc{Identifier: "source_0.php"}},
-		file.Config{Doc: file.Doc{Identifier: "source_1.php"}},
-		file.Config{Doc: file.Doc{Identifier: "source_2.php"}},
-		file.Config{Doc: file.Doc{Identifier: "source_3.php"}},
-		file.Config{Doc: file.Doc{Identifier: "source_4.php"}},
+		file.Config{Doc: file.Doc{Identifier: "doc0.txt"}},
+		file.Config{Doc: file.Doc{Identifier: "doc1.txt"}},
+		file.Config{Doc: file.Doc{Identifier: "doc2.txt"}},
+		file.Config{Doc: file.Doc{Identifier: "doc3.txt"}},
+		file.Config{Doc: file.Doc{Identifier: "doc4.txt"}},
 	}
 
 	expected := &[]file.Config{
-		file.Config{Doc: file.Doc{Identifier: "source_3.php"}},
-		file.Config{Doc: file.Doc{Identifier: "source_4.php"}},
+		file.Config{Doc: file.Doc{Identifier: "doc3.txt"}},
+		file.Config{Doc: file.Doc{Identifier: "doc4.txt"}},
 	}
 
 	results, err := parseConfigDelArgs(&configs, "3,4")
