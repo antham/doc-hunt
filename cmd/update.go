@@ -21,7 +21,7 @@ var updateCmd = &cobra.Command{
 			util.ErrorExit()
 		}
 
-		ui.Success("Update configuration succeeded")
+		ui.Success("Update succeeded")
 		util.SuccessExit()
 	},
 }
