@@ -1,23 +1,27 @@
 Doc-hunt [![Build Status](https://travis-ci.org/antham/doc-hunt.svg?branch=master)](https://travis-ci.org/antham/doc-hunt) [![codecov](https://codecov.io/gh/antham/doc-hunt/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/doc-hunt) [![codebeat badge](https://codebeat.co/badges/dc8062aa-0b73-4d58-8b6e-a3b336409ba8)](https://codebeat.co/projects/github-com-antham-doc-hunt)
 ========
 
-Doc-hunt track changes occuring on your source code to help your keeping your documentation up to date.
+Doc-hunt track changes occuring on your source code to help you keeping your documentation up to date.
 
 ## How it works ?
 
 ### Example : README.md
 
-For instance, this repository contains a README.md. This readme is really tied to cmd module that live in this repository cause it's there where we have all commands implemented. So, to keep my readme up to date, I needed to track this folder.
+This repository contains a README.md and it rely heavily on features made in cmd module, so to keep my README up to date, I need to track cmd folder.
 
-To setup this tracking, I will do :
+#### Part 1 : Setup
+
+To setup this tracking I will do :
 
 ```
 doc-hunt add config README.md cmd
 ```
 
-It will create a file .doc-hunt at the root of my repository, I have to track this file with my version control system.
+It will create a file .doc-hunt at the root of my repository and I record it to my version control system, this file will track every changes occuring on files recorded in my config.
 
-Later on, after few changes on my source code, I want to check if I have to update my doc, I run :
+#### Part 2 : Tracking changes
+
+After few changes on my source code, I want to check if I have to update my doc, I run :
 
 ```
 doc-hunt check
@@ -35,15 +39,13 @@ README.md
 ----
 ```
 
-I will check if I made changes in cmd/check.go that could be relevant to update my readme.
+#### Part 3 : Update doc-hunt
 
-When everything is fine, I update doc-hunt doing :
+I will check if I made changes in cmd/check.go that could be documented in my readme. When everything looks fine, I update my doc-hunt file doing (I commit my .doc-hunt afterwards) :
 
 ```
 doc-hunt update
 ```
-
-And I commit all changes occuring on my file .doc-hunt.
 
 ## Install
 
