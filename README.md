@@ -1,13 +1,13 @@
 Doc-hunt [![Build Status](https://travis-ci.org/antham/doc-hunt.svg?branch=master)](https://travis-ci.org/antham/doc-hunt) [![codecov](https://codecov.io/gh/antham/doc-hunt/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/doc-hunt) [![codebeat badge](https://codebeat.co/badges/dc8062aa-0b73-4d58-8b6e-a3b336409ba8)](https://codebeat.co/projects/github-com-antham-doc-hunt)
 ========
 
-Doc-hunt track changes occuring on your source code to help you keeping your documentation up to date.
+Doc-hunt track changes occuring in your source code to help you keeping your documentation up to date.
 
 ## How it works ?
 
 ### Example : README.md
 
-This repository contains a README.md and it rely heavily on features made in cmd module, so to keep my README up to date, I need to track cmd folder.
+This repository contains a README.md and it rely heavily on features made in cmd module, so to keep my README up to date, I need to track cmd folder. You can check this repository to have an example how it works with travis.
 
 #### Part 1 : Setup
 
