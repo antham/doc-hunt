@@ -66,7 +66,7 @@ func updateItems() error {
 			deleted[filename] = true
 		}
 
-		if _, ok := result.Status[IADDED]; ok == true {
+		if _, ok := result.Status[IADDED]; ok {
 			itemsAdded := result.Status[IADDED]
 			var items *[]Item
 
