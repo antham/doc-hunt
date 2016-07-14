@@ -20,8 +20,6 @@ const (
 	IDELETED
 )
 
-var statusCache map[string]ItemStatus
-
 // BuildStatus retrieves sources file status
 func BuildStatus() (*[]Result, error) {
 	results := []Result{}
