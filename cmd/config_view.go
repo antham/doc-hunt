@@ -23,6 +23,10 @@ func renderConfig(list *[]file.Config) {
 			}
 
 			out += source.Identifier
+
+			if source.Category == file.SFOLDER {
+				out += "/"
+			}
 		}
 
 		fmt.Printf("%s\n", out)
