@@ -85,7 +85,13 @@ func TestDeleteConfig(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = file.CreateConfig("doc_file_to_track.txt", file.DFILE, []string{}, []string{"source1.php"})
+	doc := file.NewDoc("doc_file_to_track.txt", file.DFILE)
+
+	sources := []file.Source{
+		*file.NewSource(doc, "source1.php", file.SFILE),
+	}
+
+	err = file.CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

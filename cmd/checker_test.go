@@ -21,7 +21,19 @@ func TestCheck(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = file.CreateConfig("doc_file_to_track.txt", file.DFILE, []string{}, []string{"source1.php"})
+	doc := file.Doc{
+		Identifier: "doc_file_to_track.txt",
+		Category:   file.DFILE,
+	}
+
+	sources := []file.Source{
+		file.Source{
+			Identifier: "source1.php",
+			Category:   file.SFILE,
+		},
+	}
+
+	err = file.CreateConfig(&doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

@@ -24,7 +24,14 @@ func TestGetItemStatus(t *testing.T) {
 	createDocFiles()
 	createSourceFilesInPath("test1")
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{"test1/source5.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "test1", SFOLDER),
+		*NewSource(doc, "test1/source5.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -43,7 +50,13 @@ func TestGetItemStatus(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track_2.txt", DFILE, []string{}, []string{"test1/source6.php"})
+	doc = NewDoc("doc_file_to_track_2.txt", DFILE)
+
+	sources = []Source{
+		*NewSource(doc, "test1/source6.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -93,7 +106,13 @@ func TestGetItemStatusWithNoChanges(t *testing.T) {
 
 	createDocFiles()
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "source1.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

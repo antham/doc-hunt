@@ -13,60 +13,46 @@ type Config struct {
 	Sources []Source
 }
 
-func createFolderSource(doc *Doc, folderSources *[]string) error {
-	for _, identifier := range *folderSources {
-		source := NewSource(doc, identifier, SFOLDER)
-		err := InsertSource(source)
+func createFolderSource(source *Source) error {
+	err := InsertSource(source)
 
-		if err != nil {
-			return err
-		}
-
-		files, err := util.ExtractFolderFiles(identifier)
-
-		if err != nil {
-			return err
-		}
-
-		items, err := NewItems(files, source)
-
-		if err != nil {
-			return err
-		}
-
-		err = InsertItems(items)
-
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
 	}
 
-	return nil
+	files, err := util.ExtractFolderFiles(source.Identifier)
+
+	if err != nil {
+		return err
+	}
+
+	items, err := NewItems(files, source)
+
+	if err != nil {
+		return err
+	}
+
+	err = InsertItems(items)
+
+	return err
 }
 
-func createFileSources(doc *Doc, fileSources *[]string) error {
-	for _, identifier := range *fileSources {
-		source := NewSource(doc, identifier, SFILE)
-		err := InsertSource(source)
+func createFileSource(source *Source) error {
+	err := InsertSource(source)
 
-		if err != nil {
-			return err
-		}
-
-		items, err := NewItems(&[]string{identifier}, source)
-
-		if err != nil {
-			return err
-		}
-
-		err = InsertItems(items)
-
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
 	}
 
-	return nil
+	items, err := NewItems(&[]string{source.Identifier}, source)
+
+	if err != nil {
+		return err
+	}
+
+	err = InsertItems(items)
+
+	return err
 }
 
 // ListConfig return a config list
@@ -102,23 +88,27 @@ func ListConfig() (*[]Config, error) {
 }
 
 // CreateConfig populates everything needed to create a new config entry
-func CreateConfig(docIdentifier string, docCat DocCategory, folderSources []string, fileSources []string) error {
-	doc := NewDoc(docIdentifier, docCat)
+func CreateConfig(doc *Doc, sources *[]Source) error {
 	err := InsertDoc(doc)
 
 	if err != nil {
 		return err
 	}
 
-	err = createFolderSource(doc, &folderSources)
+	for _, source := range *sources {
+		switch source.Category {
+		case SFILE:
+			err = createFileSource(&source)
+		case SFOLDER:
+			err = createFolderSource(&source)
+		}
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
-	err = createFileSources(doc, &fileSources)
-
-	return err
+	return nil
 }
 
 // RemoveConfigs delete one or several config group

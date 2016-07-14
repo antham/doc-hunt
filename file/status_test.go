@@ -21,7 +21,14 @@ func TestBuildStatusWithFilesUntouched(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "source1.php", SFILE),
+		*NewSource(doc, "source2.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -53,7 +60,14 @@ func TestBuildStatusWithUpdatedFile(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "source1.php", SFILE),
+		*NewSource(doc, "source2.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -92,7 +106,14 @@ func TestBuildStatusWithDeletedFile(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "source1.php", SFILE),
+		*NewSource(doc, "source2.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -135,7 +156,13 @@ func TestBuildStatusWithFolderSource(t *testing.T) {
 	createSourceFile([]byte("test"), "test1/source2.php")
 	createSourceFile([]byte("test"), "test1/source3.php")
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "test1", SFOLDER),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -169,7 +196,13 @@ func TestBuildStatusWithFolderSourceAndAddedFile(t *testing.T) {
 	createSourceFile([]byte("test"), "test1/source2.php")
 	createSourceFile([]byte("test"), "test1/source3.php")
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "test1", SFOLDER),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	createSourceFile([]byte("test"), "test1/source4.php")
 
@@ -203,7 +236,13 @@ func TestBuildStatusWithFolderDeleted(t *testing.T) {
 
 	createSourceFile([]byte("test"), "test1/source1.php")
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "test1", SFOLDER),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

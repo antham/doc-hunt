@@ -42,7 +42,14 @@ func TestUpdateItemsFingerprint(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "source1.php", SFILE),
+		*NewSource(doc, "source2.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -78,7 +85,14 @@ func TestDeleteItems(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "source1.php", SFILE),
+		*NewSource(doc, "source2.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -117,13 +131,25 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php"})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "source1.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	err = CreateConfig("doc_file_to_track_2.txt", DFILE, []string{}, []string{"source2.php"})
+	doc = NewDoc("doc_file_to_track_2.txt", DFILE)
+
+	sources = []Source{
+		*NewSource(doc, "source2.php", SFILE),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -180,7 +206,13 @@ func TestUpdate(t *testing.T) {
 	createSubTestDirectory("test1")
 	createSourceFilesInPath("test1")
 
-	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	doc := NewDoc("doc_file_to_track.txt", DFILE)
+
+	sources := []Source{
+		*NewSource(doc, "test1", SFOLDER),
+	}
+
+	err = CreateConfig(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

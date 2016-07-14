@@ -35,7 +35,7 @@ var addConfigCmd = &cobra.Command{
 			util.ErrorExit()
 		}
 
-		docIdentifier, docCat, folderSources, fileSources, err := parseConfigAddArgs(args)
+		doc, sources, err := parseConfigAddArgs(args)
 
 		if err != nil {
 			ui.Error(err)
@@ -43,7 +43,7 @@ var addConfigCmd = &cobra.Command{
 			util.ErrorExit()
 		}
 
-		err = file.CreateConfig(docIdentifier, docCat, folderSources, fileSources)
+		err = file.CreateConfig(doc, sources)
 
 		if err != nil {
 			ui.Error(err)
@@ -56,26 +56,24 @@ var addConfigCmd = &cobra.Command{
 	},
 }
 
-func parseConfigAddArgs(args []string) (string, file.DocCategory, []string, []string, error) {
-	var docCategory file.DocCategory
+func parseConfigAddArgs(args []string) (*file.Doc, *[]file.Source, error) {
+	var doc file.Doc
 	var err error
-	folderSources := []string{}
-	fileSources := []string{}
 
-	docIdentifier := args[0]
-	docCategory, err = parseDocCategory(docIdentifier)
+	doc.Identifier = args[0]
+	doc.Category, err = parseDocCategory(doc.Identifier)
 
 	if err != nil {
-		return "", docCategory, folderSources, fileSources, err
+		return &file.Doc{}, &[]file.Source{}, err
 	}
 
-	folderSources, fileSources, err = parseSources(strings.Split(args[1], ","))
+	sources, err := parseSources(&doc, strings.Split(args[1], ","))
 
 	if err != nil {
-		return "", docCategory, folderSources, fileSources, err
+		return &file.Doc{}, &[]file.Source{}, err
 	}
 
-	return docIdentifier, docCategory, folderSources, fileSources, nil
+	return &doc, sources, nil
 }
 
 func parseDocCategory(docIdentifier string) (file.DocCategory, error) {
@@ -95,27 +93,30 @@ func parseDocCategory(docIdentifier string) (file.DocCategory, error) {
 	return file.DERROR, fmt.Errorf("Doc %s is not a valid existing file, nor a valid existing folder, nor a valid URL", docIdentifier)
 }
 
-func parseSources(sources []string) ([]string, []string, error) {
-	folderSources := []string{}
-	fileSources := []string{}
+func parseSources(doc *file.Doc, identifiers []string) (*[]file.Source, error) {
+	sources := []file.Source{}
+	var cat file.SourceCategory
 
-	for _, source := range sources {
-		path := util.GetAbsPath(source)
+	for _, identifier := range identifiers {
+		path := util.GetAbsPath(identifier)
 
 		f, err := os.Stat(path)
 
 		if os.IsNotExist(err) {
-			return folderSources, fileSources, fmt.Errorf("Source identifier %s doesn't exist", source)
+			return &sources, fmt.Errorf("Source identifier %s doesn't exist", identifier)
 		}
 
 		if f.IsDir() {
-			folderSources = append(folderSources, source)
+			cat = file.SFOLDER
 		} else {
-			fileSources = append(fileSources, source)
+			cat = file.SFILE
 		}
+
+		source := file.NewSource(doc, identifier, cat)
+		sources = append(sources, *source)
 	}
 
-	return folderSources, fileSources, nil
+	return &sources, nil
 }
 
 func init() {
