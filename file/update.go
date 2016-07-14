@@ -76,9 +76,7 @@ func updateItems() error {
 				return err
 			}
 
-			for _, item := range *items {
-				added = append(added, item)
-			}
+			added = append(added, *items...)
 		}
 	}
 
