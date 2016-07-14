@@ -13,6 +13,62 @@ type Config struct {
 	Sources []Source
 }
 
+func createFolderSource(doc *Doc, folderSources *[]string) error {
+	for _, identifier := range *folderSources {
+		source := NewSource(doc, identifier, SFOLDER)
+		err := InsertSource(source)
+
+		if err != nil {
+			return err
+		}
+
+		files, err := util.ExtractFolderFiles(identifier)
+
+		if err != nil {
+			return err
+		}
+
+		items, err := NewItems(files, source)
+
+		if err != nil {
+			return err
+		}
+
+		err = InsertItems(items)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func createFileSources(doc *Doc, fileSources *[]string) error {
+	for _, identifier := range *fileSources {
+		source := NewSource(doc, identifier, SFILE)
+		err := InsertSource(source)
+
+		if err != nil {
+			return err
+		}
+
+		items, err := NewItems(&[]string{identifier}, source)
+
+		if err != nil {
+			return err
+		}
+
+		err = InsertItems(items)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ListConfig return a config list
 func ListConfig() (*[]Config, error) {
 	configs := []Config{}
@@ -48,47 +104,21 @@ func ListConfig() (*[]Config, error) {
 // CreateConfig populates everything needed to create a new config entry
 func CreateConfig(docIdentifier string, docCat DocCategory, folderSources []string, fileSources []string) error {
 	doc := NewDoc(docIdentifier, docCat)
-	InsertDoc(doc)
+	err := InsertDoc(doc)
 
-	for _, identifier := range folderSources {
-		source := NewSource(doc, identifier, SFOLDER)
-		err := InsertSource(source)
-
-		if err != nil {
-			return err
-		}
-
-		items, err := NewItems(util.ExtractFolderFiles(identifier), source)
-
-		if err != nil {
-			return err
-		}
-
-		err = InsertItems(items)
-
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
 	}
 
-	for _, identifier := range fileSources {
-		source := NewSource(doc, identifier, SFILE)
-		err := InsertSource(source)
+	err = createFolderSource(doc, &folderSources)
 
-		if err != nil {
-			return err
-		}
-
-		items, err := NewItems(&[]string{identifier}, source)
-
-		if err != nil {
-			return err
-		}
-
-		InsertItems(items)
+	if err != nil {
+		return err
 	}
 
-	return nil
+	err = createFileSources(doc, &fileSources)
+
+	return err
 }
 
 // RemoveConfigs delete one or several config group
