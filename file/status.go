@@ -81,8 +81,17 @@ func retrieveFolderItems(source *Source) (*map[string]ItemStatus, error) {
 		items[item.Identifier] = getFileStatus(item.Identifier, item.Fingerprint)
 	}
 
-	for _, file := range *util.ExtractFolderFiles(source.Identifier) {
-		if _, ok := items[file]; ok != true {
+	files, err := util.ExtractFolderFiles(source.Identifier)
+
+	switch err.(type) {
+	case nil:
+	case *os.PathError:
+	default:
+		return &items, err
+	}
+
+	for _, file := range *files {
+		if _, ok := items[file]; !ok {
 			items[file] = IADDED
 		}
 	}

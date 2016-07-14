@@ -8,35 +8,61 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func insertFakeConfig(docCat DocCategory, docIdentifier string, sourceIdentifiers map[string]SourceCategory) (Doc, []Source) {
+	sources := []Source{}
+
+	doc := NewDoc(docIdentifier, docCat)
+	err := InsertDoc(doc)
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	for sidentifier, scat := range sourceIdentifiers {
+		source := NewSource(doc, sidentifier, scat)
+		err := InsertSource(source)
+
+		sources = append(sources, *source)
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	}
+
+	return *doc, sources
+}
+
 func TestNewSource(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	createSubTestDirectory("whatever")
 
-	doc := NewDoc("test.txt", DFILE)
-	source := NewSource(doc, "whatever", SFOLDER)
+	doc, sources := insertFakeConfig(DFILE, "test.txt", map[string]SourceCategory{"whatever": SFOLDER})
 
-	assert.EqualValues(t, SFOLDER, source.Category, "Must be a folder source")
-	assert.Equal(t, doc.ID, source.DocID, "Must be tied to document declared previously")
+	assert.EqualValues(t, SFOLDER, sources[0].Category, "Must be a folder source")
+	assert.Equal(t, doc.ID, sources[0].DocID, "Must be tied to document declared previously")
 }
 
 func TestInsertConfig(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
-	sources := []*Source{NewSource(doc, "source1.php", SFILE), NewSource(doc, "source2.php", SFILE)}
-
-	InsertSource(sources[0])
-	InsertSource(sources[1])
+	doc, sources := insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
 
 	var identifier string
 
-	err := db.QueryRow("select identifier from docs where id = ?", doc.ID).Scan(&identifier)
+	err = db.QueryRow("select identifier from docs where id = ?", doc.ID).Scan(&identifier)
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -72,7 +98,11 @@ func TestInsertConfig(t *testing.T) {
 func TestListConfigWithNoResults(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	configs, err := ListConfig()
 
@@ -86,24 +116,21 @@ func TestListConfigWithNoResults(t *testing.T) {
 func TestListConfigWithEntries(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
+	err = InsertDoc(doc)
 
-	sources := []*Source{NewSource(doc, "source1.php", SFILE), NewSource(doc, "source2.php", SFILE)}
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
-	InsertSource(sources[0])
-	InsertSource(sources[1])
-
-	doc = NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
-
-	sources = []*Source{NewSource(doc, "source3.php", SFILE), NewSource(doc, "source4.php", SFILE), NewSource(doc, "source5.php", SFILE)}
-
-	InsertSource(sources[0])
-	InsertSource(sources[1])
-	InsertSource(sources[2])
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILE, "source4.php": SFILE, "source5.php": SFILE})
 
 	configs, err := ListConfig()
 
@@ -124,11 +151,18 @@ func TestListConfigWithEntries(t *testing.T) {
 func TestRemoveConfigsWithNoResults(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	configs := []Config{}
 
-	RemoveConfigs(&configs)
+	err = RemoveConfigs(&configs)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	result, err := ListConfig()
 
@@ -140,20 +174,22 @@ func TestRemoveConfigsWithNoResults(t *testing.T) {
 func TestRemoveConfigsWithOneEntry(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
-	sources := []*Source{NewSource(doc, "source1.php", SFILE), NewSource(doc, "source2.php", SFILE)}
-
-	InsertSource(sources[0])
-	InsertSource(sources[1])
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
 
 	configs, err := ListConfig()
 
 	assert.NoError(t, err, "Must return no errors")
 
-	RemoveConfigs(configs)
+	err = RemoveConfigs(configs)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	result, err := ListConfig()
 
@@ -165,25 +201,14 @@ func TestRemoveConfigsWithOneEntry(t *testing.T) {
 func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
 
-	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
+	err := Initialize()
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
-	InsertSource(NewSource(doc, "source1.php", SFILE))
-	InsertSource(NewSource(doc, "source2.php", SFILE))
-
-	doc = NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
-
-	InsertSource(NewSource(doc, "source3.php", SFILE))
-	InsertSource(NewSource(doc, "source4.php", SFILE))
-
-	doc = NewDoc("doc_file_to_track.txt", DFILE)
-	InsertDoc(doc)
-
-	InsertSource(NewSource(doc, "source1.php", SFILE))
-	InsertSource(NewSource(doc, "source2.php", SFILE))
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILE, "source4.php": SFILE})
 
 	configs, err := ListConfig()
 	assert.NoError(t, err, "Must return no errors")
@@ -192,7 +217,10 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 
 	c := append((*configs)[:1], (*configs)[2:]...)
 
-	RemoveConfigs(&c)
+	err = RemoveConfigs(&c)
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	result, err := ListConfig()
 	assert.NoError(t, err, "Must return no errors")
@@ -204,14 +232,17 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 func TestNewItems(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
 
-	doc := NewDoc("test.txt", DFILE)
-	source := NewSource(doc, "whatever", SFOLDER)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	_, sources := insertFakeConfig(DFILE, "test.txt", map[string]SourceCategory{"whatever": SFOLDER})
 
 	files := []string{"source1.php", "source2.php"}
 
-	items, err := NewItems(&files, source)
+	items, err := NewItems(&files, &sources[0])
 	assert.NoError(t, err, "Must return no errors")
 
 	assert.Equal(t, "source1.php", (*items)[0].Identifier, "Must return file source1.php")

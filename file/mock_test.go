@@ -87,5 +87,9 @@ func createMocks() {
 }
 
 func deleteDatabase() {
-	os.Remove(util.GetAbsPath(dbName))
+	err := os.Remove(util.GetAbsPath(dbName))
+
+	if err != nil {
+		logrus.Info(err)
+	}
 }

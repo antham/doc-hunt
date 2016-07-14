@@ -37,5 +37,9 @@ func TestCheck(t *testing.T) {
 
 	os.Args = []string{"", "check"}
 
-	RootCmd.Execute()
+	err = RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }

@@ -36,15 +36,19 @@ func retrieveItems(identifiers []string) map[string]*[]Item {
 func TestUpdateItemsFingerprint(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
-
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
-
-	before := retrieveItems([]string{"source1.php", "source2.php"})
+	err := Initialize()
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	before := retrieveItems([]string{"source1.php", "source2.php"})
 
 	err = ioutil.WriteFile(util.GetAbsPath("source1.php"), []byte("<?php echo 'Hello world !';"), 0644)
 
@@ -52,7 +56,11 @@ func TestUpdateItemsFingerprint(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	updateItemsFingeprint()
+	err = updateItemsFingeprint()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	after := retrieveItems([]string{"source1.php", "source2.php"})
 
@@ -64,15 +72,19 @@ func TestUpdateItemsFingerprint(t *testing.T) {
 func TestDeleteItems(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
-
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
-
-	before := retrieveItems([]string{"source1.php", "source2.php"})
+	err := Initialize()
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	before := retrieveItems([]string{"source1.php", "source2.php"})
 
 	err = os.Remove(util.GetAbsPath("source1.php"))
 
@@ -80,7 +92,11 @@ func TestDeleteItems(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	deleteItems(&[]string{"source1.php"})
+	err = deleteItems(&[]string{"source1.php"})
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	after := retrieveItems([]string{"source1.php", "source2.php"})
 
@@ -95,9 +111,13 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 	createMocks()
 	createDocFiles()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php"})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php"})
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -117,7 +137,11 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	deleteItems(&[]string{"source1.php"})
+	err = deleteItems(&[]string{"source1.php"})
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	sourceRows, err := db.Query("select s.id from sources s where identifier = ?", "source1.php")
 
@@ -147,11 +171,16 @@ func TestUpdate(t *testing.T) {
 	createMocks()
 	createDocFiles()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	createSubTestDirectory("test1")
 	createSourceFilesInPath("test1")
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
 
 	if err != nil {
 		logrus.Fatal(err)

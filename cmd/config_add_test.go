@@ -24,7 +24,11 @@ func TestAddConfigWithMissingFileDoc(t *testing.T) {
 
 	os.Args = []string{"", "config", "add"}
 
-	RootCmd.Execute()
+	err := RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func TestAddConfigWithMissingFileSources(t *testing.T) {
@@ -38,7 +42,11 @@ func TestAddConfigWithMissingFileSources(t *testing.T) {
 
 	os.Args = []string{"", "config", "add", "test"}
 
-	RootCmd.Execute()
+	err := RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func TestAddConfigWithMoreThanTwoArguments(t *testing.T) {
@@ -52,7 +60,11 @@ func TestAddConfigWithMoreThanTwoArguments(t *testing.T) {
 
 	os.Args = []string{"", "config", "add", "test", "test", "test"}
 
-	RootCmd.Execute()
+	err := RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func TestAddConfig(t *testing.T) {
@@ -73,7 +85,11 @@ func TestAddConfig(t *testing.T) {
 
 	os.Args = []string{"", "config", "add", "doc_file_to_track.txt", "source1.php,source2.php"}
 
-	RootCmd.Execute()
+	err = RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func TestParseConfigAddArgsWithUnexistingFileDoc(t *testing.T) {

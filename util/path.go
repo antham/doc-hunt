@@ -40,7 +40,7 @@ func GetFolderPath(path string) string {
 }
 
 // ExtractFolderFiles fetch all files from a given relative folder
-func ExtractFolderFiles(path string) *[]string {
+func ExtractFolderFiles(path string) (*[]string, error) {
 	files := []string{}
 
 	w := func(path string, info os.FileInfo, err error) error {
@@ -55,7 +55,7 @@ func ExtractFolderFiles(path string) *[]string {
 		return nil
 	}
 
-	filepath.Walk(GetAbsPath(path), w)
+	err := filepath.Walk(GetAbsPath(path), w)
 
-	return &files
+	return &files, err
 }

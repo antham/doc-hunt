@@ -103,5 +103,9 @@ func TestDeleteConfig(t *testing.T) {
 
 	os.Args = []string{"", "config", "del"}
 
-	RootCmd.Execute()
+	err = RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }

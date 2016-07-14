@@ -37,5 +37,9 @@ func TestUpdate(t *testing.T) {
 
 	os.Args = []string{"", "update"}
 
-	RootCmd.Execute()
+	err = RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }

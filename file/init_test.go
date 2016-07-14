@@ -3,6 +3,7 @@ package file
 import (
 	"testing"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,9 +13,13 @@ func TestCreateTables(t *testing.T) {
 
 	dbName = id
 
-	Initialize()
+	err := Initialize()
 
-	_, err := db.Exec("select * from docs")
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	_, err = db.Exec("select * from docs")
 
 	assert.NoError(t, err, "Select * docs table must return no error")
 

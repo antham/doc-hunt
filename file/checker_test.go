@@ -15,11 +15,16 @@ func TestGetItemStatus(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	createDocFiles()
 	createSourceFilesInPath("test1")
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{"test1/source5.php"})
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{"test1/source5.php"})
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -80,10 +85,15 @@ func TestGetItemStatus(t *testing.T) {
 func TestGetItemStatusWithNoChanges(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	createDocFiles()
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php"})
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php"})
 
 	if err != nil {
 		logrus.Fatal(err)

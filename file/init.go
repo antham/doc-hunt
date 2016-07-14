@@ -35,11 +35,7 @@ func Initialize() error {
 
 	err = createItemTable()
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func createDocTable() error {

@@ -15,11 +15,7 @@ func Update() error {
 
 	err = updateItemsFingeprint()
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // deleteItems remove items from their identifiers
@@ -48,19 +44,18 @@ func deleteItems(identifiers *[]string) error {
 
 	_, err = db.Exec("delete from docs where id not in (select doc_id from sources);")
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // updateItems add missing occurence in database or removes those which disappeared
 func updateItems() error {
+	var err error
+
 	deleted := map[string]bool{}
 	added := []Item{}
+	var status *[]Result
 
-	status, err := BuildStatus()
+	status, err = BuildStatus()
 
 	if err != nil {
 		return err
@@ -73,8 +68,9 @@ func updateItems() error {
 
 		if _, ok := result.Status[IADDED]; ok == true {
 			itemsAdded := result.Status[IADDED]
+			var items *[]Item
 
-			items, err := NewItems(&itemsAdded, &result.Source)
+			items, err = NewItems(&itemsAdded, &result.Source)
 
 			if err != nil {
 				return err
@@ -104,11 +100,7 @@ func updateItems() error {
 
 	err = deleteItems(extractDeletedFiles(&deleted))
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // updateItemsFingeprint update file check sum if source file content changed
@@ -124,7 +116,11 @@ func updateItemsFingeprint() error {
 	for rows.Next() {
 		var identifier string
 
-		rows.Scan(&identifier)
+		err = rows.Scan(&identifier)
+
+		if err != nil {
+			return err
+		}
 
 		identifiers = append(identifiers, identifier)
 	}

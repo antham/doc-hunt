@@ -97,9 +97,17 @@ func TestConfig(t *testing.T) {
 	writer := bufio.NewWriter(&b)
 
 	RootCmd.SetOutput(writer)
-	RootCmd.Execute()
+	err := RootCmd.Execute()
 
-	writer.Flush()
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = writer.Flush()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	assert.Contains(t, b.String(), "List, add or delete", "Must display config help")
 }

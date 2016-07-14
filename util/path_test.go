@@ -71,5 +71,11 @@ func TestExtractFolderFiles(t *testing.T) {
 		}
 	}
 
-	assert.Equal(t, &[]string{"file1", "test1/file2", "test1/test2/file3", "test1/test2/test3/file4", "test1/test2/test3/file5"}, ExtractFolderFiles("/"), "Must extract all files in folder")
+	files, err := ExtractFolderFiles("/")
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	assert.Equal(t, &[]string{"file1", "test1/file2", "test1/test2/file3", "test1/test2/test3/file4", "test1/test2/test3/file5"}, files, "Must extract all files in folder")
 }

@@ -15,9 +15,13 @@ import (
 func TestBuildStatusWithFilesUntouched(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -43,9 +47,13 @@ func TestBuildStatusWithFilesUntouched(t *testing.T) {
 func TestBuildStatusWithUpdatedFile(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -78,9 +86,13 @@ func TestBuildStatusWithUpdatedFile(t *testing.T) {
 func TestBuildStatusWithDeletedFile(t *testing.T) {
 	createMocks()
 	deleteDatabase()
-	Initialize()
+	err := Initialize()
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{}, []string{"source1.php", "source2.php"})
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -113,13 +125,17 @@ func TestBuildStatusWithFolderSource(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	createSourceFile([]byte("test"), "test1/source1.php")
 	createSourceFile([]byte("test"), "test1/source2.php")
 	createSourceFile([]byte("test"), "test1/source3.php")
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -143,13 +159,17 @@ func TestBuildStatusWithFolderSourceAndAddedFile(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	createSourceFile([]byte("test"), "test1/source1.php")
 	createSourceFile([]byte("test"), "test1/source2.php")
 	createSourceFile([]byte("test"), "test1/source3.php")
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
 
 	createSourceFile([]byte("test"), "test1/source4.php")
 
@@ -175,11 +195,15 @@ func TestBuildStatusWithFolderDeleted(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
-	Initialize()
+	err := Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	createSourceFile([]byte("test"), "test1/source1.php")
 
-	err := CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
+	err = CreateConfig("doc_file_to_track.txt", DFILE, []string{"test1"}, []string{})
 
 	if err != nil {
 		logrus.Fatal(err)

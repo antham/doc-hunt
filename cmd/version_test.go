@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/antham/doc-hunt/ui"
@@ -21,5 +22,9 @@ func TestVersion(t *testing.T) {
 
 	os.Args = []string{"", "version"}
 
-	RootCmd.Execute()
+	err := RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
 }
