@@ -14,13 +14,16 @@ version:
 fmt:
 	find ! -path "./vendor/*" -name "*.go" -exec go fmt {} \;
 
-checker:
+gometalinter:
 	gometalinter -D gotype --vendor --deadline=240s --dupl-threshold=200 -e '_string' -j 5 ./...
+
+doc-hunt:
+	doc-hunt check -e
 
 run-tests:
 	./test.sh
 
-test-all: checker run-tests
+test-all: gometalinter run-tests doc-hunt
 
 test-package:
 	go test -race -cover -coverprofile=/tmp/doc-hunt github.com/antham/doc-hunt/$(pkg)
