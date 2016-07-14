@@ -13,7 +13,7 @@ before_install:
 install: glide install
 
 script:
-  make run-tests && ~/doc-hunt check -e
+  make test-all && dochunt check -e
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
