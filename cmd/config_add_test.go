@@ -114,6 +114,7 @@ func TestParseConfigAddArgsWithFile(t *testing.T) {
 	doc, sources, err := parseConfigAddArgs([]string{"doc_file_to_track.txt", "source1.php,source2.php"})
 
 	assert.NoError(t, err, "Must return no error")
+	assert.Regexp(t, "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", doc.ID, "Must return an id")
 	assert.Equal(t, "doc_file_to_track.txt", doc.Identifier, "Must return doc file path")
 	assert.EqualValues(t, file.DFILE, doc.Category, "Must return a file doc category")
 	assert.Equal(t, "source1.php", (*sources)[0].Identifier, "Must return sources file path")

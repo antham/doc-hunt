@@ -57,23 +57,22 @@ var addConfigCmd = &cobra.Command{
 }
 
 func parseConfigAddArgs(args []string) (*file.Doc, *[]file.Source, error) {
-	var doc file.Doc
-	var err error
+	identifier := args[0]
+	category, err := parseDocCategory(identifier)
 
-	doc.Identifier = args[0]
-	doc.Category, err = parseDocCategory(doc.Identifier)
-
-	if err != nil {
-		return &file.Doc{}, &[]file.Source{}, err
-	}
-
-	sources, err := parseSources(&doc, strings.Split(args[1], ","))
+	doc := file.NewDoc(identifier, category)
 
 	if err != nil {
 		return &file.Doc{}, &[]file.Source{}, err
 	}
 
-	return &doc, sources, nil
+	sources, err := parseSources(doc, strings.Split(args[1], ","))
+
+	if err != nil {
+		return &file.Doc{}, &[]file.Source{}, err
+	}
+
+	return doc, sources, nil
 }
 
 func parseDocCategory(docIdentifier string) (file.DocCategory, error) {
