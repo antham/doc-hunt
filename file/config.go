@@ -2,6 +2,7 @@ package file
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/antham/doc-hunt/util"
@@ -53,6 +54,21 @@ func createFileSource(source *Source) error {
 	err = InsertItems(items)
 
 	return err
+}
+
+// ParseIdentifier extract identifier and category from string
+func ParseIdentifier(value string) (string, SourceCategory) {
+	f, ferr := os.Stat(util.GetAbsPath(value))
+
+	if ferr == nil {
+		if f.IsDir() {
+			return value, SFOLDER
+		} else if f.Mode().IsRegular() {
+			return value, SFILE
+		}
+	}
+
+	return value, SERROR
 }
 
 // ListConfig return a config list
