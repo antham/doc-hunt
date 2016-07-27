@@ -88,7 +88,7 @@ func TestDeleteConfig(t *testing.T) {
 	doc := file.NewDoc("doc_file_to_track.txt", file.DFILE)
 
 	sources := []file.Source{
-		*file.NewSource(doc, "source1.php", file.SFILE),
+		*file.NewSource(doc, "source1.php", file.SFILEREG),
 	}
 
 	err = file.CreateConfig(doc, &sources)

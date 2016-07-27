@@ -43,9 +43,9 @@ func TestNewSource(t *testing.T) {
 
 	createSubTestDirectory("whatever")
 
-	doc, sources := insertFakeConfig(DFILE, "test.txt", map[string]SourceCategory{"whatever": SFOLDER})
+	doc, sources := insertFakeConfig(DFILE, "test.txt", map[string]SourceCategory{"whatever": SFILEREG})
 
-	assert.EqualValues(t, SFOLDER, sources[0].Category, "Must be a folder source")
+	assert.EqualValues(t, SFILEREG, sources[0].Category, "Must be a folder source")
 	assert.Equal(t, doc.ID, sources[0].DocID, "Must be tied to document declared previously")
 }
 
@@ -58,7 +58,7 @@ func TestInsertConfig(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	doc, sources := insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
+	doc, sources := insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILEREG, "source2.php": SFILEREG})
 
 	var identifier string
 
@@ -129,8 +129,8 @@ func TestListConfigWithEntries(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
-	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILE, "source4.php": SFILE, "source5.php": SFILE})
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILEREG, "source2.php": SFILEREG})
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILEREG, "source4.php": SFILEREG, "source5.php": SFILEREG})
 
 	configs, err := ListConfig()
 
@@ -180,7 +180,7 @@ func TestRemoveConfigsWithOneEntry(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILEREG, "source2.php": SFILEREG})
 
 	configs, err := ListConfig()
 
@@ -207,8 +207,8 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILE, "source2.php": SFILE})
-	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILE, "source4.php": SFILE})
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILEREG, "source2.php": SFILEREG})
+	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILEREG, "source4.php": SFILEREG})
 
 	configs, err := ListConfig()
 	assert.NoError(t, err, "Must return no errors")
@@ -238,7 +238,7 @@ func TestNewItems(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	_, sources := insertFakeConfig(DFILE, "test.txt", map[string]SourceCategory{"whatever": SFOLDER})
+	_, sources := insertFakeConfig(DFILE, "test.txt", map[string]SourceCategory{"whatever": SFILEREG})
 
 	files := []string{"source1.php", "source2.php"}
 

@@ -2,7 +2,7 @@ package file
 
 import (
 	"fmt"
-	"os"
+	"regexp"
 	"strings"
 
 	"github.com/antham/doc-hunt/util"
@@ -14,14 +14,14 @@ type Config struct {
 	Sources []Source
 }
 
-func createFolderSource(source *Source) error {
+func createFileRegSource(source *Source) error {
 	err := InsertSource(source)
 
 	if err != nil {
 		return err
 	}
 
-	files, err := util.ExtractFolderFiles(source.Identifier)
+	files, err := util.ExtractFilesMatchingReg(regexp.MustCompile(source.Identifier))
 
 	if err != nil {
 		return err
@@ -38,34 +38,12 @@ func createFolderSource(source *Source) error {
 	return err
 }
 
-func createFileSource(source *Source) error {
-	err := InsertSource(source)
-
-	if err != nil {
-		return err
-	}
-
-	items, err := NewItems(&[]string{source.Identifier}, source)
-
-	if err != nil {
-		return err
-	}
-
-	err = InsertItems(items)
-
-	return err
-}
-
 // ParseIdentifier extract identifier and category from string
 func ParseIdentifier(value string) (string, SourceCategory) {
-	f, ferr := os.Stat(util.GetAbsPath(value))
+	_, err := regexp.Compile(value)
 
-	if ferr == nil {
-		if f.IsDir() {
-			return value, SFOLDER
-		} else if f.Mode().IsRegular() {
-			return value, SFILE
-		}
+	if err == nil {
+		return value, SFILEREG
 	}
 
 	return value, SERROR
@@ -113,10 +91,8 @@ func CreateConfig(doc *Doc, sources *[]Source) error {
 
 	for _, source := range *sources {
 		switch source.Category {
-		case SFILE:
-			err = createFileSource(&source)
-		case SFOLDER:
-			err = createFolderSource(&source)
+		case SFILEREG:
+			err = createFileRegSource(&source)
 		}
 
 		if err != nil {

@@ -7,27 +7,27 @@ Doc-hunt track changes occuring in your source code to help you keeping your doc
 
 ### Example : README.md
 
-This repository contains a README.md and it rely heavily on features made in cmd module, so to keep my README up to date, I need to track cmd folder. You can check this repository to have an example how it works with travis.
+This repository contains a ```README.md``` and it rely heavily on features made in ```cmd``` module (cmd folder in this repository), so to keep file ```README.md``` up to date, we need to track ```cmd``` folder. You can check this repository to have an example how it works with travis.
 
 #### Part 1 : Setup
 
-To setup this tracking I will do :
+To setup this tracking we do :
 
 ```
 doc-hunt add config README.md cmd
 ```
 
-It will create a file .doc-hunt at the root of my repository and I record it to my version control system, this file will track every changes occuring on files recorded in my config.
+It creates a file ```.doc-hunt``` at the root of this repository and we record it to version control system, this file will track every changes occuring in files recorded in config.
 
 #### Part 2 : Tracking changes
 
-After few changes on my source code, I want to check if I have to update my doc, I run :
+After few changes in source code, we want to check if we have to update ```README.md```, we run :
 
 ```
 doc-hunt check
 ```
 
-And I get :
+And we get :
 
 ```
 ----
@@ -41,7 +41,7 @@ README.md
 
 #### Part 3 : Update doc-hunt
 
-I will check if I made changes in cmd/check.go that could be documented in my readme. When everything looks fine, I update my doc-hunt file doing (I commit my .doc-hunt afterwards) :
+We check if we made changes in file ```cmd/check.go``` that could be documented in ```README.md```. When everything looks fine, we update ```.doc-hunt``` file doing (we are going to commit ```.doc-hunt``` afterwards) :
 
 ```
 doc-hunt update
@@ -73,12 +73,12 @@ Use "doc-hunt [command] --help" for more information about a command.
 
 ### Config
 
-A config line is made with a document (a file, a folder in current repository or an external URL) with one or several sources (files or folder in current repository).
+A config line is made with a document (a file, a folder in current repository or an external URL) with one or several sources (a regexp matching file sources you want to track).
 
-To add a new configuration on a file and two folder for instance, run :
+To add a new configuration on all php files in two different folders run :
 
 ```
-doc-hunt config add README.md file1.php,folder1,folder2
+doc-hunt config add README.md folder1/.*.php,folder2/.*.php
 ```
 
 You can record as many configurations you want and list them with :

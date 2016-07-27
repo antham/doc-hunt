@@ -45,8 +45,8 @@ func TestUpdateItemsFingerprint(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "source1.php", SFILE),
-		*NewSource(doc, "source2.php", SFILE),
+		*NewSource(doc, "source1.php", SFILEREG),
+		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -88,8 +88,8 @@ func TestDeleteItems(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "source1.php", SFILE),
-		*NewSource(doc, "source2.php", SFILE),
+		*NewSource(doc, "source1.php", SFILEREG),
+		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -134,7 +134,7 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "source1.php", SFILE),
+		*NewSource(doc, "source1.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -146,7 +146,7 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 	doc = NewDoc("doc_file_to_track_2.txt", DFILE)
 
 	sources = []Source{
-		*NewSource(doc, "source2.php", SFILE),
+		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -209,7 +209,7 @@ func TestUpdate(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "test1", SFOLDER),
+		*NewSource(doc, "test1", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
