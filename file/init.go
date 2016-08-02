@@ -35,7 +35,31 @@ func Initialize() error {
 
 	err = createItemTable()
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	err = createVersionTable()
+
+	if err != nil {
+		return err
+	}
+
+	return initVersion()
+}
+
+func createVersionTable() error {
+	query := `
+create table version(
+id text primary key not null
+);`
+	_, err := db.Exec(query)
+
+	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
+		return err
+	}
+
+	return nil
 }
 
 func createDocTable() error {
@@ -92,4 +116,16 @@ foreign key(source_id) references sources(id));`
 	}
 
 	return nil
+}
+
+func initVersion() error {
+	res, err := db.Query("select id from version")
+
+	if !res.Next() {
+		_, err = db.Exec("insert into version values (?)", appVersion)
+
+		return err
+	}
+
+	return err
 }
