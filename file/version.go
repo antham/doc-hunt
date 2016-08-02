@@ -13,6 +13,23 @@ func GetAppVersion() string {
 	return appVersion
 }
 
+// getAppDbVersion return app version recorded in database
+func getAppDbVersion() (string, error) {
+	var version string
+
+	res, err := db.Query("select id from version")
+
+	if err != nil {
+		return "", fmt.Errorf("Can't retrieve database app version")
+	}
+
+	res.Next()
+
+	err = res.Scan(&version)
+
+	return version, err
+}
+
 // HasMajorVersionEqualFrom check if major version in given version is equal to app version
 func HasMajorVersionEqualFrom(ver string) (bool, error) {
 	re := regexp.MustCompile(`^(\d)\.(\d)\.(\d)(?:(?:\-|\+).*)?`)
