@@ -51,6 +51,10 @@ doc-hunt update
 
 From [release page](https://github.com/antham/doc-hunt/releases) download the binary according to your system architecture
 
+### Warning
+
+```doc-hunt``` keep a track of version app you used to record you configuration, you need to keep an binary with same major version or you have to redo you configuration if you want to update to a new major version.
+
 ## Usage
 
 ```bash
