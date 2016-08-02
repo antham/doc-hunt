@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetVersion(t *testing.T) {
-	assert.Equal(t, appVersion, GetVersion(), "Must return version")
+func TestGetAppVersion(t *testing.T) {
+	assert.Equal(t, appVersion, GetAppVersion(), "Must return version")
 }
 
 func TestHasMajorVersionEqualFromWithSameMajorVersion(t *testing.T) {

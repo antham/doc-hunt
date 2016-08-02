@@ -8,8 +8,8 @@ import (
 
 var appVersion = "1.0.0"
 
-// GetVersion return app version
-func GetVersion() string {
+// GetAppVersion return app version
+func GetAppVersion() string {
 	return appVersion
 }
 

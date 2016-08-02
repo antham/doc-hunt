@@ -12,7 +12,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "App version",
 	Run: func(cmd *cobra.Command, args []string) {
-		ui.Info("v" + file.GetVersion())
+		ui.Info("v" + file.GetAppVersion())
 
 		util.SuccessExit()
 	},
