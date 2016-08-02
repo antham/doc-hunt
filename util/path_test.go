@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
@@ -55,7 +56,7 @@ func TestGetFolderPathAddTrailingSeparatorWithMultipleTrailingSeparator(t *testi
 	assert.Equal(t, "test/", GetFolderPath("test////////////"), "Must add a trailing seperator")
 }
 
-func TestExtractFolderFiles(t *testing.T) {
+func TestExtractFilesMatchingReg(t *testing.T) {
 	removeTestDirectory()
 	createTestDirectory()
 	createSubTestDirectory("test1")
@@ -71,7 +72,7 @@ func TestExtractFolderFiles(t *testing.T) {
 		}
 	}
 
-	files, err := ExtractFolderFiles("/")
+	files, err := ExtractFilesMatchingReg(regexp.MustCompile(".*"))
 
 	if err != nil {
 		logrus.Fatal(err)

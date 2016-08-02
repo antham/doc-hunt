@@ -24,8 +24,8 @@ func TestBuildStatusWithFilesUntouched(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "source1.php", SFILE),
-		*NewSource(doc, "source2.php", SFILE),
+		*NewSource(doc, "source1.php", SFILEREG),
+		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -63,8 +63,8 @@ func TestBuildStatusWithUpdatedFile(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "source1.php", SFILE),
-		*NewSource(doc, "source2.php", SFILE),
+		*NewSource(doc, "source1.php", SFILEREG),
+		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -109,8 +109,8 @@ func TestBuildStatusWithDeletedFile(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "source1.php", SFILE),
-		*NewSource(doc, "source2.php", SFILE),
+		*NewSource(doc, "source1.php", SFILEREG),
+		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -142,7 +142,7 @@ func TestBuildStatusWithDeletedFile(t *testing.T) {
 	assert.Equal(t, []string{"source2.php"}, (*results)[1].Status[INONE], "One file item must be found")
 }
 
-func TestBuildStatusWithFolderSource(t *testing.T) {
+func TestBuildStatusWithRegexpDescribingAFolder(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
@@ -159,7 +159,7 @@ func TestBuildStatusWithFolderSource(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "test1", SFOLDER),
+		*NewSource(doc, "test1", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -182,7 +182,7 @@ func TestBuildStatusWithFolderSource(t *testing.T) {
 	assert.Equal(t, []string{"test1/source1.php", "test1/source2.php", "test1/source3.php"}, (*results)[0].Status[INONE], "Three file items must be found")
 }
 
-func TestBuildStatusWithFolderSourceAndAddedFile(t *testing.T) {
+func TestBuildStatusWithRegexpDescribingAFolderAndAddedFile(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
@@ -199,7 +199,7 @@ func TestBuildStatusWithFolderSourceAndAddedFile(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "test1", SFOLDER),
+		*NewSource(doc, "test1", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -224,7 +224,7 @@ func TestBuildStatusWithFolderSourceAndAddedFile(t *testing.T) {
 	assert.Equal(t, []string{"test1/source4.php"}, (*results)[0].Status[IADDED], "One file item must be found")
 }
 
-func TestBuildStatusWithFolderDeleted(t *testing.T) {
+func TestBuildStatusWithRegexpDescribingAFolderAndFolderDeleted(t *testing.T) {
 	createMocks()
 	deleteDatabase()
 	createSubTestDirectory("test1")
@@ -239,7 +239,7 @@ func TestBuildStatusWithFolderDeleted(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "test1", SFOLDER),
+		*NewSource(doc, "test1", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)

@@ -94,24 +94,15 @@ func parseDocCategory(docIdentifier string) (file.DocCategory, error) {
 
 func parseSources(doc *file.Doc, identifiers []string) (*[]file.Source, error) {
 	sources := []file.Source{}
-	var cat file.SourceCategory
 
 	for _, identifier := range identifiers {
-		path := util.GetAbsPath(identifier)
+		parsedIdentifier, cat := file.ParseIdentifier(identifier)
 
-		f, err := os.Stat(path)
-
-		if os.IsNotExist(err) {
-			return &sources, fmt.Errorf("Source identifier %s doesn't exist", identifier)
+		if cat == file.SERROR {
+			return &[]file.Source{}, fmt.Errorf("Source identifier %s doesn't exist", identifier)
 		}
 
-		if f.IsDir() {
-			cat = file.SFOLDER
-		} else {
-			cat = file.SFILE
-		}
-
-		source := file.NewSource(doc, identifier, cat)
+		source := file.NewSource(doc, parsedIdentifier, cat)
 		sources = append(sources, *source)
 	}
 

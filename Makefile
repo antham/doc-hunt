@@ -6,7 +6,7 @@ compile:
 
 version:
 	git stash -u
-	sed -i "s/[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+/$(v)/g" cmd/version.go
+	sed -i "s/[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+/$(v)/g" file/version.go
 	git add -A
 	git commit -m "feat(version) : "$(v)
 	git tag v$(v) master

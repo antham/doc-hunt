@@ -27,8 +27,8 @@ func TestGetItemStatus(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "test1", SFOLDER),
-		*NewSource(doc, "test1/source5.php", SFILE),
+		*NewSource(doc, "test1", SFILEREG),
+		*NewSource(doc, "test1/source5.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -53,7 +53,7 @@ func TestGetItemStatus(t *testing.T) {
 	doc = NewDoc("doc_file_to_track_2.txt", DFILE)
 
 	sources = []Source{
-		*NewSource(doc, "test1/source6.php", SFILE),
+		*NewSource(doc, "test1/source6.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)
@@ -109,7 +109,7 @@ func TestGetItemStatusWithNoChanges(t *testing.T) {
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
 
 	sources := []Source{
-		*NewSource(doc, "source1.php", SFILE),
+		*NewSource(doc, "source1.php", SFILEREG),
 	}
 
 	err = CreateConfig(doc, &sources)

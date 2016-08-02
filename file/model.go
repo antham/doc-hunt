@@ -24,8 +24,7 @@ type SourceCategory int
 // SourceCategory categories
 const (
 	SERROR = iota
-	SFILE
-	SFOLDER
+	SFILEREG
 )
 
 // Item represents an actual tracked source

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/antham/doc-hunt/ui"
@@ -39,8 +40,8 @@ func GetFolderPath(path string) string {
 	return strings.TrimRight(path, fmt.Sprintf("%c", filepath.Separator)) + fmt.Sprintf("%c", filepath.Separator)
 }
 
-// ExtractFolderFiles fetch all files from a given relative folder
-func ExtractFolderFiles(path string) (*[]string, error) {
+// ExtractFilesMatchingReg extract files matching given regexp
+func ExtractFilesMatchingReg(re *regexp.Regexp) (*[]string, error) {
 	files := []string{}
 
 	w := func(path string, info os.FileInfo, err error) error {
@@ -48,14 +49,16 @@ func ExtractFolderFiles(path string) (*[]string, error) {
 			return err
 		}
 
-		if !info.IsDir() {
-			files = append(files, TrimAbsBasePath(path))
+		pathTrimmed := TrimAbsBasePath(path)
+
+		if !info.IsDir() && re.MatchString(pathTrimmed) {
+			files = append(files, pathTrimmed)
 		}
 
 		return nil
 	}
 
-	err := filepath.Walk(GetAbsPath(path), w)
+	err := filepath.Walk(AppPath, w)
 
 	return &files, err
 }

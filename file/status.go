@@ -2,6 +2,7 @@ package file
 
 import (
 	"os"
+	"regexp"
 
 	"github.com/antham/doc-hunt/util"
 )
@@ -40,22 +41,14 @@ func BuildStatus() (*[]Result, error) {
 			result.Source = source
 
 			switch source.Category {
-			case SFILE:
-				status, err := retrieveFileItem(&source)
+			case SFILEREG:
+				items, err := findItems(&source)
 
 				if err != nil {
 					return nil, err
 				}
 
-				result.Status[status] = append(result.Status[status], source.Identifier)
-			case SFOLDER:
-				folderItems, err := retrieveFolderItems(&source)
-
-				if err != nil {
-					return nil, err
-				}
-
-				for identifier, status := range *folderItems {
+				for identifier, status := range *items {
 					result.Status[status] = append(result.Status[status], identifier)
 				}
 			}
@@ -67,7 +60,7 @@ func BuildStatus() (*[]Result, error) {
 	return &results, nil
 }
 
-func retrieveFolderItems(source *Source) (*map[string]ItemStatus, error) {
+func findItems(source *Source) (*map[string]ItemStatus, error) {
 	items := map[string]ItemStatus{}
 	dbItems, err := getItems(source)
 
@@ -79,7 +72,7 @@ func retrieveFolderItems(source *Source) (*map[string]ItemStatus, error) {
 		items[item.Identifier] = getFileStatus(item.Identifier, item.Fingerprint)
 	}
 
-	files, err := util.ExtractFolderFiles(source.Identifier)
+	files, err := util.ExtractFilesMatchingReg(regexp.MustCompile(source.Identifier))
 
 	switch err.(type) {
 	case nil:
@@ -95,16 +88,6 @@ func retrieveFolderItems(source *Source) (*map[string]ItemStatus, error) {
 	}
 
 	return &items, nil
-}
-
-func retrieveFileItem(source *Source) (ItemStatus, error) {
-	items, err := getItems(source)
-
-	if err != nil {
-		return INONE, err
-	}
-
-	return getFileStatus((*items)[0].Identifier, (*items)[0].Fingerprint), nil
 }
 
 func getFileStatus(path string, origFingerprint string) ItemStatus {

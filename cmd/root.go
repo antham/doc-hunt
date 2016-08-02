@@ -19,7 +19,11 @@ var RootCmd = &cobra.Command{
 func Execute() {
 	if err := file.Initialize(); err != nil {
 		ui.Error(err)
+		util.ErrorExit()
+	}
 
+	if ok, err := file.HasMajorVersionEqualFrom(); !ok {
+		ui.Error(err)
 		util.ErrorExit()
 	}
 
