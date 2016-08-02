@@ -31,14 +31,20 @@ func getAppDbVersion() (string, error) {
 }
 
 // HasMajorVersionEqualFrom check if major version in given version is equal to app version
-func HasMajorVersionEqualFrom(ver string) (bool, error) {
+func HasMajorVersionEqualFrom() (bool, error) {
 	re := regexp.MustCompile(`^(\d)\.(\d)\.(\d)(?:(?:\-|\+).*)?`)
 
-	verComp := re.FindStringSubmatch(ver)
+	dbVer, err := getAppDbVersion()
+
+	if err != nil {
+		return false, err
+	}
+
+	dbVerComp := re.FindStringSubmatch(dbVer)
 	appVerComp := re.FindStringSubmatch(appVersion)
 
-	if len(verComp) != 4 {
-		return false, fmt.Errorf("Wrong version format : %s, must follows semver", ver)
+	if len(dbVerComp) != 4 {
+		return false, fmt.Errorf("Wrong version format : %s, must follows semver", dbVer)
 	}
 
 	appVerMajor, err := strconv.Atoi(appVerComp[1])
@@ -47,11 +53,15 @@ func HasMajorVersionEqualFrom(ver string) (bool, error) {
 		return false, err
 	}
 
-	verMajor, err := strconv.Atoi(verComp[1])
+	verMajor, err := strconv.Atoi(dbVerComp[1])
 
 	if err != nil {
 		return false, err
 	}
 
-	return verMajor == appVerMajor, nil
+	if verMajor == appVerMajor {
+		return true, nil
+	}
+
+	return false, fmt.Errorf("Database version : %s and app version : %s don't have same major version", dbVer, appVersion)
 }
