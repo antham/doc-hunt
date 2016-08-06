@@ -13,3 +13,6 @@ import:
   - assert
 - package: github.com/chzyer/readline
   version: ^1.3.0
+- package: github.com/glenn-brown/golang-pkg-pcre
+  subpackages:
+  - src/pkg/pcre
