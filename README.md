@@ -75,13 +75,11 @@ Flags:
 Use "doc-hunt [command] --help" for more information about a command.
 ```
 
-### config
+### config add
 
 A config line is made with a document (a file, a folder in current repository or an external URL) with one or several sources (a pcre regexp matching file sources that need to be tracked).
 
-#### add
-
-##### Example 1
+#### Example 1
 
 Add a new configuration on all php files in two different folders :
 
@@ -89,7 +87,7 @@ Add a new configuration on all php files in two different folders :
 doc-hunt config add README.md folder1/.*.php,folder2/.*.php
 ```
 
-##### Example 2
+#### Example 2
 
 Add a new configuration on all php files in a folder and exclude test files :
 
@@ -97,7 +95,7 @@ Add a new configuration on all php files in a folder and exclude test files :
 doc-hunt config add README.md 'folder1/.*(?<!_test).php'
 ```
 
-##### -n flag, try config
+#### -n flag, try config
 
 It's possible to simulate what this command will do adding a ```-n``` option like so :
 
@@ -105,7 +103,7 @@ It's possible to simulate what this command will do adding a ```-n``` option lik
 doc-hunt config add -n README.md folder1/.*.php
 ```
 
-#### list
+### config list
 
 List all existing configurations :
 
@@ -113,7 +111,7 @@ List all existing configurations :
 doc-hunt config list
 ```
 
-#### del
+### config del
 
 Remove unwanted configuration (This command will launch a prompt) :
 
