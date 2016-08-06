@@ -13,6 +13,8 @@ import (
 	"github.com/antham/doc-hunt/util"
 )
 
+var dryRun bool
+
 var addConfigCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new configuration row",
@@ -43,16 +45,11 @@ var addConfigCmd = &cobra.Command{
 			util.ErrorExit()
 		}
 
-		err = file.CreateConfig(doc, sources)
-
-		if err != nil {
-			ui.Error(err)
-
-			util.ErrorExit()
+		if dryRun {
+			execDryRun(doc, sources)
 		}
 
-		ui.Success("Config added")
-		util.SuccessExit()
+		createConfig(doc, sources)
 	},
 }
 
@@ -99,7 +96,7 @@ func parseSources(doc *file.Doc, identifiers []string) (*[]file.Source, error) {
 		parsedIdentifier, cat := file.ParseIdentifier(identifier)
 
 		if cat == file.SERROR {
-			return &[]file.Source{}, fmt.Errorf("Source identifier %s doesn't exist", identifier)
+			return &[]file.Source{}, fmt.Errorf("Source identifier %s is not correct", identifier)
 		}
 
 		source := file.NewSource(doc, parsedIdentifier, cat)
@@ -109,6 +106,39 @@ func parseSources(doc *file.Doc, identifiers []string) (*[]file.Source, error) {
 	return &sources, nil
 }
 
+func execDryRun(doc *file.Doc, sources *[]file.Source) {
+	datas := map[string]*[]string{}
+
+	for _, source := range *sources {
+		files, err := util.ExtractFilesMatchingReg(source.Identifier)
+
+		if err != nil {
+			ui.Error(err)
+
+			util.ErrorExit()
+		}
+
+		datas[source.Identifier] = files
+	}
+
+	renderDryRun(doc, &datas)
+	util.SuccessExit()
+}
+
+func createConfig(doc *file.Doc, sources *[]file.Source) {
+	err := file.CreateConfig(doc, sources)
+
+	if err != nil {
+		ui.Error(err)
+
+		util.ErrorExit()
+	}
+
+	ui.Success("Config added")
+	util.SuccessExit()
+}
+
 func init() {
 	configCmd.AddCommand(addConfigCmd)
+	addConfigCmd.Flags().BoolVarP(&dryRun, "dry-run", "n", false, "simulate what a config would record")
 }
