@@ -2,12 +2,16 @@ package cmd
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strings"
 
 	"github.com/fatih/color"
 
 	"github.com/antham/doc-hunt/file"
 )
+
+var out io.Writer = os.Stdout
 
 func renderConfig(list *[]file.Config) {
 	color.Magenta("----")
@@ -32,25 +36,25 @@ func renderConfig(list *[]file.Config) {
 }
 
 func renderDryRun(doc *file.Doc, datas *map[string]*[]string) {
-	out := fmt.Sprintf(`%s : %s`, color.CyanString("Document"), color.YellowString(doc.Identifier))
-	out += fmt.Sprintf("\n\n")
+	output := fmt.Sprintf(`%s : %s`, color.CyanString("Document"), color.YellowString(doc.Identifier))
+	output += fmt.Sprintf("\n\n")
 
 	for identifier, files := range *datas {
-		out += fmt.Sprintf(`%s "%s" : `, color.CyanString("Files matching regexp"), color.YellowString(identifier))
-		out += fmt.Sprintf("\n")
+		output += fmt.Sprintf(`%s "%s" : `, color.CyanString("Files matching regexp"), color.YellowString(identifier))
+		output += fmt.Sprintf("\n")
 
 		if len(*files) == 0 {
-			out += fmt.Sprintf("    => %s\n", color.RedString("No files found"))
+			output += fmt.Sprintf("    => %s\n", color.RedString("No files found"))
 		}
 
 		for _, file := range *files {
-			out += fmt.Sprintf("    => %s\n", file)
+			output += fmt.Sprintf("    => %s\n", file)
 		}
 
-		out += fmt.Sprintf("\n")
+		output += fmt.Sprintf("\n")
 	}
 
-	out = strings.TrimRight(out, "\n")
+	output = strings.TrimRight(output, "\n")
 
-	fmt.Printf("%s\n", out)
+	fmt.Fprintf(out, "%s\n", output)
 }
