@@ -1,8 +1,11 @@
 export CGO_ENABLED=1
 
 compile:
+	rm -rf build
+	mkdir build
 	git stash -u
-	gox -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+	gox -osarch=linux/386 -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+	gox -osarch=linux/amd64 -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
 
 version:
 	git stash -u
