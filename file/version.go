@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var appVersion = "2.1.0"
+var appVersion = "2.1.1"
 
 // GetAppVersion return app version
 func GetAppVersion() string {
@@ -23,9 +23,17 @@ func getAppDbVersion() (string, error) {
 		return "", fmt.Errorf("Can't retrieve database app version")
 	}
 
-	res.Next()
+	defer func() {
+		if e := res.Close(); e != nil {
+			err = e
+		}
+	}()
 
-	err = res.Scan(&version)
+	if err == nil {
+		for res.Next() {
+			err = res.Scan(&version)
+		}
+	}
 
 	return version, err
 }
