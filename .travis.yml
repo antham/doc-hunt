@@ -4,7 +4,7 @@ go:
   - 1.6
 
 before_install:
-  - wget -O doc-hunt https://github.com/antham/doc-hunt/releases/download/v1.0.0/doc-hunt_linux_amd64
+  - wget -O doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
   - chmod 777 doc-hunt
   - export PATH=$PATH:$PWD/doc-hunt
   - go get github.com/onsi/gomega
