@@ -3,6 +3,8 @@ Doc-hunt [![Build Status](https://travis-ci.org/antham/doc-hunt.svg?branch=maste
 
 Doc-hunt track changes occuring in a source code to help keeping documentation up to date.
 
+[![asciicast](https://asciinema.org/a/7qqxr5izv277cz5l9j1turqyu.png)](https://asciinema.org/a/7qqxr5izv277cz5l9j1turqyu)
+
 ## How it works ?
 
 ### Example : README.md
