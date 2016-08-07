@@ -119,9 +119,17 @@ foreign key(source_id) references sources(id));`
 }
 
 func initVersion() error {
+	var err error
+
 	res, err := db.Query("select id from version")
 
-	if !res.Next() {
+	defer func() {
+		if e := res.Close(); e != nil {
+			err = e
+		}
+	}()
+
+	if err == nil && !res.Next() {
 		_, err = db.Exec("insert into version values (?)", appVersion)
 
 		return err
