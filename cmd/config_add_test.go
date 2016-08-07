@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"os"
 	"testing"
 
@@ -84,6 +85,33 @@ func TestAddConfig(t *testing.T) {
 	}
 
 	os.Args = []string{"", "config", "add", "doc_file_to_track.txt", "source1.php,source2.php"}
+
+	err = RootCmd.Execute()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+}
+
+func TestAddConfigWithDryRun(t *testing.T) {
+	createMocks()
+	err := file.Initialize()
+	output := []byte{}
+	out = bytes.NewBuffer(output)
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	util.SuccessExit = func() {
+		assert.Regexp(t, `doc_file_to_track.txt`, out, "Must render document")
+		assert.Regexp(t, `Files matching regexp "source1.php"`, out, "Must render original regexp")
+		assert.Regexp(t, `=> source1.php`, out, "Must render source")
+		assert.Regexp(t, `Files matching regexp "source2.php"`, out, "Must render original regexp")
+		assert.Regexp(t, `=> source2.php`, out, "Must render source")
+	}
+
+	os.Args = []string{"", "config", "add", "-n", "doc_file_to_track.txt", "source1.php,source2.php"}
 
 	err = RootCmd.Execute()
 

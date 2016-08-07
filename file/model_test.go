@@ -138,14 +138,38 @@ func TestListConfigWithEntries(t *testing.T) {
 
 	assert.Len(t, *configs, 2, "Must have 2 configs")
 
-	assert.Len(t, (*configs)[0].Sources, 2, "Must have 2 source files")
-	assert.Equal(t, "source1.php", (*configs)[0].Sources[0].Identifier, "Must return correct identifier")
-	assert.Equal(t, "source2.php", (*configs)[0].Sources[1].Identifier, "Must return correct identifier")
+	expectedResults := map[string]bool{
+		"source1.php": true,
+		"source2.php": true,
+		"source3.php": true,
+		"source4.php": true,
+		"source5.php": true,
+	}
 
+	assert.Len(t, (*configs)[0].Sources, 2, "Must have 2 source files")
 	assert.Len(t, (*configs)[1].Sources, 3, "Must have 3 source files")
-	assert.Equal(t, "source3.php", (*configs)[1].Sources[0].Identifier, "Must return correct identifier")
-	assert.Equal(t, "source4.php", (*configs)[1].Sources[1].Identifier, "Must return correct identifier")
-	assert.Equal(t, "source5.php", (*configs)[1].Sources[2].Identifier, "Must return correct identifier")
+
+	assert.Condition(t, func() bool {
+		for i := 0; i < 2; i++ {
+			if !expectedResults[(*configs)[0].Sources[i].Identifier] {
+				return false
+			}
+
+			delete(expectedResults, (*configs)[0].Sources[i].Identifier)
+		}
+
+		for i := 0; i < 3; i++ {
+			if !expectedResults[(*configs)[1].Sources[i].Identifier] {
+				return false
+			}
+
+			delete(expectedResults, (*configs)[1].Sources[i].Identifier)
+		}
+
+		return true
+	}, "Must return correct identifier")
+
+	assert.Len(t, expectedResults, 0, "Must record all source files")
 }
 
 func TestRemoveConfigsWithNoResults(t *testing.T) {

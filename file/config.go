@@ -2,8 +2,9 @@ package file
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
+
+	"github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
 
 	"github.com/antham/doc-hunt/util"
 )
@@ -21,7 +22,7 @@ func createFileRegSource(source *Source) error {
 		return err
 	}
 
-	files, err := util.ExtractFilesMatchingReg(regexp.MustCompile(source.Identifier))
+	files, err := util.ExtractFilesMatchingReg(source.Identifier)
 
 	if err != nil {
 		return err
@@ -40,7 +41,7 @@ func createFileRegSource(source *Source) error {
 
 // ParseIdentifier extract identifier and category from string
 func ParseIdentifier(value string) (string, SourceCategory) {
-	_, err := regexp.Compile(value)
+	_, err := pcre.Compile(value, pcre.ANCHORED)
 
 	if err == nil {
 		return value, SFILEREG

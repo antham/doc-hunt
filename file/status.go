@@ -2,7 +2,6 @@ package file
 
 import (
 	"os"
-	"regexp"
 
 	"github.com/antham/doc-hunt/util"
 )
@@ -72,7 +71,7 @@ func findItems(source *Source) (*map[string]ItemStatus, error) {
 		items[item.Identifier] = getFileStatus(item.Identifier, item.Fingerprint)
 	}
 
-	files, err := util.ExtractFilesMatchingReg(regexp.MustCompile(source.Identifier))
+	files, err := util.ExtractFilesMatchingReg(source.Identifier)
 
 	switch err.(type) {
 	case nil:

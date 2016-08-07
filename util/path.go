@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/antham/doc-hunt/ui"
+	"github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
 )
 
 // AppPath define path where app stands
@@ -41,8 +41,15 @@ func GetFolderPath(path string) string {
 }
 
 // ExtractFilesMatchingReg extract files matching given regexp
-func ExtractFilesMatchingReg(re *regexp.Regexp) (*[]string, error) {
+func ExtractFilesMatchingReg(exp string) (*[]string, error) {
 	files := []string{}
+	flags := pcre.ANCHORED
+
+	re, perr := pcre.Compile(exp, flags)
+
+	if perr != nil {
+		return &files, fmt.Errorf(perr.String())
+	}
 
 	w := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -51,7 +58,7 @@ func ExtractFilesMatchingReg(re *regexp.Regexp) (*[]string, error) {
 
 		pathTrimmed := TrimAbsBasePath(path)
 
-		if !info.IsDir() && re.MatchString(pathTrimmed) {
+		if !info.IsDir() && re.MatcherString(pathTrimmed, flags).Matches() {
 			files = append(files, pathTrimmed)
 		}
 

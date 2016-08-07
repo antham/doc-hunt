@@ -2,11 +2,16 @@ package cmd
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"strings"
 
 	"github.com/fatih/color"
 
 	"github.com/antham/doc-hunt/file"
 )
+
+var out io.Writer = os.Stdout
 
 func renderConfig(list *[]file.Config) {
 	color.Magenta("----")
@@ -28,4 +33,28 @@ func renderConfig(list *[]file.Config) {
 		fmt.Printf("%s\n", out)
 		color.Magenta("----")
 	}
+}
+
+func renderDryRun(doc *file.Doc, datas *map[string]*[]string) {
+	output := fmt.Sprintf(`%s : %s`, color.CyanString("Document"), color.YellowString(doc.Identifier))
+	output += fmt.Sprintf("\n\n")
+
+	for identifier, files := range *datas {
+		output += fmt.Sprintf(`%s "%s" : `, color.CyanString("Files matching regexp"), color.YellowString(identifier))
+		output += fmt.Sprintf("\n")
+
+		if len(*files) == 0 {
+			output += fmt.Sprintf("    => %s\n", color.RedString("No files found"))
+		}
+
+		for _, file := range *files {
+			output += fmt.Sprintf("    => %s\n", file)
+		}
+
+		output += fmt.Sprintf("\n")
+	}
+
+	output = strings.TrimRight(output, "\n")
+
+	fmt.Fprintf(out, "%s\n", output)
 }

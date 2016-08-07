@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
@@ -72,7 +71,7 @@ func TestExtractFilesMatchingReg(t *testing.T) {
 		}
 	}
 
-	files, err := ExtractFilesMatchingReg(regexp.MustCompile(".*"))
+	files, err := ExtractFilesMatchingReg(".*")
 
 	if err != nil {
 		logrus.Fatal(err)

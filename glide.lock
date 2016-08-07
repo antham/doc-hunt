@@ -1,45 +1,28 @@
-hash: 8d452ae4e5c6ba8b13f6d9e5ae256b2ba127ae2be0ea2b25c7d0e139426b187a
-updated: 2016-06-09T00:08:44.225872862+02:00
+hash: f32e1bf5eaeadd37fcbf3a9cefc889631225f166387c28fe6e6d4787f34a362c
+updated: 2016-08-06T22:57:35.203181877+02:00
 imports:
-- name: github.com/BurntSushi/toml
-  version: f0aeabca5a127c4078abb8c8d64298b147264b55
 - name: github.com/chzyer/readline
-  version: 64a71f22be412fa183322657872f81a757eb8665
+  version: 62c6fe6193755f722b8b8788aa7357be55a50ff1
 - name: github.com/fatih/color
-  version: 1b35f289c47d5c73c398cea8e006b7bcb6234a96
-- name: github.com/fsnotify/fsnotify
-  version: 30411dbcefb7a1da7e84f75530ad3abe4011b4f8
-- name: github.com/hashicorp/hcl
-  version: 9a905a34e6280ce905da1a32344b25e81011197a
+  version: 87d4004f2ab62d0d255e0a38f1680aa534549fe3
+- name: github.com/glenn-brown/golang-pkg-pcre
+  version: 48bb82a8b8ceea98f4e97825b43870f6ba1970d6
   subpackages:
-  - hcl/ast
-  - hcl/parser
-  - hcl/token
-  - json/parser
-  - hcl/scanner
-  - hcl/strconv
-  - json/scanner
-  - json/token
+  - src/pkg/pcre
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
-- name: github.com/magiconair/properties
-  version: c265cfa48dda6474e208715ca93e987829f572f8
+- name: github.com/mattn/go-colorable
+  version: ed8eb9e318d7a84ce5915b495b7d35e0cfe7b5a8
+- name: github.com/mattn/go-isatty
+  version: 66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8
 - name: github.com/mattn/go-sqlite3
   version: 38ee283dabf11c9cbdb968eebd79b1fa7acbabe6
-- name: github.com/mitchellh/mapstructure
-  version: d2dd0262208475919e1a362f675cfc0e7c10e905
 - name: github.com/satori/go.uuid
   version: f9ab0dce87d815821e221626b772e3475a0d2749
-- name: github.com/shiena/ansicolor
-  version: a422bbe96644373c5753384a59d678f7d261ff10
 - name: github.com/Sirupsen/logrus
   version: f3cfb454f4c209e6668c95216c4744b8fddb2356
-- name: github.com/spf13/cast
-  version: 27b586b42e29bec072fe7379259cc719e1289da6
 - name: github.com/spf13/cobra
   version: f447048345b64b3247b29a679a14bd0da12c7f2f
-- name: github.com/spf13/jwalterweatherman
-  version: 33c24e77fb80341fe7130ee7c594256ff08ccc46
 - name: github.com/spf13/pflag
   version: cb88ea77998c3f024757528e3305022ab50b43be
 - name: github.com/spf13/viper
@@ -48,14 +31,8 @@ imports:
   version: f390dcf405f7b83c997eac1b06768bb9f44dec18
   subpackages:
   - assert
-- name: golang.org/x/crypto
-  version: 77f4136a99ffb5ecdbdd0226bd5cb146cf56bc0e
-  subpackages:
-  - ssh/terminal
 - name: golang.org/x/sys
-  version: 076b546753157f758b316e59bcb51e6807c04057
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
   subpackages:
   - unix
-- name: gopkg.in/yaml.v2
-  version: a83829b6f1293c91addabc89d0571c246397bbf4
 devImports: []
