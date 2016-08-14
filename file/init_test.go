@@ -9,6 +9,8 @@ import (
 )
 
 func TestCreateTables(t *testing.T) {
+	deleteDatabase()
+
 	id := uuid.NewV4().String()
 
 	dbName = id
@@ -21,9 +23,17 @@ func TestCreateTables(t *testing.T) {
 
 	_, err = db.Exec("select * from docs")
 
-	assert.NoError(t, err, "Select * docs table must return no error")
+	assert.NoError(t, err, "Select docs table must return no error")
 
 	_, err = db.Exec("select * from sources")
 
-	assert.NoError(t, err, "Select * sources table must return no error")
+	assert.NoError(t, err, "Select sources table must return no error")
+
+	_, err = db.Exec("select * from items")
+
+	assert.NoError(t, err, "Select items table must return no error")
+
+	_, err = db.Exec("select * from version")
+
+	assert.NoError(t, err, "Select version table must return no error")
 }
