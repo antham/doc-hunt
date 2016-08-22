@@ -63,11 +63,9 @@ func TestUpdateItemsFingerprint(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = updateItemsFingeprint()
+	err = Update()
 
-	if err != nil {
-		logrus.Fatal(err)
-	}
+	assert.NoError(t, err, "Must produces no errors")
 
 	after := retrieveItems([]string{"source1.php", "source2.php"})
 
@@ -106,11 +104,9 @@ func TestDeleteItems(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = deleteItems(&[]string{"source1.php"})
+	err = Update()
 
-	if err != nil {
-		logrus.Fatal(err)
-	}
+	assert.NoError(t, err, "Must produces no errors")
 
 	after := retrieveItems([]string{"source1.php", "source2.php"})
 
@@ -163,11 +159,9 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	err = deleteItems(&[]string{"source1.php"})
+	err = Update()
 
-	if err != nil {
-		logrus.Fatal(err)
-	}
+	assert.NoError(t, err, "Must produces no errors")
 
 	sourceRows, err := db.Query("select s.id from sources s where identifier = ?", "source1.php")
 
