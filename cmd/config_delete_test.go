@@ -91,7 +91,7 @@ func TestDeleteConfig(t *testing.T) {
 		*file.NewSource(doc, "source1.php", file.SFILEREG),
 	}
 
-	err = file.CreateConfig(doc, &sources)
+	err = file.Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

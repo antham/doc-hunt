@@ -16,14 +16,14 @@ func retrieveItems(identifiers []string) map[string]*[]Item {
 
 	for _, identifier := range identifiers {
 		var id string
-		err := db.QueryRow("select id from sources where identifier = ?", identifier).Scan(&id)
+		err := Container.GetDatabase().QueryRow("select id from sources where identifier = ?", identifier).Scan(&id)
 
 		if err != nil {
 			logrus.Warn(err)
 		}
 
 		source := Source{ID: id}
-		items[identifier], err = getItems(&source)
+		items[identifier], err = Container.GetItemRepository().ListFromSource(&source)
 
 		if err != nil {
 			logrus.Warn(err)
@@ -49,7 +49,7 @@ func TestUpdateItemsFingerprint(t *testing.T) {
 		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -90,7 +90,7 @@ func TestDeleteItems(t *testing.T) {
 		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -133,7 +133,7 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 		*NewSource(doc, "source1.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -145,7 +145,7 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -163,13 +163,13 @@ func TestDeleteItemsWithOnlyOneItemRemaining(t *testing.T) {
 
 	assert.NoError(t, err, "Must produces no errors")
 
-	sourceRows, err := db.Query("select s.id from sources s where identifier = ?", "source1.php")
+	sourceRows, err := Container.GetDatabase().Query("select s.id from sources s where identifier = ?", "source1.php")
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	docRows, err := db.Query("select d.id from docs d where identifier = ?", "doc_file_to_track.txt")
+	docRows, err := Container.GetDatabase().Query("select d.id from docs d where identifier = ?", "doc_file_to_track.txt")
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -206,7 +206,7 @@ func TestUpdate(t *testing.T) {
 		*NewSource(doc, "test1", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

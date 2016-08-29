@@ -24,7 +24,8 @@ const (
 func BuildStatus() (*[]Result, error) {
 	results := []Result{}
 
-	configs, err := ListConfig()
+	c := Container.GetConfigRepository()
+	configs, err := c.List()
 
 	if err != nil {
 		return nil, err
@@ -61,7 +62,9 @@ func BuildStatus() (*[]Result, error) {
 
 func findItems(source *Source) (*map[string]ItemStatus, error) {
 	items := map[string]ItemStatus{}
-	dbItems, err := getItems(source)
+
+	r := Container.GetItemRepository()
+	dbItems, err := r.ListFromSource(source)
 
 	if err != nil {
 		return nil, err

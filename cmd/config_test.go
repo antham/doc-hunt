@@ -12,6 +12,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/antham/doc-hunt/file"
 	"github.com/antham/doc-hunt/util"
 )
 
@@ -69,6 +70,13 @@ func createSourceFile(content []byte, filename string) {
 func createMocks() {
 	removeTestDirectory()
 	createTestDirectory()
+
+	err := file.Initialize()
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	createADocFile()
 	createSourceFiles()
 }

@@ -21,7 +21,7 @@ func TestHasMajorVersionEqualFromWithSameMajorVersion(t *testing.T) {
 
 	appVersion = "1.0.0"
 
-	_, err = db.Exec("update version set id = '1.6.9'")
+	_, err = Container.GetDatabase().Exec("update version set id = '1.6.9'")
 
 	if err != nil {
 		logrus.Error(err)
@@ -43,7 +43,7 @@ func TestHasMajorVersionEqualFromWithDifferentMajorVersion(t *testing.T) {
 
 	appVersion = "1.0.0"
 
-	_, err = db.Exec("update version set id = '2.0.0'")
+	_, err = Container.GetDatabase().Exec("update version set id = '2.0.0'")
 
 	if err != nil {
 		logrus.Error(err)
@@ -65,7 +65,7 @@ func TestHasMajorVersionEqualFromWithWrongVersionFormat(t *testing.T) {
 
 	appVersion = "1.0.0"
 
-	_, err = db.Exec("update version set id = '2.0'")
+	_, err = Container.GetDatabase().Exec("update version set id = '2.0'")
 
 	if err != nil {
 		logrus.Error(err)

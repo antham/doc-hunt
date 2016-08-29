@@ -17,7 +17,7 @@ func GetAppVersion() string {
 func getAppDbVersion() (string, error) {
 	var version string
 
-	res, err := db.Query("select id from version")
+	res, err := Container.GetDatabase().Query("select id from version")
 
 	if err != nil {
 		return "", fmt.Errorf("Can't retrieve database app version")

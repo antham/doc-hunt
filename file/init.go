@@ -1,33 +1,32 @@
 package file
 
 import (
-	"database/sql"
-
 	"github.com/mattn/go-sqlite3"
-
-	"github.com/antham/doc-hunt/util"
 )
 
-var db *sql.DB
+// Container is a dependency injection container in charge of
+// creating and keeping reference to objects
+var Container container
+
 var dbName = ".doc-hunt"
 
 // Initialize initialize project
 func Initialize() error {
 	var err error
 
-	db, err = sql.Open("sqlite3", util.GetAbsPath(dbName))
-
-	if err != nil {
-		return err
-	}
-
-	err = createSourceTable()
+	Container, err = newContainer(dbName)
 
 	if err != nil {
 		return err
 	}
 
 	err = createDocTable()
+
+	if err != nil {
+		return err
+	}
+
+	err = createSourceTable()
 
 	if err != nil {
 		return err
@@ -53,7 +52,7 @@ func createVersionTable() error {
 create table version(
 id text primary key not null
 );`
-	_, err := db.Exec(query)
+	_, err := Container.GetDatabase().Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
 		return err
@@ -70,7 +69,7 @@ category int not null,
 identifier text not null,
 created_at timestamp not null);`
 
-	_, err := db.Exec(query)
+	_, err := Container.GetDatabase().Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
 		return err
@@ -89,7 +88,7 @@ created_at timestamp not null,
 doc_id text not null,
 foreign key(doc_id) references docs(id));`
 
-	_, err := db.Exec(query)
+	_, err := Container.GetDatabase().Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
 		return err
@@ -109,7 +108,7 @@ updated_at timestamp not null,
 source_id text not null,
 foreign key(source_id) references sources(id));`
 
-	_, err := db.Exec(query)
+	_, err := Container.GetDatabase().Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
 		return err
@@ -121,7 +120,7 @@ foreign key(source_id) references sources(id));`
 func initVersion() error {
 	var err error
 
-	res, err := db.Query("select id from version")
+	res, err := Container.GetDatabase().Query("select id from version")
 
 	defer func() {
 		if e := res.Close(); e != nil {
@@ -130,7 +129,7 @@ func initVersion() error {
 	}()
 
 	if err == nil && !res.Next() {
-		_, err = db.Exec("insert into version values (?)", appVersion)
+		_, err = Container.GetDatabase().Exec("insert into version values (?)", appVersion)
 
 		return err
 	}

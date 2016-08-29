@@ -28,7 +28,7 @@ func TestBuildStatusWithFilesUntouched(t *testing.T) {
 		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -67,7 +67,7 @@ func TestBuildStatusWithUpdatedFile(t *testing.T) {
 		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -113,7 +113,7 @@ func TestBuildStatusWithDeletedFile(t *testing.T) {
 		*NewSource(doc, "source2.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -162,7 +162,7 @@ func TestBuildStatusWithRegexpDescribingAFolder(t *testing.T) {
 		*NewSource(doc, "test1", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -202,7 +202,7 @@ func TestBuildStatusWithRegexpDescribingAFolderAndAddedFile(t *testing.T) {
 		*NewSource(doc, "test1", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -246,7 +246,7 @@ func TestBuildStatusWithRegexpDescribingAFolderAndFolderDeleted(t *testing.T) {
 		*NewSource(doc, "test1", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

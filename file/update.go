@@ -2,7 +2,7 @@ package file
 
 // Update all entries in items database
 func Update() error {
-	r := NewItemRepository()
+	r := Container.GetItemRepository()
 
 	err := r.AppendOrRemove()
 

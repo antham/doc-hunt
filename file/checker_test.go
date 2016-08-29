@@ -31,7 +31,7 @@ func TestGetItemStatus(t *testing.T) {
 		*NewSource(doc, "test1/source5.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -56,7 +56,7 @@ func TestGetItemStatus(t *testing.T) {
 		*NewSource(doc, "test1/source6.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -112,7 +112,7 @@ func TestGetItemStatusWithNoChanges(t *testing.T) {
 		*NewSource(doc, "source1.php", SFILEREG),
 	}
 
-	err = CreateConfig(doc, &sources)
+	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

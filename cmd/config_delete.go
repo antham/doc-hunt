@@ -16,7 +16,8 @@ var delConfigCmd = &cobra.Command{
 	Use:   "del",
 	Short: "Delete one or several configuration row",
 	Run: func(cmd *cobra.Command, args []string) {
-		list, err := file.ListConfig()
+		c := file.Container.GetConfigRepository()
+		list, err := c.List()
 
 		if err != nil {
 			ui.Error(err)
@@ -37,7 +38,7 @@ var delConfigCmd = &cobra.Command{
 			util.ErrorExit()
 		}
 
-		err = file.RemoveConfigs(configs)
+		err = c.Delete(configs)
 
 		if err != nil {
 			ui.Error(err)

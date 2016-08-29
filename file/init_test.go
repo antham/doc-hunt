@@ -13,7 +13,7 @@ func TestCreateTables(t *testing.T) {
 
 	id := uuid.NewV4().String()
 
-	dbName = id
+	Container.dbName = id
 
 	err := Initialize()
 
@@ -21,19 +21,19 @@ func TestCreateTables(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	_, err = db.Exec("select * from docs")
+	_, err = Container.GetDatabase().Exec("select * from docs")
 
 	assert.NoError(t, err, "Select docs table must return no error")
 
-	_, err = db.Exec("select * from sources")
+	_, err = Container.GetDatabase().Exec("select * from sources")
 
 	assert.NoError(t, err, "Select sources table must return no error")
 
-	_, err = db.Exec("select * from items")
+	_, err = Container.GetDatabase().Exec("select * from items")
 
 	assert.NoError(t, err, "Select items table must return no error")
 
-	_, err = db.Exec("select * from version")
+	_, err = Container.GetDatabase().Exec("select * from version")
 
 	assert.NoError(t, err, "Select version table must return no error")
 }

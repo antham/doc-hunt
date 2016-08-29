@@ -33,7 +33,7 @@ func TestCheck(t *testing.T) {
 		},
 	}
 
-	err = file.CreateConfig(&doc, &sources)
+	err = file.Container.GetConfigRepository().CreateFromDocAndSources(&doc, &sources)
 
 	if err != nil {
 		logrus.Fatal(err)

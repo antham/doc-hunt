@@ -1,17 +1,32 @@
 package file
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 )
 
 // ItemRepository handle all actions availables on items table
 type ItemRepository struct {
+	db *sql.DB
 }
 
 // NewItemRepository return a new ItemRepository instance
-func NewItemRepository() ItemRepository {
-	return ItemRepository{}
+func NewItemRepository(db *sql.DB) ItemRepository {
+	return ItemRepository{db: db}
+}
+
+// createFromItemList insert new items from an item list
+func (i ItemRepository) createFromItemList(items *[]Item) error {
+	for _, item := range *items {
+		_, err := i.db.Exec("insert into items values (?,?,?,?,?,?)", item.ID, item.Identifier, item.Fingerprint, item.CreatedAt, item.UpdatedAt, item.SourceID)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // deleteByIdentifiers all items from their identifiers
@@ -26,19 +41,19 @@ func (i ItemRepository) deleteByIdentifiers(identifiers *[]string) error {
 		}
 	}
 
-	_, err := db.Exec(fmt.Sprintf("delete from items where identifier in (%s)", identifierQuery))
+	_, err := i.db.Exec(fmt.Sprintf("delete from items where identifier in (%s)", identifierQuery))
 
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Exec("delete from sources where id not in (select source_id from items);")
+	_, err = i.db.Exec("delete from sources where id not in (select source_id from items);")
 
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Exec("delete from docs where id not in (select doc_id from sources);")
+	_, err = i.db.Exec("delete from docs where id not in (select doc_id from sources);")
 
 	return err
 }
@@ -86,7 +101,7 @@ func (i ItemRepository) AppendOrRemove() error {
 		return &results
 	}
 
-	err = InsertItems(&added)
+	err = i.createFromItemList(&added)
 
 	if err != nil {
 		return err
@@ -98,7 +113,7 @@ func (i ItemRepository) AppendOrRemove() error {
 // UpdateAllFingerprints update all items fingerprints with new value
 // if file content changed
 func (i ItemRepository) UpdateAllFingerprints() error {
-	rows, err := db.Query("select distinct(identifier) from items")
+	rows, err := i.db.Query("select distinct(identifier) from items")
 
 	if err != nil {
 		return err
@@ -125,7 +140,7 @@ func (i ItemRepository) UpdateAllFingerprints() error {
 			return err
 		}
 
-		_, err = db.Exec("update items set fingerprint = ?, updated_at = ? where identifier = ?", fingerprint, time.Now(), identifier)
+		_, err = i.db.Exec("update items set fingerprint = ?, updated_at = ? where identifier = ?", fingerprint, time.Now(), identifier)
 
 		if err != nil {
 			return err
@@ -133,4 +148,40 @@ func (i ItemRepository) UpdateAllFingerprints() error {
 	}
 
 	return nil
+}
+
+// ListFromSource retrieves all items from a source
+func (i ItemRepository) ListFromSource(source *Source) (*[]Item, error) {
+	items := []Item{}
+
+	rows, err := i.db.Query("select id, identifier, fingerprint, created_at, updated_at, source_id from items where source_id = ? order by identifier", source.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		item := Item{}
+
+		err := rows.Scan(&item.ID, &item.Identifier, &item.Fingerprint, &item.CreatedAt, &item.UpdatedAt, &item.SourceID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		items = append(items, item)
+	}
+
+	return &items, nil
+}
+
+// CreateFromIdentifiersAndSource insert new items from an identifier list and a source
+func (i ItemRepository) CreateFromIdentifiersAndSource(identifiers *[]string, source *Source) error {
+	items, err := NewItems(identifiers, source)
+
+	if err != nil {
+		return err
+	}
+
+	return i.createFromItemList(items)
 }

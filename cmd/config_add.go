@@ -126,7 +126,8 @@ func execDryRun(doc *file.Doc, sources *[]file.Source) {
 }
 
 func createConfig(doc *file.Doc, sources *[]file.Source) {
-	err := file.CreateConfig(doc, sources)
+	c := file.Container.GetConfigRepository()
+	err := c.CreateFromDocAndSources(doc, sources)
 
 	if err != nil {
 		ui.Error(err)
