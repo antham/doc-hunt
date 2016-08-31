@@ -15,27 +15,13 @@ func GetAppVersion() string {
 
 // getAppDbVersion return app version recorded in database
 func getAppDbVersion() (string, error) {
-	var version string
-
-	res, err := Container.GetDatabase().Query("select id from version")
+	version, err := Container.GetSettingRepository().Get("version")
 
 	if err != nil {
 		return "", fmt.Errorf("Can't retrieve database app version")
 	}
 
-	defer func() {
-		if e := res.Close(); e != nil {
-			err = e
-		}
-	}()
-
-	if err == nil {
-		for res.Next() {
-			err = res.Scan(&version)
-		}
-	}
-
-	return version, err
+	return version, nil
 }
 
 // HasMajorVersionEqualFrom check if major version in given version is equal to app version

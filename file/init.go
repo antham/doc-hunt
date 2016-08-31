@@ -1,6 +1,8 @@
 package file
 
 import (
+	"database/sql"
+
 	"github.com/mattn/go-sqlite3"
 )
 
@@ -68,21 +70,34 @@ func runQuery(query string) error {
 }
 
 func initVersion() error {
+	var version, sversion, vversion, table string
 	var err error
 
-	res, err := Container.GetDatabase().Query("select id from version")
+	// @deprecated : we store version in settings
+	_ = Container.GetDatabase().QueryRow("select name from sqlite_master where type=(?) and name=(?)", "table", "version").Scan(&table)
 
-	defer func() {
-		if e := res.Close(); e != nil {
-			err = e
+	if table != "" {
+		// @deprecated : we store version in settings
+		if err = Container.GetDatabase().QueryRow("select id from version").Scan(&vversion); err != nil {
+			return err
 		}
-	}()
 
-	if err == nil && !res.Next() {
-		_, err = Container.GetDatabase().Exec("insert into version values (?)", appVersion)
+		if vversion != "" {
+			version = vversion
+		}
+	} else {
+		if sversion, err = Container.GetSettingRepository().Get("version"); err != nil && err != sql.ErrNoRows {
+			return err
+		}
 
-		return err
+		if sversion == "" {
+			version = appVersion
+		}
 	}
 
-	return err
+	if version != "" {
+		return Container.GetSettingRepository().Create(NewSetting("version", version))
+	}
+
+	return nil
 }
