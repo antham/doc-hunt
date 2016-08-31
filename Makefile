@@ -10,7 +10,7 @@ fmt:
 gometalinter:
 	gometalinter -D gotype --vendor --deadline=240s --dupl-threshold=200 -e '_string' -j 5 ./...
 
-doc-hunt:
+doc-check:
 	doc-hunt check -e
 
 gommit:
