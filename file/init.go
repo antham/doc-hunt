@@ -20,94 +20,44 @@ func Initialize() error {
 		return err
 	}
 
-	err = createDocTable()
-
-	if err != nil {
-		return err
-	}
-
-	err = createSourceTable()
-
-	if err != nil {
-		return err
-	}
-
-	err = createItemTable()
-
-	if err != nil {
-		return err
-	}
-
-	err = createVersionTable()
-
-	if err != nil {
-		return err
-	}
-
-	return initVersion()
-}
-
-func createVersionTable() error {
-	query := `
-create table version(
-id text primary key not null
-);`
-	_, err := Container.GetDatabase().Exec(query)
-
-	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		return err
-	}
-
-	return nil
-}
-
-func createDocTable() error {
-	query := `
-create table docs(
+	queries := []string{
+		`create table docs(
 id text primary key not null,
 category int not null,
 identifier text not null,
-created_at timestamp not null);`
-
-	_, err := Container.GetDatabase().Exec(query)
-
-	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		return err
-	}
-
-	return nil
-}
-
-func createSourceTable() error {
-	query := `
-create table sources(
+created_at timestamp not null);`,
+		`create table sources(
 id text primary key not null,
 identifier text not null,
 category int not null,
 created_at timestamp not null,
 doc_id text not null,
-foreign key(doc_id) references docs(id));`
-
-	_, err := Container.GetDatabase().Exec(query)
-
-	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {
-		return err
+foreign key(doc_id) references docs(id));`,
+		`create table items(
+			id text primary key not null,
+			identifier text not null,
+			fingerprint text not null,
+			created_at timestamp not null,
+			updated_at timestamp not null,
+			source_id text not null,
+			foreign key(source_id) references sources(id));`,
+		`create table settings(
+			name text primary key,
+			value text);`,
 	}
 
-	return nil
+	for _, query := range queries {
+		err := runQuery(query)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return initVersion()
 }
 
-func createItemTable() error {
-	query := `
-create table items(
-id text primary key not null,
-identifier text not null,
-fingerprint text not null,
-created_at timestamp not null,
-updated_at timestamp not null,
-source_id text not null,
-foreign key(source_id) references sources(id));`
-
+func runQuery(query string) error {
 	_, err := Container.GetDatabase().Exec(query)
 
 	if err != nil && err.(sqlite3.Error).Code != sqlite3.ErrError {

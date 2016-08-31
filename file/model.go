@@ -102,6 +102,20 @@ func NewDoc(identifier string, category DocCategory) *Doc {
 	}
 }
 
+// Setting represents a setting stored in database
+type Setting struct {
+	Name  string
+	Value string
+}
+
+// NewSetting creates a new setting
+func NewSetting(name string, value string) *Setting {
+	return &Setting{
+		name,
+		value,
+	}
+}
+
 // Config represents a config line
 type Config struct {
 	Doc     Doc

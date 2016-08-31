@@ -7,12 +7,13 @@ import (
 )
 
 type container struct {
-	db       *sql.DB
-	dbName   string
-	cfgRepo  *ConfigRepository
-	srcRepo  *SourceRepository
-	itemRepo *ItemRepository
-	docRepo  *DocRepository
+	db          *sql.DB
+	dbName      string
+	cfgRepo     *ConfigRepository
+	srcRepo     *SourceRepository
+	itemRepo    *ItemRepository
+	docRepo     *DocRepository
+	settingRepo *SettingRepository
 }
 
 func newContainer(dbName string) (container, error) {
@@ -66,4 +67,13 @@ func (c container) GetDocRepository() *DocRepository {
 	}
 
 	return c.docRepo
+}
+
+func (c container) GetSettingRepository() *SettingRepository {
+	if c.itemRepo == nil {
+		repo := NewSettingRepository(c.GetDatabase())
+		c.settingRepo = &repo
+	}
+
+	return c.settingRepo
 }
