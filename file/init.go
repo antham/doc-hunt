@@ -46,6 +46,7 @@ foreign key(doc_id) references docs(id));`,
 		`create table settings(
 			name text primary key,
 			value text);`,
+		`alter table items add vcs_ref text;`,
 	}
 
 	for _, query := range queries {

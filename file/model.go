@@ -44,6 +44,7 @@ type Item struct {
 	ID          string
 	Identifier  string
 	Fingerprint string
+	VcsRef      string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	SourceID    string
@@ -64,6 +65,7 @@ func NewItems(identifiers *[]string, source *Source) (*[]Item, error) {
 			uuid.NewV4().String(),
 			identifier,
 			fingerprint,
+			"",
 			time.Now(),
 			time.Now(),
 			source.ID,

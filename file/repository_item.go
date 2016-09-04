@@ -19,7 +19,7 @@ func NewItemRepository(db *sql.DB) ItemRepository {
 // createFromItemList insert new items from an item list
 func (i ItemRepository) createFromItemList(items *[]Item) error {
 	for _, item := range *items {
-		_, err := i.db.Exec("insert into items values (?,?,?,?,?,?)", item.ID, item.Identifier, item.Fingerprint, item.CreatedAt, item.UpdatedAt, item.SourceID)
+		_, err := i.db.Exec("insert into items values (?,?,?,?,?,?,?)", item.ID, item.Identifier, item.Fingerprint, item.CreatedAt, item.UpdatedAt, item.SourceID, item.VcsRef)
 
 		if err != nil {
 			return err
