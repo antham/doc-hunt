@@ -2,7 +2,10 @@ package file
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
+	"regexp"
+	"strconv"
 
 	"github.com/antham/doc-hunt/util"
 )
@@ -16,6 +19,7 @@ type container struct {
 	docRepo     *DocRepository
 	settingRepo *SettingRepository
 	manager     *Manager
+	version     *Version
 }
 
 func newContainer(dbName string) (container, error) {
@@ -87,4 +91,13 @@ func (c container) GetManager() *Manager {
 	}
 
 	return c.manager
+}
+
+func (c container) GetVersion() *Version {
+	if c.version == nil {
+		version := NewVersion(c.GetSettingRepository(), regexp.MustCompile, strconv.Atoi, fmt.Errorf)
+		c.version = &version
+	}
+
+	return c.version
 }
