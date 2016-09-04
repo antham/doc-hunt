@@ -59,18 +59,11 @@ func (i ItemRepository) deleteByIdentifiers(identifiers *[]string) error {
 }
 
 // AppendOrRemove create new items from new files, delete those which were suppressed
-func (i ItemRepository) AppendOrRemove() error {
+func (i ItemRepository) AppendOrRemove(status *[]Result) error {
 	var err error
 
 	deleted := map[string]bool{}
 	added := []Item{}
-	var status *[]Result
-
-	status, err = BuildStatus()
-
-	if err != nil {
-		return err
-	}
 
 	for _, result := range *status {
 		for _, filename := range result.Status[IDELETED] {

@@ -13,7 +13,7 @@ var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update documentation references",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := file.Update()
+		err := file.Container.GetManager().UpdateFingerprints()
 
 		if err != nil {
 			ui.Error(err)

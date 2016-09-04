@@ -2,6 +2,7 @@ package file
 
 import (
 	"database/sql"
+	"os"
 
 	"github.com/antham/doc-hunt/util"
 )
@@ -14,6 +15,7 @@ type container struct {
 	itemRepo    *ItemRepository
 	docRepo     *DocRepository
 	settingRepo *SettingRepository
+	manager     *Manager
 }
 
 func newContainer(dbName string) (container, error) {
@@ -76,4 +78,13 @@ func (c container) GetSettingRepository() *SettingRepository {
 	}
 
 	return c.settingRepo
+}
+
+func (c container) GetManager() *Manager {
+	if c.manager == nil {
+		manager := NewManager(c.GetConfigRepository(), c.GetItemRepository(), util.GetAbsPath, util.ExtractFilesMatchingReg, os.Stat)
+		c.manager = &manager
+	}
+
+	return c.manager
 }
