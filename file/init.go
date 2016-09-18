@@ -82,18 +82,18 @@ func initVersion() error {
 		if err = Container.GetDatabase().QueryRow("select id from version").Scan(&vversion); err != nil {
 			return err
 		}
+	}
 
-		if vversion != "" {
-			version = vversion
-		}
-	} else {
-		if sversion, err = Container.GetSettingRepository().Get("version"); err != nil && err != sql.ErrNoRows {
-			return err
-		}
+	if sversion, err = Container.GetSettingRepository().Get("version"); err != nil && err != sql.ErrNoRows {
+		return err
+	}
 
-		if sversion == "" {
-			version = appVersion
-		}
+	if vversion != "" && sversion == "" {
+		version = vversion
+	}
+
+	if vversion == "" && sversion == "" {
+		version = appVersion
 	}
 
 	if version != "" {
