@@ -204,6 +204,10 @@ func TestBuildStatusWithRegexpDescribingAFolderAndAddedFile(t *testing.T) {
 
 	err = CreateConfig(doc, &sources)
 
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	createSourceFile([]byte("test"), "test1/source4.php")
 
 	results, err := BuildStatus()
