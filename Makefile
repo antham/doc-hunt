@@ -1,11 +1,10 @@
-export CGO_ENABLED=1
-
 compile:
 	rm -rf build
 	mkdir build
-	git stash -u
-	gox -osarch=linux/386 -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
-	gox -osarch=linux/amd64 -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+	go build -o build/doc-hunt_linux_amd64 main.go
+
+build-container:
+	docker build -t antham/doc-hunt:$(v) -t antham/doc-hunt:latest .
 
 version:
 	git stash -u
@@ -13,6 +12,8 @@ version:
 	git add -A
 	git commit -m "feat(version) : "$(v)
 	git tag v$(v) master
+
+build: version compile build-container
 
 fmt:
 	find ! -path "./vendor/*" -name "*.go" -exec go fmt {} \;
