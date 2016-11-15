@@ -51,7 +51,15 @@ doc-hunt update
 
 ## Install
 
-From [release page](https://github.com/antham/doc-hunt/releases) download the binary according to your system architecture
+From [release page](https://github.com/antham/doc-hunt/releases) download the binary according to your system architecture.
+
+You can pull a docker container from dockerhub, run this command from you root path application :
+
+```docker run -it --rm -v $PWD:/app/ antham/doc-hunt config list```
+
+if you need a different binary version add it as tag like so :
+
+```docker run -it --rm -v $PWD:/app/ antham/doc-hunt:2.1.1 config list```
 
 ### Warning
 
