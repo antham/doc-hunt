@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Install vendors
           command: |
-            dep ensure -v
+            make install-vendors
       - run:
           name: Run gometalinter
           command: |
@@ -37,7 +37,7 @@ jobs:
           command: |
             if [ $CIRCLE_BRANCH != 'master' ]; then
             git fetch --all
-            gommit check range $(git rev-parse origin/master) $(git rev-parse ${CIRCLE_BRANCH})
+            make gommit FROM=$(git rev-parse origin/master) TO=$(git rev-parse ${CIRCLE_BRANCH})
             fi
       - run:
           name: Run doc-hunt
@@ -57,12 +57,7 @@ jobs:
        BASH_ENV: /home/circleci/.bashrc
     steps:
       - checkout
-      - run:
-          name: Add bin path to $PATH
-          command: |
-            mkdir /home/circleci/bin
-            echo 'export PATH=$HOME/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
+      - run: mkdir "$HOME/bin" && echo 'export PATH=$HOME/bin:$PATH' >> $BASH_ENV
       - run:
           name: Fetch tags
           command: |
@@ -70,7 +65,6 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            mkdir /home/circleci/bin
             go get -u github.com/mitchellh/gox
             go get -u github.com/tcnksm/ghr
             go get -u github.com/golang/dep/cmd/dep
@@ -79,7 +73,7 @@ jobs:
       - run:
           name: Install vendors
           command: |
-            dep ensure -v
+            make install-vendors
       - run:
           name: Compile
           command: |
@@ -115,7 +109,7 @@ jobs:
             {{ range $key, $value := .Datas }}
             => {{ $value.issueTitle }} (#{{ $value.githubIssueId }}) {{ end }}'
 
-            ~/bin/chyle create
+            chyle create
 workflows:
   version: 2
   build:

@@ -1,5 +1,9 @@
 build-container:
 	docker build -t antham/doc-hunt:$(v) -t antham/doc-hunt:latest .
+
+install-vendors:
+	dep ensure -v
+
 fmt:
 	find ! -path "./vendor/*" -name "*.go" -exec go fmt {} \;
 
@@ -9,10 +13,11 @@ gometalinter:
 doc-hunt:
 	doc-hunt check -e
 
-run-tests:
-	./test.sh
+gommit:
+	gommit check range $(FROM) $(TO)
 
-test-all: gometalinter run-tests doc-hunt
+test-unit:
+	./test.sh
 
 test-package:
 	go test -race -cover -coverprofile=/tmp/doc-hunt github.com/antham/doc-hunt/$(pkg)
