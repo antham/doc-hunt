@@ -73,7 +73,7 @@ func parseConfigDelArgs(configs *[]file.Config, line string) (*[]file.Config, er
 	results := []file.Config{}
 
 	for _, sel := range strings.Split(line, ",") {
-		strings.TrimSpace(sel)
+		sel = strings.TrimSpace(sel)
 		n, err := strconv.Atoi(sel)
 
 		if err != nil {
