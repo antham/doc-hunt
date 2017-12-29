@@ -208,6 +208,8 @@ func TestBuildStatusWithRegexpDescribingAFolderAndAddedFile(t *testing.T) {
 
 	err = Container.GetConfigRepository().CreateFromDocAndSources(doc, &sources)
 
+	assert.NoError(t, err)
+
 	createSourceFile([]byte("test"), "test1/source4.php")
 
 	m := Container.GetManager()
