@@ -45,6 +45,7 @@ jobs:
             fi
       - run:
           name: Run doc-hunt
+          shell: /bin/sh
           command: |
             make doc-hunt
       - run:
