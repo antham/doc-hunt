@@ -1,20 +1,5 @@
-compile:
-	rm -rf build
-	mkdir build
-	go build -o build/doc-hunt_linux_amd64 main.go
-
 build-container:
 	docker build -t antham/doc-hunt:$(v) -t antham/doc-hunt:latest .
-
-version:
-	git stash -u
-	sed -i "s/[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+/$(v)/g" file/version.go
-	git add -A
-	git commit -m "feat(version) : "$(v)
-	git tag v$(v) master
-
-build: version compile build-container
-
 fmt:
 	find ! -path "./vendor/*" -name "*.go" -exec go fmt {} \;
 
