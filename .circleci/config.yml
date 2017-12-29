@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            make run-tests
+            make test-unit
       - run:
           name: Run gommit
           command: |
