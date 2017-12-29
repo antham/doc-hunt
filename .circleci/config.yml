@@ -7,12 +7,13 @@ jobs:
     working_directory: /go/src/github.com/antham/doc-hunt
     steps:
       - checkout
+      - run: echo 'export PATH=$HOME/bin:$PATH' >> $BASH_ENV
       - run:
           name: Get doc-hunt and gommit binaries
           command: |
-            wget -O /usr/local/sbin/doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
-            wget -O /usr/local/sbin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
-            chmod 777 -R /usr/local/sbin/
+            wget -O ~/bin/doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
+            wget -O ~/bin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
+            chmod 777 -R ~/bin/
       - run:
           name: Install dep and gometalinter
           command: |
@@ -36,7 +37,7 @@ jobs:
           command: |
             if [ $CIRCLE_BRANCH != 'master' ]; then
             git fetch --all
-            # gommit check range $(git rev-parse origin/master) $(git rev-parse ${CIRCLE_BRANCH})
+            gommit check range $(git rev-parse origin/master) $(git rev-parse ${CIRCLE_BRANCH})
             fi
       - run:
           name: Run doc-hunt
