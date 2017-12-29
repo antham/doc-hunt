@@ -52,26 +52,9 @@ func createADocFile() {
 	}
 }
 
-func createDocFiles() {
-	for i := 1; i <= 10; i++ {
-		content := []byte("This is a doc file")
-		err := ioutil.WriteFile(util.GetAbsPath(fmt.Sprintf("doc_file_to_track_%d.txt", i)), content, 0644)
-
-		if err != nil {
-			logrus.Fatal(err)
-		}
-	}
-}
-
 func createSourceFiles() {
 	for i := 1; i <= 10; i++ {
 		createSourceFile([]byte("<?php echo 'A source file';"), fmt.Sprintf("source%d.php", i))
-	}
-}
-
-func createSourceFilesInPath(path string) {
-	for i := 1; i <= 10; i++ {
-		createSourceFile([]byte("<?php echo 'A source file';"), fmt.Sprintf("%s%csource%d.php", path, filepath.Separator, i))
 	}
 }
 
