@@ -19,16 +19,16 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/dlclark/regexp2"
+  packages = [".","syntax"]
+  revision = "487489b64fb796de2e55f4e8a4ad1e145f80e957"
+  version = "v1.1.6"
+
+[[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
   revision = "87d4004f2ab62d0d255e0a38f1680aa534549fe3"
   version = "v1.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/glenn-brown/golang-pkg-pcre"
-  packages = ["src/pkg/pcre"]
-  revision = "48bb82a8b8ceea98f4e97825b43870f6ba1970d6"
 
 [[projects]]
   name = "github.com/inconshreveable/mousetrap"
@@ -88,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "23e7fed5ffe37e9ab141a45da8db9729962ec24c8207ac92ef26529c1b9e0e41"
+  inputs-digest = "4f4b0f03717ee62ae7b4b16254dcfbe0af14c5a030b5c8605864ff40b54312be"
   solver-name = "gps-cdcl"
   solver-version = 1

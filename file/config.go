@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
+	"github.com/dlclark/regexp2"
 
 	"github.com/antham/doc-hunt/util"
 )
@@ -41,7 +41,7 @@ func createFileRegSource(source *Source) error {
 
 // ParseIdentifier extract identifier and category from string
 func ParseIdentifier(value string) (string, SourceCategory) {
-	_, err := pcre.Compile(value, pcre.ANCHORED)
+	_, err := regexp2.Compile(value, regexp2.ExplicitCapture)
 
 	if err == nil {
 		return value, SFILEREG

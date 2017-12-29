@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/antham/doc-hunt/ui"
-	"github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
+	"github.com/dlclark/regexp2"
 )
 
 // AppPath define path where app stands
@@ -43,12 +43,12 @@ func GetFolderPath(path string) string {
 // ExtractFilesMatchingReg extract files matching given regexp
 func ExtractFilesMatchingReg(exp string) (*[]string, error) {
 	files := []string{}
-	flags := pcre.ANCHORED
+	flags := (regexp2.RegexOptions)(regexp2.ExplicitCapture)
 
-	re, perr := pcre.Compile(exp, flags)
+	re, perr := regexp2.Compile(exp, flags)
 
 	if perr != nil {
-		return &files, fmt.Errorf(perr.String())
+		return &files, fmt.Errorf(perr.Error())
 	}
 
 	w := func(path string, info os.FileInfo, err error) error {
@@ -58,7 +58,13 @@ func ExtractFilesMatchingReg(exp string) (*[]string, error) {
 
 		pathTrimmed := TrimAbsBasePath(path)
 
-		if !info.IsDir() && re.MatcherString(pathTrimmed, flags).Matches() {
+		ok, err := re.MatchString(pathTrimmed)
+
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() && ok {
 			files = append(files, pathTrimmed)
 		}
 

@@ -29,10 +29,6 @@
   version = "1.0.0"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/glenn-brown/golang-pkg-pcre"
-
-[[constraint]]
   name = "github.com/satori/go.uuid"
   version = "1.0.0"
 
