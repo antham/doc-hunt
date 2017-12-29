@@ -4,16 +4,14 @@ jobs:
     docker:
       - image: circleci/golang:1.9
     working_directory: /go/src/github.com/antham/doc-hunt
-    environment:
-       BASH_ENV: /home/circleci/.bashrc
     steps:
       - checkout
       - run:
           name: Add bin path to $PATH
           command: |
             mkdir /home/circleci/bin
-            echo 'export PATH=$HOME/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
+            echo 'export PATH=$HOME/bin:$PATH' >> /home/circleci/.bashrc
+            source /home/circleci/.bashrc
       - run:
           name: Get doc-hunt and gommit binaries
           command: |
