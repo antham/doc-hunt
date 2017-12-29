@@ -7,13 +7,13 @@ jobs:
     working_directory: /go/src/github.com/antham/doc-hunt
     steps:
       - checkout
-      - run: echo 'export PATH=$HOME/bin:$PATH' >> $BASH_ENV
+      - run: mkdir "$HOME/bin" && echo 'export PATH=$HOME/bin:$PATH' >> $BASH_ENV
       - run:
           name: Get doc-hunt and gommit binaries
           command: |
-            wget -O ~/bin/doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
-            wget -O ~/bin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
-            chmod 777 -R ~/bin/
+            wget -O $HOME/bin/doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
+            wget -O $HOME/bin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
+            chmod 777 -R $HOME/bin/
       - run:
           name: Install dep and gometalinter
           command: |
