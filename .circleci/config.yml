@@ -3,6 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.9
+
     working_directory: /go/src/github.com/antham/doc-hunt
     steps:
       - checkout
@@ -47,6 +48,7 @@ jobs:
           name: Run doc-hunt
           shell: /bin/bash
           command: |
+            env
             make doc-hunt
       - run:
           name: Push on codecov result
