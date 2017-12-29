@@ -8,17 +8,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Add bin path to $PATH
-          command: |
-            mkdir /home/circleci/bin
-            echo 'export PATH=$HOME/bin:$PATH' >> /home/circleci/.bashrc
-            source /home/circleci/.bashrc
-      - run:
           name: Get doc-hunt and gommit binaries
           command: |
-            wget -O ~/bin/doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
-            wget -O ~/bin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
-            chmod 777 -R ~/bin/
+            wget -O /usr/local/sbin/doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
+            wget -O /usr/local/sbin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
+            chmod 777 -R /usr/local/sbin/
       - run:
           name: Install dep and gometalinter
           command: |
@@ -42,13 +36,12 @@ jobs:
           command: |
             if [ $CIRCLE_BRANCH != 'master' ]; then
             git fetch --all
-            # ~/bin/gommit check range $(git rev-parse origin/master) $(git rev-parse ${CIRCLE_BRANCH})
+            # gommit check range $(git rev-parse origin/master) $(git rev-parse ${CIRCLE_BRANCH})
             fi
       - run:
           name: Run doc-hunt
           shell: /bin/bash
           command: |
-            env
             make doc-hunt
       - run:
           name: Push on codecov result
