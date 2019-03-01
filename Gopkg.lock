@@ -2,92 +2,142 @@
 
 
 [[projects]]
+  digest = "1:57b5794e4e248428cdaef6475523ed1ecc23747c05985e0e28aa02e80ca1a4f3"
   name = "github.com/Sirupsen/logrus"
   packages = ["."]
+  pruneopts = ""
   revision = "f3cfb454f4c209e6668c95216c4744b8fddb2356"
 
 [[projects]]
+  digest = "1:ef15b38e9e9fecba7ae3e6e11d9a662f2c147acc25369d1b458d874f8cee17b1"
   name = "github.com/chzyer/readline"
   packages = ["."]
+  pruneopts = ""
   revision = "62c6fe6193755f722b8b8788aa7357be55a50ff1"
   version = "v1.4"
 
 [[projects]]
+  digest = "1:56c130d885a4aacae1dd9c7b71cfe39912c7ebc1ff7d2b46083c8812996dc43b"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
+  pruneopts = ""
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
 
 [[projects]]
+  digest = "1:556b75e96f02319585d253d262c4ce5dfdf4b28be474f1e0877c5f4f9b10cf9e"
   name = "github.com/dlclark/regexp2"
-  packages = [".","syntax"]
+  packages = [
+    ".",
+    "syntax",
+  ]
+  pruneopts = ""
   revision = "487489b64fb796de2e55f4e8a4ad1e145f80e957"
   version = "v1.1.6"
 
 [[projects]]
+  digest = "1:c9bebdae4ac52d0c3bbe5876de3d72f3bb05b4986865cdb3f15e305e1dc4fbca"
   name = "github.com/fatih/color"
   packages = ["."]
-  revision = "87d4004f2ab62d0d255e0a38f1680aa534549fe3"
-  version = "v1.0.0"
+  pruneopts = ""
+  revision = "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
+  version = "v1.5.0"
 
 [[projects]]
+  digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
+  pruneopts = ""
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
 
 [[projects]]
+  digest = "1:3781fabc2dfd60aa62764f5cf54b84fc4eed5b629bddd69d15c8a7e1db076be7"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
+  pruneopts = ""
   revision = "ed8eb9e318d7a84ce5915b495b7d35e0cfe7b5a8"
   version = "v0.0.6"
 
 [[projects]]
+  digest = "1:9f2f6c5cd374ff92ac60c9da0e87155bd8ca98d7c1b94defe268aa274f94f185"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
+  pruneopts = ""
   revision = "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8"
 
 [[projects]]
+  digest = "1:fc9e8eb918aaac3bb99a843591fa4f41f8e35da0b8c1d338c33f8b197a3aa878"
   name = "github.com/mattn/go-sqlite3"
   packages = ["."]
+  pruneopts = ""
   revision = "38ee283dabf11c9cbdb968eebd79b1fa7acbabe6"
 
 [[projects]]
+  digest = "1:256484dbbcd271f9ecebc6795b2df8cad4c458dd0f5fd82a8c2fa0c29f233411"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
+  pruneopts = ""
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:a94c5f6f71ae6aa6bc8d07e6c1f03f37323e1fb4a7dbbb46081ba5ae25a46fd7"
   name = "github.com/satori/go.uuid"
   packages = ["."]
+  pruneopts = ""
   revision = "f9ab0dce87d815821e221626b772e3475a0d2749"
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:5120e9615dcb5be308f1f04dcb5b1496ad1bee7998a370c93f362b4102fcb542"
   name = "github.com/spf13/cobra"
   packages = ["."]
+  pruneopts = ""
   revision = "f447048345b64b3247b29a679a14bd0da12c7f2f"
 
 [[projects]]
+  digest = "1:3ddabab9378168b050bcf36adbb2bd2572028ce645116b951f9fa58815b69fa0"
   name = "github.com/spf13/pflag"
   packages = ["."]
+  pruneopts = ""
   revision = "cb88ea77998c3f024757528e3305022ab50b43be"
 
 [[projects]]
+  digest = "1:a13cb503c52c7f571ba5bae6361aa95f1d11abd1756fcd0945f5d69c06d9162b"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
+  pruneopts = ""
   revision = "f390dcf405f7b83c997eac1b06768bb9f44dec18"
   version = "v1.1.3"
 
 [[projects]]
+  digest = "1:b5165ca5a79287b24f024ba885a6c40c58ef5415372b37bce9dc86c29c19a4ee"
   name = "golang.org/x/sys"
   packages = ["unix"]
+  pruneopts = ""
   revision = "a646d33e2ee3172a661fc09bca23bb4889a41bc8"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4f4b0f03717ee62ae7b4b16254dcfbe0af14c5a030b5c8605864ff40b54312be"
+  input-imports = [
+    "github.com/Sirupsen/logrus",
+    "github.com/chzyer/readline",
+    "github.com/davecgh/go-spew/spew",
+    "github.com/dlclark/regexp2",
+    "github.com/dlclark/regexp2/syntax",
+    "github.com/fatih/color",
+    "github.com/inconshreveable/mousetrap",
+    "github.com/mattn/go-colorable",
+    "github.com/mattn/go-isatty",
+    "github.com/mattn/go-sqlite3",
+    "github.com/pmezard/go-difflib/difflib",
+    "github.com/satori/go.uuid",
+    "github.com/spf13/cobra",
+    "github.com/spf13/pflag",
+    "github.com/stretchr/testify/assert",
+    "golang.org/x/sys/unix",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
