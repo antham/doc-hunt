@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.15
 
     working_directory: /go/src/github.com/antham/doc-hunt
     steps:
@@ -15,23 +15,32 @@ jobs:
             wget -O $HOME/bin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
             chmod 777 -R $HOME/bin/
       - run:
-          name: Install dep and gometalinter
+          name: Install gox
           command: |
-            go get -u github.com/golang/dep/cmd/dep
-            go get github.com/alecthomas/gometalinter
-            gometalinter --install --update
+            export GO111MODULE=on
+            go get -u github.com/mitchellh/gox@v1.0.1
+      - run:
+          name: Install golang-ci
+          command: |
+            export GO111MODULE=on
+            go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.30.0
       - run:
           name: Install vendors
           command: |
-            make install-vendors
+            export GO111MODULE=on
+            go mod vendor
       - run:
-          name: Run gometalinter
+          name: Compile
           command: |
-            make gometalinter
+            make compile
       - run:
           name: Run tests
           command: |
             make test-unit
+      - run:
+          name: Run linter
+          command: |
+            make lint
       - run:
           name: Run gommit
           command: |
@@ -51,7 +60,7 @@ jobs:
 
   publish:
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.15
     working_directory: /go/src/github.com/antham/doc-hunt
     environment:
        BASH_ENV: /home/circleci/.bashrc
@@ -63,21 +72,19 @@ jobs:
           command: |
             git fetch --tags
       - run:
-          name: Install dependencies
+          name: Install gox
           command: |
-            go get -u github.com/mitchellh/gox
-            go get -u github.com/tcnksm/ghr
-            go get -u github.com/golang/dep/cmd/dep
-            wget -O ~/bin/chyle https://github.com/antham/chyle/releases/download/v1.2.0/chyle_linux_amd64
-            chmod 777 ~/bin/chyle
+            export GO111MODULE=on
+            go get -u github.com/mitchellh/gox@v1.0.1
       - run:
           name: Install vendors
           command: |
-            make install-vendors
+            export GO111MODULE=on
+            go mod vendor
       - run:
           name: Compile
           command: |
-            gox -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+            make compile
       - run:
           run: Upload assets
           command: |
