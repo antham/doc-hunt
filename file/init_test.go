@@ -3,8 +3,8 @@ package file
 import (
 	"testing"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/satori/go.uuid"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
