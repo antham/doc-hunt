@@ -17,7 +17,7 @@ var listConfigCmd = &cobra.Command{
 }
 
 func listConfig() {
-	list, err := file.ListConfig()
+	list, err := file.Container.GetConfigRepository().List()
 
 	if err != nil {
 		ui.Error(err)

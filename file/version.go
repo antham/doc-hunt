@@ -1,48 +1,57 @@
 package file
 
 import (
-	"fmt"
 	"regexp"
-	"strconv"
 )
 
 var appVersion = "2.1.1"
 
-// GetAppVersion return app version
-func GetAppVersion() string {
+// Version handle everything needed to compare versions,
+// retrieve app version
+type Version struct {
+	settingRepo *SettingRepository
+	mustCompile func(string) *regexp.Regexp
+	atoi        func(string) (int, error)
+	errorf      func(string, ...interface{}) error
+}
+
+// Get return app version
+func (v Version) Get() string {
 	return appVersion
 }
 
-// getAppDbVersion return app version recorded in database
-func getAppDbVersion() (string, error) {
-	var version string
+// NewVersion instanciates a new version
+func NewVersion(
+	settingRepo *SettingRepository,
+	mustCompile func(string) *regexp.Regexp,
+	atoi func(string) (int, error),
+	errorf func(string, ...interface{}) error,
 
-	res, err := db.Query("select id from version")
-
-	if err != nil {
-		return "", fmt.Errorf("Can't retrieve database app version")
+) Version {
+	return Version{
+		settingRepo,
+		mustCompile,
+		atoi,
+		errorf,
 	}
-
-	defer func() {
-		if e := res.Close(); e != nil {
-			err = e
-		}
-	}()
-
-	if err == nil {
-		for res.Next() {
-			err = res.Scan(&version)
-		}
-	}
-
-	return version, err
 }
 
-// HasMajorVersionEqualFrom check if major version in given version is equal to app version
-func HasMajorVersionEqualFrom() (bool, error) {
-	re := regexp.MustCompile(`^(\d)\.(\d)\.(\d)(?:(?:\-|\+).*)?`)
+// getDbVersion return app version recorded in database
+func (v Version) getDbVersion() (string, error) {
+	version, err := v.settingRepo.Get("version")
 
-	dbVer, err := getAppDbVersion()
+	if err != nil {
+		return "", v.errorf("Can't retrieve database app version")
+	}
+
+	return version, nil
+}
+
+// HasMajorVersionEqual check if major version in given version is equal to app version
+func (v Version) HasMajorVersionEqual() (bool, error) {
+	re := v.mustCompile(`^(\d)\.(\d)\.(\d)(?:(?:\-|\+).*)?`)
+
+	dbVer, err := v.getDbVersion()
 
 	if err != nil {
 		return false, err
@@ -52,16 +61,16 @@ func HasMajorVersionEqualFrom() (bool, error) {
 	appVerComp := re.FindStringSubmatch(appVersion)
 
 	if len(dbVerComp) != 4 {
-		return false, fmt.Errorf("Wrong version format : %s, must follows semver", dbVer)
+		return false, v.errorf("Wrong version format : %s, must follows semver", dbVer)
 	}
 
-	appVerMajor, err := strconv.Atoi(appVerComp[1])
+	appVerMajor, err := v.atoi(appVerComp[1])
 
 	if err != nil {
 		return false, err
 	}
 
-	verMajor, err := strconv.Atoi(dbVerComp[1])
+	verMajor, err := v.atoi(dbVerComp[1])
 
 	if err != nil {
 		return false, err
@@ -71,5 +80,5 @@ func HasMajorVersionEqualFrom() (bool, error) {
 		return true, nil
 	}
 
-	return false, fmt.Errorf("Database version : %s and app version : %s don't have same major version", dbVer, appVersion)
+	return false, v.errorf("Database version : %s and app version : %s don't have same major version", dbVer, appVersion)
 }

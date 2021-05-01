@@ -12,7 +12,7 @@ func insertFakeConfig(docCat DocCategory, docIdentifier string, sourceIdentifier
 	sources := []Source{}
 
 	doc := NewDoc(docIdentifier, docCat)
-	err := InsertDoc(doc)
+	err := Container.GetDocRepository().Create(doc)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -20,7 +20,7 @@ func insertFakeConfig(docCat DocCategory, docIdentifier string, sourceIdentifier
 
 	for sidentifier, scat := range sourceIdentifiers {
 		source := NewSource(doc, sidentifier, scat)
-		err := InsertSource(source)
+		err := Container.GetSourceRepository().Create(source)
 
 		sources = append(sources, *source)
 
@@ -62,13 +62,13 @@ func TestInsertConfig(t *testing.T) {
 
 	var identifier string
 
-	err = db.QueryRow("select identifier from docs where id = ?", doc.ID).Scan(&identifier)
+	err = Container.GetDatabase().QueryRow("select identifier from docs where id = ?", doc.ID).Scan(&identifier)
 
 	assert.NoError(t, err, "Must return no errors")
 
 	assert.Equal(t, doc.Identifier, identifier, "Must record a doc file row")
 
-	results, err := db.Query("select identifier, category from sources where doc_id = ? order by identifier", doc.ID)
+	results, err := Container.GetDatabase().Query("select identifier, category from sources where doc_id = ? order by identifier", doc.ID)
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -104,7 +104,7 @@ func TestListConfigWithNoResults(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	configs, err := ListConfig()
+	configs, err := Container.GetConfigRepository().List()
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -123,7 +123,7 @@ func TestListConfigWithEntries(t *testing.T) {
 	}
 
 	doc := NewDoc("doc_file_to_track.txt", DFILE)
-	err = InsertDoc(doc)
+	err = Container.GetDocRepository().Create(doc)
 
 	if err != nil {
 		logrus.Fatal(err)
@@ -132,7 +132,7 @@ func TestListConfigWithEntries(t *testing.T) {
 	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILEREG, "source2.php": SFILEREG})
 	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILEREG, "source4.php": SFILEREG, "source5.php": SFILEREG})
 
-	configs, err := ListConfig()
+	configs, err := Container.GetConfigRepository().List()
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -183,12 +183,12 @@ func TestRemoveConfigsWithNoResults(t *testing.T) {
 
 	configs := []Config{}
 
-	err = RemoveConfigs(&configs)
+	err = Container.GetConfigRepository().Delete(&configs)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	result, err := ListConfig()
+	result, err := Container.GetConfigRepository().List()
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -206,16 +206,16 @@ func TestRemoveConfigsWithOneEntry(t *testing.T) {
 
 	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILEREG, "source2.php": SFILEREG})
 
-	configs, err := ListConfig()
+	configs, err := Container.GetConfigRepository().List()
 
 	assert.NoError(t, err, "Must return no errors")
 
-	err = RemoveConfigs(configs)
+	err = Container.GetConfigRepository().Delete(configs)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	result, err := ListConfig()
+	result, err := Container.GetConfigRepository().List()
 
 	assert.NoError(t, err, "Must return no errors")
 
@@ -234,19 +234,19 @@ func TestRemoveConfigsWithSeveralEntries(t *testing.T) {
 	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source1.php": SFILEREG, "source2.php": SFILEREG})
 	insertFakeConfig(DFILE, "doc_file_to_track.txt", map[string]SourceCategory{"source3.php": SFILEREG, "source4.php": SFILEREG})
 
-	configs, err := ListConfig()
+	configs, err := Container.GetConfigRepository().List()
 	assert.NoError(t, err, "Must return no errors")
 
 	expected := (*configs)[1]
 
 	c := append((*configs)[:1], (*configs)[2:]...)
 
-	err = RemoveConfigs(&c)
+	err = Container.GetConfigRepository().Delete(&c)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	result, err := ListConfig()
+	result, err := Container.GetConfigRepository().List()
 	assert.NoError(t, err, "Must return no errors")
 
 	assert.Len(t, *result, 1, "Must have no config remaining")

@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetAppVersion(t *testing.T) {
-	assert.Equal(t, appVersion, GetAppVersion(), "Must return version")
+	assert.Equal(t, appVersion, Container.GetVersion().Get(), "Must return version")
 }
 
 func TestHasMajorVersionEqualFromWithSameMajorVersion(t *testing.T) {
@@ -21,13 +21,13 @@ func TestHasMajorVersionEqualFromWithSameMajorVersion(t *testing.T) {
 
 	appVersion = "1.0.0"
 
-	_, err = db.Exec("update version set id = '1.6.9'")
+	err = Container.GetSettingRepository().Update(NewSetting("version", "1.6.9"))
 
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	isEqual, err := HasMajorVersionEqualFrom()
+	isEqual, err := Container.GetVersion().HasMajorVersionEqual()
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.True(t, isEqual, "Must be true, major versions are equals")
@@ -43,13 +43,13 @@ func TestHasMajorVersionEqualFromWithDifferentMajorVersion(t *testing.T) {
 
 	appVersion = "1.0.0"
 
-	_, err = db.Exec("update version set id = '2.0.0'")
+	err = Container.GetSettingRepository().Update(NewSetting("version", "2.0.0"))
 
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	isEqual, err := HasMajorVersionEqualFrom()
+	isEqual, err := Container.GetVersion().HasMajorVersionEqual()
 
 	assert.EqualError(t, err, "Database version : 2.0.0 and app version : 1.0.0 don't have same major version", "Must return an error if version format are different")
 	assert.False(t, isEqual, "Must be false, major versions are differents")
@@ -65,13 +65,13 @@ func TestHasMajorVersionEqualFromWithWrongVersionFormat(t *testing.T) {
 
 	appVersion = "1.0.0"
 
-	_, err = db.Exec("update version set id = '2.0'")
+	err = Container.GetSettingRepository().Update(NewSetting("version", "2.0"))
 
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	_, err = HasMajorVersionEqualFrom()
+	_, err = Container.GetVersion().HasMajorVersionEqual()
 
 	assert.EqualError(t, err, "Wrong version format : 2.0, must follows semver", "Must return an error if version format is invalid")
 }

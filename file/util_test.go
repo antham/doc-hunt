@@ -28,3 +28,17 @@ func TestHasChanged(t *testing.T) {
 func TestHasChangedWithSameChecksum(t *testing.T) {
 	assert.False(t, hasChanged("8e2586d4d6c168565389214a17426a60f4bce67c", "8e2586d4d6c168565389214a17426a60f4bce67c"), "Must return false if file have the same checksum")
 }
+
+func TestParseIdentifierWithARegexp(t *testing.T) {
+	value, category := ParseIdentifier("test.*")
+	assert.Equal(t, "test.*", value, "Must return identifier")
+	assert.EqualValues(t, SFILEREG, category, "Must return file regexp category")
+}
+
+func TestParseIdentifierWithAnError(t *testing.T) {
+	createMocks()
+
+	value, category := ParseIdentifier("test****")
+	assert.Equal(t, "test****", value, "Must return identifier")
+	assert.EqualValues(t, SERROR, category, "Must return an error")
+}

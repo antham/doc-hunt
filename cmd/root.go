@@ -22,7 +22,7 @@ func Execute() {
 		util.ErrorExit()
 	}
 
-	if ok, err := file.HasMajorVersionEqualFrom(); !ok {
+	if ok, err := file.Container.GetVersion().HasMajorVersionEqual(); !ok {
 		ui.Error(err)
 		util.ErrorExit()
 	}

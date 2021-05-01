@@ -15,7 +15,7 @@ import (
 func TestVersion(t *testing.T) {
 
 	ui.Info = func(msg string) {
-		assert.Equal(t, "v"+file.GetAppVersion(), msg, "Must output version")
+		assert.Equal(t, "v"+file.Container.GetVersion().Get(), msg, "Must output version")
 	}
 
 	util.SuccessExit = func() {
