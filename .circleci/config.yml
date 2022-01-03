@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.16
+      - image: circleci/golang:1.17
 
     working_directory: /go/src/github.com/antham/doc-hunt
     steps:
@@ -17,13 +17,12 @@ jobs:
       - run:
           name: Install gox
           command: |
-            export GO111MODULE=off
-            go get -u github.com/mitchellh/gox@v1.0.1
+            export CGO_ENABLED=1
+            go install github.com/mitchellh/gox@v1.0.1
       - run:
           name: Install golang-ci
           command: |
-            export GO111MODULE=off
-            go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.30.0
+            go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.30.0
       - run:
           name: Install vendors
           command: |
@@ -60,7 +59,7 @@ jobs:
 
   publish:
     docker:
-      - image: circleci/golang:1.16
+      - image: circleci/golang:1.17
     working_directory: /go/src/github.com/antham/doc-hunt
     environment:
        BASH_ENV: /home/circleci/.bashrc
@@ -84,6 +83,7 @@ jobs:
       - run:
           name: Compile
           command: |
+            export CGO_ENABLED=1
             make compile
       - run:
           run: Upload assets

@@ -5,7 +5,7 @@ fmt:
 	find ! -path "./vendor/*" -name "*.go" -exec go fmt {} \;
 
 compile:
-	gox -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+	gox -cgo -osarch "linux/amd64" -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
 
 lint:
 	golangci-lint run
