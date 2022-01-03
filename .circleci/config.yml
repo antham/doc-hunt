@@ -74,7 +74,8 @@ jobs:
           name: Install gox
           command: |
             export GO111MODULE=on
-            go get -u github.com/mitchellh/gox@v1.0.1
+            go install github.com/mitchellh/gox@v1.0.1
+            go install github.com/tcnksm/ghr@v0.13.0
       - run:
           name: Install vendors
           command: |
