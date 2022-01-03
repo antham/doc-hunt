@@ -1,14 +1,14 @@
 build-container:
 	docker build -t antham/doc-hunt:$(v) -t antham/doc-hunt:latest .
 
-install-vendors:
-	dep ensure -v
-
 fmt:
 	find ! -path "./vendor/*" -name "*.go" -exec go fmt {} \;
 
-gometalinter:
-	gometalinter -D gotype --vendor --deadline=240s --dupl-threshold=200 -e '_string' -j 5 ./...
+compile:
+	gox -cgo -osarch "linux/amd64" -output "build/{{.Dir}}_{{.OS}}_{{.Arch}}"
+
+lint:
+	golangci-lint run
 
 doc-hunt:
 	doc-hunt check -e

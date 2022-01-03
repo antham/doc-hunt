@@ -37,11 +37,11 @@ func renderConfig(list *[]file.Config) {
 
 func renderDryRun(doc *file.Doc, datas *map[string]*[]string) {
 	output := fmt.Sprintf(`%s : %s`, color.CyanString("Document"), color.YellowString(doc.Identifier))
-	output += fmt.Sprintf("\n\n")
+	output += "\n\n"
 
 	for identifier, files := range *datas {
 		output += fmt.Sprintf(`%s "%s" : `, color.CyanString("Files matching regexp"), color.YellowString(identifier))
-		output += fmt.Sprintf("\n")
+		output += "\n"
 
 		if len(*files) == 0 {
 			output += fmt.Sprintf("    => %s\n", color.RedString("No files found"))
@@ -51,7 +51,7 @@ func renderDryRun(doc *file.Doc, datas *map[string]*[]string) {
 			output += fmt.Sprintf("    => %s\n", file)
 		}
 
-		output += fmt.Sprintf("\n")
+		output += "\n"
 	}
 
 	output = strings.TrimRight(output, "\n")
