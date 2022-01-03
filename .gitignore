@@ -1,2 +1,4 @@
 vendor/*
 /build/*
+coverage.txt
+test/*
