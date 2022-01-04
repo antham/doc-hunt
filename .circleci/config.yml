@@ -9,19 +9,13 @@ jobs:
       - checkout
       - run: mkdir "$HOME/bin" && echo 'export PATH=$HOME/bin:$PATH' >> $BASH_ENV
       - run:
-          name: Get doc-hunt and gommit binaries
+          name: Install dependencies
           command: |
             wget -O $HOME/bin/doc-hunt https://github.com/antham/doc-hunt/releases/download/v2.1.1/doc-hunt_linux_amd64
             wget -O $HOME/bin/gommit https://github.com/antham/gommit/releases/download/v2.1.1/gommit_linux_386
             chmod 777 -R $HOME/bin/
-      - run:
-          name: Install gox
-          command: |
             export CGO_ENABLED=1
             go install github.com/mitchellh/gox@v1.0.1
-      - run:
-          name: Install golang-ci
-          command: |
             go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.30.0
       - run:
           name: Install vendors
@@ -71,11 +65,12 @@ jobs:
           command: |
             git fetch --tags
       - run:
-          name: Install gox
+          name: Install dependencies
           command: |
             export GO111MODULE=on
             go install github.com/mitchellh/gox@v1.0.1
             go install github.com/tcnksm/ghr@v0.13.0
+            go install github.com/antham/chyle@latest
       - run:
           name: Install vendors
           command: |
