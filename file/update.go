@@ -47,7 +47,7 @@ func deleteItems(identifiers *[]string) error {
 	return err
 }
 
-// updateItems add missing occurence in database or removes those which disappeared
+// updateItems add missing occurrence in database or removes those which disappeared
 func updateItems() error {
 	var err error
 

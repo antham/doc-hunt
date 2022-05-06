@@ -3,7 +3,7 @@ package file
 // GetItemStatus retrieve source file status
 func GetItemStatus() (*map[Doc]map[ItemStatus]map[string]bool, bool, error) {
 	filenamePerStatus := map[Doc]map[ItemStatus]map[string]bool{}
-	changesOccured := false
+	changesOccurred := false
 
 	results, err := BuildStatus()
 
@@ -25,7 +25,7 @@ func GetItemStatus() (*map[Doc]map[ItemStatus]map[string]bool, bool, error) {
 		for status, filenames := range result.Status {
 			for _, filename := range filenames {
 				if status == IDELETED || status == IUPDATED || status == IADDED || status == IFAILED {
-					changesOccured = true
+					changesOccurred = true
 				}
 
 				filenamePerStatus[result.Doc][status][filename] = true
@@ -33,5 +33,5 @@ func GetItemStatus() (*map[Doc]map[ItemStatus]map[string]bool, bool, error) {
 		}
 	}
 
-	return &filenamePerStatus, changesOccured, nil
+	return &filenamePerStatus, changesOccurred, nil
 }

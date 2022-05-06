@@ -44,7 +44,7 @@ func renderStatus(status *map[file.ItemStatus]map[string]bool) string {
 		case file.IUPDATED:
 			output += fmt.Sprintf("\n  %s \n\n", color.YellowString("Updated"))
 		case file.IFAILED:
-			output += fmt.Sprintf("\n  %s \n\n", color.RedString("An error occured"))
+			output += fmt.Sprintf("\n  %s \n\n", color.RedString("An error occurred"))
 		case file.IDELETED:
 			output += fmt.Sprintf("\n  %s \n\n", color.RedString("Deleted"))
 		}
