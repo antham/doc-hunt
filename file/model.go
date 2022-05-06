@@ -3,7 +3,6 @@ package file
 import (
 	"time"
 
-	//import sqlite
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
 )
