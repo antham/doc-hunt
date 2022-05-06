@@ -1,5 +1,4 @@
-Doc-hunt [![CircleCI](https://circleci.com/gh/antham/doc-hunt.svg?style=svg)](https://circleci.com/gh/antham/doc-hunt) [![codecov](https://codecov.io/gh/antham/doc-hunt/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/doc-hunt) [![codebeat badge](https://codebeat.co/badges/dc8062aa-0b73-4d58-8b6e-a3b336409ba8)](https://codebeat.co/projects/github-com-antham-doc-hunt)
-========
+# Doc-hunt [![codecov](https://codecov.io/gh/antham/doc-hunt/branch/master/graph/badge.svg)](https://codecov.io/gh/antham/doc-hunt) [![Go Report Card](https://goreportcard.com/badge/github.com/antham/doc-hunt)](https://goreportcard.com/report/github.com/antham/doc-hunt) [![GitHub tag](https://img.shields.io/github/tag/antham/doc-hunt.svg)]()
 
 Doc-hunt track changes occuring in a source code to help keeping documentation up to date.
 
@@ -9,7 +8,7 @@ Doc-hunt track changes occuring in a source code to help keeping documentation u
 
 ### Example : README.md
 
-This repository contains a ```README.md``` and it rely heavily on features made in ```cmd``` module (cmd folder in this repository), so to keep file ```README.md``` up to date, we need to track some files in```cmd``` folder. You can check this repository to have an example how it works with travis.
+This repository contains a `README.md` and it rely heavily on features made in `cmd` module (cmd folder in this repository), so to keep file `README.md` up to date, we need to track some files in`cmd` folder. You can check this repository to have an example how it works with travis.
 
 #### Part 1 : Setup
 
@@ -19,11 +18,11 @@ To setup this tracking we do :
 doc-hunt add config README.md 'cmd/(config.*|update|version|check)(?<!_test).go'
 ```
 
-It creates a file ```.doc-hunt``` at the root of this repository and we record it to version control system, this file will track every changes occuring in files recorded in config.
+It creates a file `.doc-hunt` at the root of this repository and we record it to version control system, this file will track every changes occuring in files recorded in config.
 
 #### Part 2 : Tracking changes
 
-After few changes in source code, we want to check if we have to update ```README.md```, we run :
+After few changes in source code, we want to check if we have to update `README.md`, we run :
 
 ```
 doc-hunt check
@@ -43,7 +42,7 @@ README.md
 
 #### Part 3 : Update doc-hunt
 
-We check if we made changes in file ```cmd/check.go``` that could be documented in ```README.md```. When everything looks fine, we update ```.doc-hunt``` file doing (we are going to commit ```.doc-hunt``` afterwards) :
+We check if we made changes in file `cmd/check.go` that could be documented in `README.md`. When everything looks fine, we update `.doc-hunt` file doing (we are going to commit `.doc-hunt` afterwards) :
 
 ```
 doc-hunt update
@@ -55,15 +54,15 @@ From [release page](https://github.com/antham/doc-hunt/releases) download the bi
 
 You can pull a docker container from dockerhub, run this command from you root path application :
 
-```docker run -it --rm -v $PWD:/app/ antham/doc-hunt config list```
+`docker run -it --rm -v $PWD:/app/ antham/doc-hunt config list`
 
 if you need a different binary version add it as tag like so :
 
-```docker run -it --rm -v $PWD:/app/ antham/doc-hunt:2.1.1 config list```
+`docker run -it --rm -v $PWD:/app/ antham/doc-hunt:2.1.1 config list`
 
 ### Warning
 
-```doc-hunt``` keep a track of version app used to record configuration, it's necessary to use a binary with same major version or configuration needs to be redo to update to a new major version.
+`doc-hunt` keep a track of version app used to record configuration, it's necessary to use a binary with same major version or configuration needs to be redo to update to a new major version.
 
 ## Usage
 
@@ -107,7 +106,7 @@ doc-hunt config add README.md 'folder1/.*(?<!_test).php'
 
 #### -n flag, try config
 
-It's possible to simulate what this command will do adding a ```-n``` option like so :
+It's possible to simulate what this command will do adding a `-n` option like so :
 
 ```
 doc-hunt config add -n README.md folder1/.*.php
@@ -139,7 +138,7 @@ doc-hunt check
 
 #### -e flag, crash when a change occurs
 
-To make ```doc-hunt``` crashes when changes are detected (useful in a CI), add a ```e``` flag like so :
+To make `doc-hunt` crashes when changes are detected (useful in a CI), add a `e` flag like so :
 
 ```
 doc-hunt check -e
@@ -147,10 +146,10 @@ doc-hunt check -e
 
 ### update
 
-To record every changes and make ```doc-hunt``` not complaining anymore :
+To record every changes and make `doc-hunt` not complaining anymore :
 
 ```
 doc-hunt update
 ```
 
-New version of ```.doc-hunt``` must be committed with all changes added.
+New version of `.doc-hunt` must be committed with all changes added.
