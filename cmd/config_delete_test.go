@@ -14,10 +14,10 @@ import (
 
 func TestParseConfigDelArgsWithArgumentNotANumber(t *testing.T) {
 	configs := []file.Config{
-		file.Config{},
-		file.Config{},
-		file.Config{},
-		file.Config{},
+		{},
+		{},
+		{},
+		{},
 	}
 
 	_, err := parseConfigDelArgs(&configs, "1,2,3,a")
@@ -27,9 +27,9 @@ func TestParseConfigDelArgsWithArgumentNotANumber(t *testing.T) {
 
 func TestParseConfigDelArgsWithArgumentNotInRange(t *testing.T) {
 	configs := []file.Config{
-		file.Config{},
-		file.Config{},
-		file.Config{},
+		{},
+		{},
+		{},
 	}
 
 	_, err := parseConfigDelArgs(&configs, "3,4")
@@ -39,16 +39,16 @@ func TestParseConfigDelArgsWithArgumentNotInRange(t *testing.T) {
 
 func TestParseConfigDelArgs(t *testing.T) {
 	configs := []file.Config{
-		file.Config{Doc: file.Doc{Identifier: "doc0.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc1.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc2.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc3.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc4.txt"}},
+		{Doc: file.Doc{Identifier: "doc0.txt"}},
+		{Doc: file.Doc{Identifier: "doc1.txt"}},
+		{Doc: file.Doc{Identifier: "doc2.txt"}},
+		{Doc: file.Doc{Identifier: "doc3.txt"}},
+		{Doc: file.Doc{Identifier: "doc4.txt"}},
 	}
 
 	expected := &[]file.Config{
-		file.Config{Doc: file.Doc{Identifier: "doc3.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc4.txt"}},
+		{Doc: file.Doc{Identifier: "doc3.txt"}},
+		{Doc: file.Doc{Identifier: "doc4.txt"}},
 	}
 
 	results, err := parseConfigDelArgs(&configs, "3,4")
@@ -61,11 +61,11 @@ func TestPromptConfigToRemove(t *testing.T) {
 	rl = &mockTerminalReader{"1,3,0", nil}
 
 	c := []file.Config{
-		file.Config{Doc: file.Doc{Identifier: "doc0.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc1.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc2.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc3.txt"}},
-		file.Config{Doc: file.Doc{Identifier: "doc4.txt"}},
+		{Doc: file.Doc{Identifier: "doc0.txt"}},
+		{Doc: file.Doc{Identifier: "doc1.txt"}},
+		{Doc: file.Doc{Identifier: "doc2.txt"}},
+		{Doc: file.Doc{Identifier: "doc3.txt"}},
+		{Doc: file.Doc{Identifier: "doc4.txt"}},
 	}
 
 	configs, err := promptConfigToRemove(&c)

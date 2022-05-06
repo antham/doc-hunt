@@ -27,7 +27,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	sources := []file.Source{
-		file.Source{
+		{
 			Identifier: "source1.php",
 			Category:   file.SFILEREG,
 		},

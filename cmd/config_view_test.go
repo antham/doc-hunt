@@ -18,7 +18,7 @@ func TestRenderDryRun(t *testing.T) {
 	doc.Identifier = "doc-1.txt"
 
 	sources := map[string]*[]string{
-		"file/.*": &[]string{
+		"file/.*": {
 			"file/source1.php",
 			"file/source2.php",
 		},
@@ -40,7 +40,7 @@ func TestRenderDryRunWithEmptySources(t *testing.T) {
 	doc.Identifier = "doc-1.txt"
 
 	sources := map[string]*[]string{
-		"file/.*": &[]string{},
+		"file/.*": {},
 	}
 
 	renderDryRun(&doc, &sources)

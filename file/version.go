@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var appVersion = "2.1.1"
+var appVersion = ""
 
 // GetAppVersion return app version
 func GetAppVersion() string {

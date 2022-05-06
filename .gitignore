@@ -2,3 +2,4 @@ vendor/*
 /build/*
 coverage.txt
 test/*
+/testing-directory/

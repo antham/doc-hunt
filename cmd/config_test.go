@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	uuid "github.com/satori/go.uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
@@ -16,38 +17,24 @@ import (
 )
 
 func init() {
-	util.AppPath = filepath.Clean(util.AppPath + "/../" + "test")
-}
-
-func removeTestDirectory() {
-	err := os.RemoveAll(util.AppPath)
-
-	if err != nil {
-		logrus.Fatal(err)
-	}
+	util.AppPath = filepath.Clean(util.AppPath + "/../testing-directory/" + uuid.NewV4().String())
 }
 
 func createTestDirectory() {
-	err := os.Mkdir(util.AppPath, 0777)
-
-	if err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(util.AppPath, 0777); err != nil && !os.IsExist(err) {
 		logrus.Fatal(err)
 	}
 }
 
 func createSubTestDirectory(path string) {
-	err := os.Mkdir(fmt.Sprintf("%s%c%s", util.AppPath, filepath.Separator, path), 0777)
-
-	if err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(fmt.Sprintf("%s%c%s", util.AppPath, filepath.Separator, path), 0777); err != nil && !os.IsExist(err) {
 		logrus.Fatal(err)
 	}
 }
 
 func createADocFile() {
 	content := []byte("This is a doc file")
-	err := ioutil.WriteFile(util.GetAbsPath("/doc_file_to_track.txt"), content, 0644)
-
-	if err != nil {
+	if err := ioutil.WriteFile(util.GetAbsPath("/doc_file_to_track.txt"), content, 0644); err != nil {
 		logrus.Fatal(err)
 	}
 }
@@ -59,15 +46,12 @@ func createSourceFiles() {
 }
 
 func createSourceFile(content []byte, filename string) {
-	err := ioutil.WriteFile(util.GetAbsPath(filename), content, 0644)
-
-	if err != nil {
+	if err := ioutil.WriteFile(util.GetAbsPath(filename), content, 0644); err != nil {
 		logrus.Fatal(err)
 	}
 }
 
 func createMocks() {
-	removeTestDirectory()
 	createTestDirectory()
 	createADocFile()
 	createSourceFiles()
