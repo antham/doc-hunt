@@ -64,7 +64,7 @@ func TestGetItemStatus(t *testing.T) {
 
 	createSourceFile([]byte("test"), "test1/source11.php")
 
-	itemStatus, changesOccured, err := GetItemStatus()
+	itemStatus, changesOccurred, err := GetItemStatus()
 
 	assert.NoError(t, err, "Must return item status without errors")
 
@@ -82,7 +82,7 @@ func TestGetItemStatus(t *testing.T) {
 		}
 	}
 
-	assert.True(t, changesOccured, "Must indicate that some items changed")
+	assert.True(t, changesOccurred, "Must indicate that some items changed")
 
 	assert.Len(t, results["doc_file_to_track.txt"][IADDED], 1, "Must contains 1 element added")
 	assert.Len(t, results["doc_file_to_track.txt"][IDELETED], 1, "Must contains 1 element deleted")
@@ -118,7 +118,7 @@ func TestGetItemStatusWithNoChanges(t *testing.T) {
 		logrus.Fatal(err)
 	}
 
-	itemStatus, changesOccured, err := GetItemStatus()
+	itemStatus, changesOccurred, err := GetItemStatus()
 
 	assert.NoError(t, err, "Must return item status without errors")
 
@@ -136,7 +136,7 @@ func TestGetItemStatusWithNoChanges(t *testing.T) {
 		}
 	}
 
-	assert.False(t, changesOccured, "Must indicate that no items changed")
+	assert.False(t, changesOccurred, "Must indicate that no items changed")
 
 	assert.Len(t, results["doc_file_to_track.txt"][IADDED], 0, "Must contains no element added")
 	assert.Len(t, results["doc_file_to_track.txt"][IDELETED], 0, "Must contains no element deleted")

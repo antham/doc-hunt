@@ -8,7 +8,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-sqlite3 v1.14.2
+	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0

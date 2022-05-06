@@ -48,11 +48,11 @@ func TestTrimAbsBasePath(t *testing.T) {
 }
 
 func TestGetFolderPathAddTrailingSeparator(t *testing.T) {
-	assert.Equal(t, "test/", GetFolderPath("test"), "Must add a trailing seperator")
+	assert.Equal(t, "test/", GetFolderPath("test"), "Must add a trailing separator")
 }
 
 func TestGetFolderPathAddTrailingSeparatorWithMultipleTrailingSeparator(t *testing.T) {
-	assert.Equal(t, "test/", GetFolderPath("test////////////"), "Must add a trailing seperator")
+	assert.Equal(t, "test/", GetFolderPath("test////////////"), "Must add a trailing separator")
 }
 
 func TestExtractFilesMatchingReg(t *testing.T) {

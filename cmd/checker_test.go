@@ -40,7 +40,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	ui.Success = func(msg string) {
-		assert.Equal(t, "No changes found", msg, "Must display a message showing no changes occured")
+		assert.Equal(t, "No changes found", msg, "Must display a message showing no changes occurred")
 	}
 
 	util.SuccessExit = func() {
