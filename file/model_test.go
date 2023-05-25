@@ -2,6 +2,7 @@ package file
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -77,6 +78,10 @@ func TestInsertConfig(t *testing.T) {
 			logrus.Fatal(err)
 		}
 	}()
+
+	sort.Slice(sources, func(i, j int) bool {
+		return sources[i].Identifier > sources[j].Identifier
+	})
 
 	var i int
 
